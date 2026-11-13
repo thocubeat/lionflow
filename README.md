@@ -2,6 +2,17 @@
 
 **[⬇ Download the latest version (APK)](https://github.com/thocubeat/lionflow/releases/latest/download/LionFlow.apk)** · [All releases](https://github.com/thocubeat/lionflow/releases)
 
+### First sign-in (2 minutes)
+
+1. **Have MyPeugeot working first.** Your car must already be added in the official MyPeugeot app, and you need its 4-digit security code.
+2. **Install:** open the APK link above on your phone → tap the file → allow *Install unknown apps* for your browser when asked.
+3. **Sign in:** open LionFlow → **Sign in with Peugeot** → log in on Peugeot's page with your MyPeugeot email and password.
+4. **Back to the app:** if Android asks which app should open the link, choose **LionFlow** (not MyPeugeot). The app opens and loads your car.
+5. **Remote control (optional):** tap **Send SMS code** → enter the SMS code and your MyPeugeot security code → **Activate**. Do it once; you can skip it and do it later under Settings › Security.
+6. **Allow location and notifications** when asked — for the map, local weather and car alerts.
+
+> Didn't come back to the app after signing in? Open LionFlow again and repeat step 3. Still stuck? Settings › Security › *Command & error log* shows what went wrong.
+
 A faster, simpler personal alternative to the MyPeugeot Android app.
 
 > **Unofficial, use at your own risk.** LionFlow is not affiliated with, endorsed by or supported by Peugeot or Stellantis. "Peugeot" and "MyPeugeot" are trademarks of their owners and are used only to say which cars the app works with.
