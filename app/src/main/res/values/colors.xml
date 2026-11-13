@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="launcher_bg">#121417</color>
+    <color name="window_bg">#0D0E10</color>
+    <color name="widget_bg">#0F1012</color>
+    <color name="widget_line">#23262A</color>
+    <color name="widget_chip">#1B1D21</color>
+    <color name="widget_track">#26292E</color>
+    <color name="widget_orange">#FFB547</color>
+    <color name="widget_divider">#2C2F34</color>
+    <color name="widget_text">#F2F3F5</color>
+    <color name="widget_muted">#9A9EA6</color>
+    <color name="widget_accent">#C6F36B</color>
+</resources>

@@ -1,0 +1,67 @@
+# LionFlow
+
+A faster, simpler personal alternative to the MyPeugeot Android app.
+
+> **Unofficial, use at your own risk.** LionFlow is not affiliated with, endorsed by or supported by Peugeot or Stellantis. "Peugeot" and "MyPeugeot" are trademarks of their owners and are used only to say which cars the app works with.
+>
+> LionFlow talks to the same sign-in and connected-car API as the MyPeugeot app, the way the open-source projects under Credits do. That API is not public and may change or stop working at any time. Using it may go against Peugeot's terms of use; your account and car are your own responsibility. Remote commands act on a real car — make sure it's safe to lock, unlock, heat or charge it before you do.
+
+## Install on your phone
+
+1. On your phone, open **Releases** in this repo and download the newest `LionFlow-1.0.x.apk`.
+2. Tap the file and allow "Install unknown apps" for your browser when Android asks.
+3. Open LionFlow and tap **Sign in with Peugeot**. After you sign in on Peugeot's page, Android may ask which app should open the link: choose **LionFlow**.
+4. Optional: turn on remote control with the SMS code and your MyPeugeot security code.
+
+Every push to `main` builds a new signed APK with GitHub Actions and publishes it as a release. New versions install over the old one.
+
+## How car data is updated
+
+- **When you open the app** (or switch back to it), LionFlow fetches fresh status, unless it already did so less than 5 minutes ago.
+- **While the app is open**, it updates by itself every 5 minutes.
+- **The refresh button** (on Home and on the widget) updates right away, at any time.
+- **In the background**, Android lets the app check about every 30 minutes. This keeps the widget and the notifications up to date.
+
+Automatic updates can be turned off under Settings › Driving data. The refresh button always works.
+
+## Features
+
+- **Sign-in** on Peugeot's own page, "Remember me", and app lock with your security code or fingerprint
+- **Status:** battery, range, charging, doors, odometer, position and next service
+- **Remote control:** lock/unlock, lights, horn, pre-heating, and start/stop charging, confirmed with fingerprint or security code
+- **Map:** free vector map (MapLibre + OpenFreeMap) in 2D/3D that you can drag, zoom and rotate, showing you, the car and chargers from NOBIL (needs a free API key)
+- **Weather** now and the forecast where you are (MET Norway)
+- **Trips** with CSV export and import, plus your own service history
+- **Home-screen widget:** battery %, charging, range, pre-heating and outside temperature
+- **Notifications:** charging complete or stopped, pre-heating finished, car left unlocked, low battery and service due
+- Light, dark or system theme, km or miles, °C or °F
+- Adapts to foldables and tablets with a side menu and a two-column home screen
+
+## What the Peugeot API doesn't offer
+
+- **Cabin temperature:** the car only reports the outside temperature. The widget shows the pre-heating state instead.
+- **Pre-heating temperature and departure times:** start and stop work in the app, but the settings themselves are changed in the car or in MyPeugeot.
+- **Charge limit and scheduled start time:** these are set in the car or in MyPeugeot. "Stop charging" waits until the scheduled time.
+- **Remote-control codes:** Peugeot allows roughly 6 one-time codes per day, and too many wrong security codes can block remote control for a while.
+
+## Security
+
+- Tokens, the remote-control state and your security code are encrypted with an Android Keystore key (AES-256-GCM).
+- Your password is only typed on Peugeot's own page. The app never sees it.
+- There is no backend and no analytics. The app talks directly to Peugeot, OpenFreeMap, MET Norway and NOBIL.
+- The release signing key lives only in GitHub Secrets (`KEYSTORE_B64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`). It is restored during the build and deleted afterwards.
+
+## License
+
+GPL-3.0 — see [`LICENSE`](LICENSE). Third-party code, licences and data sources are listed in [`NOTICE.md`](NOTICE.md).
+
+## Build it yourself
+
+Fork the repo and add four Actions secrets for signing: `KEYSTORE_B64` (base64 of a PKCS12 keystore), `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`. Every push to `main` then builds a signed APK release. Without secrets, the *Compile check* workflow builds an unsigned debug APK on any other branch.
+
+## Credits
+
+The Stellantis sign-in, API and MQTT flow are ported from
+[homeassistant-stellantis-vehicles](https://github.com/andreadegiovine/homeassistant-stellantis-vehicles) (MIT), and the
+one-time-code generator from [psa_car_controller](https://github.com/flobz/psa_car_controller) (GPL-3.0) by Florian Bezannier.
+Thanks to both projects — LionFlow wouldn't exist without them. Details in `NOTICE.md`.

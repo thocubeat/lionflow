@@ -1,0 +1,63 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore: [ "README.md" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+
+      - name: Restore signing key from GitHub Secrets
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "::error::Signing secrets are missing. Add KEYSTORE_B64, KEYSTORE_PASSWORD, KEY_ALIAS and KEY_PASSWORD under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+
+      - name: Build signed release APK
+        env:
+          SIGNING_STORE_FILE: ${{ runner.temp }}/release.jks
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: gradle :app:assembleRelease --stacktrace --no-daemon
+
+      - name: Remove signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks"
+
+      - name: Rename APK
+        run: cp app/build/outputs/apk/release/app-release.apk LionFlow-1.0.${{ github.run_number }}.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LionFlow-apk
+          path: LionFlow-*.apk
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: LionFlow 1.0.${{ github.run_number }}
+          files: LionFlow-*.apk
+          make_latest: true

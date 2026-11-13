@@ -1,0 +1,21 @@
+name: Compile check
+
+on:
+  push:
+    branches-ignore: [ main ]
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Build debug APK (no signing secrets needed)
+        run: gradle :app:assembleDebug --stacktrace --no-daemon
