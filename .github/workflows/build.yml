@@ -42,22 +42,32 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: gradle :app:assembleRelease --stacktrace --no-daemon
 
-      - name: Remove signing key
-        if: always()
-        run: rm -f "$RUNNER_TEMP/release.jks"
 
       - name: Rename APK
-        run: cp app/build/outputs/apk/release/app-release.apk LionFlow-1.0.${{ github.run_number }}.apk
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk LionFlow-1.0.${{ github.run_number }}.apk
+          cp app/build/outputs/apk/release/app-release.apk LionFlow.apk
+
+      - name: Show signing certificate fingerprint (public, for developer registration)
+        env:
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: keytool -list -v -keystore "$RUNNER_TEMP/release.jks" -storepass "$SIGNING_STORE_PASSWORD" | grep -E "SHA256:" || true
 
       - uses: actions/upload-artifact@v4
         with:
           name: LionFlow-apk
-          path: LionFlow-*.apk
+          path: LionFlow.apk
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.${{ github.run_number }}
           name: LionFlow 1.0.${{ github.run_number }}
-          files: LionFlow-*.apk
+          files: |
+            LionFlow-*.apk
+            LionFlow.apk
           make_latest: true
+
+      - name: Remove signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks"

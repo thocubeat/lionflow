@@ -28,6 +28,7 @@ interface Platform {
     fun requestLocation()
     fun share(file: java.io.File, mime: String)
     fun openUrl(url: String)
+    fun openInstallPermission()
 }
 
 class MainActivity : FragmentActivity(), Platform {
@@ -109,6 +110,12 @@ class MainActivity : FragmentActivity(), Platform {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         startActivity(Intent.createChooser(send, "Export driving data"))
+    }
+
+    override fun openInstallPermission() {
+        try {
+            startActivity(Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:$packageName")))
+        } catch (_: Exception) { }
     }
 
     override fun openUrl(url: String) {

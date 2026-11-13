@@ -24,6 +24,7 @@ data class AppSettings(
     val notifyService: Boolean = false,
     val carName: String = "My Peugeot",
     val wakeOnOpen: Boolean = true,
+    val autoUpdate: Boolean = true,
 )
 
 /** Plain (non-secret) preferences, exposed as a StateFlow so the UI updates instantly. */
@@ -52,6 +53,7 @@ class SettingsStore(context: Context) {
         notifyService = p.getBoolean("nService", false),
         carName = p.getString("carName", "My Peugeot") ?: "My Peugeot",
         wakeOnOpen = p.getBoolean("wakeOnOpen", true),
+        autoUpdate = p.getBoolean("autoUpdate", true),
     )
 
     fun update(block: (AppSettings) -> AppSettings) {
@@ -75,6 +77,7 @@ class SettingsStore(context: Context) {
             .putBoolean("nService", s.notifyService)
             .putString("carName", s.carName)
             .putBoolean("wakeOnOpen", s.wakeOnOpen)
+            .putBoolean("autoUpdate", s.autoUpdate)
             .apply()
         _state.value = s
     }
@@ -83,6 +86,10 @@ class SettingsStore(context: Context) {
     var lastRefresh: Long
         get() = p.getLong("lastRefresh", 0L)
         set(v) { p.edit().putLong("lastRefresh", v).apply() }
+
+    var lastUpdateCheck: Long
+        get() = p.getLong("lastUpdateCheck", 0L)
+        set(v) { p.edit().putLong("lastUpdateCheck", v).apply() }
 
     var photoPath: String?
         get() = p.getString("photo", null)

@@ -136,6 +136,16 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
             LinkRow(if (s.nobilKey.isBlank()) "Add NOBIL API key" else "NOBIL API key added", "Free key from info.nobil.no/api", LfIcons.Bolt, last = true) { editNobil = true }
         }
 
+        SectionTitle("App updates")
+        GroupCard {
+            LinkRow(
+                if (ui.update != null) "Install ${ui.update?.tag}" else "Check for updates",
+                ui.updateStatus ?: "You have ${BuildConfig.VERSION_NAME}",
+                LfIcons.Download,
+            ) { if (ui.update != null) { if (ui.needsInstallPermission) platform.openInstallPermission() else vm.installUpdate() } else vm.checkForUpdate(force = true) }
+            ToggleRow("Install updates automatically", "Only versions signed with LionFlow's key. No taps needed on Android 12+ after the first update", s.autoUpdate, showDivider = false) { v -> set { it.copy(autoUpdate = v) } }
+        }
+
         SectionTitle("Appearance")
         GroupCard {
             SegRow("Theme", listOf("dark" to "Dark", "light" to "Light", "system" to "System"), s.theme) { v -> set { it.copy(theme = v) } }

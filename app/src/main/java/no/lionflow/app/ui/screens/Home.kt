@@ -123,6 +123,26 @@ private fun HomeMain(vm: AppViewModel, ui: UiState, s: AppSettings) {
         }
     }
 
+    ui.update?.let { r ->
+        val platform = no.lionflow.app.ui.LocalPlatform.current
+        LfCard(radius = 20.dp, padding = androidx.compose.foundation.layout.PaddingValues(14.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                LfIcon(LfIcons.Download, c.accentInk, 22.dp)
+                Column(Modifier.weight(1f)) {
+                    Text("Update ${r.tag} is ready", style = Type.label, color = c.text)
+                    Text(ui.updateStatus ?: "Signed with LionFlow's key · installs in a few seconds", style = Type.tiny, color = c.muted)
+                }
+                val busy = ui.updateStatus?.let { it.startsWith("Downloading") || it.startsWith("Installing") } == true
+                if (busy) no.lionflow.app.ui.Busy()
+                else Text(
+                    if (ui.needsInstallPermission) "Allow" else "Install",
+                    style = Type.label, color = c.accentInk,
+                    modifier = Modifier.clickable { if (ui.needsInstallPermission) platform.openInstallPermission() else vm.installUpdate() }.padding(8.dp),
+                )
+            }
+        }
+    }
+
     CarPhoto(vm, ui)
 
     // Status chips

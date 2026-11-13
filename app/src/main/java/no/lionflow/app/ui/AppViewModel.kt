@@ -65,6 +65,9 @@ data class UiState(
     val smsSent: Boolean = false,
     val setupError: String? = null,
     val photoPath: String? = null,
+    val update: no.lionflow.app.update.Release? = null,
+    val updateStatus: String? = null,
+    val needsInstallPermission: Boolean = false,
 )
 
 class AppViewModel(app: Application) : AndroidViewModel(app) {
@@ -178,6 +181,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun onUnlocked() {
+        checkForUpdate(force = false)
         maybeAutoRefresh(force = _ui.value.status == null)
         warmUpRemote()
         startTicker()
@@ -192,6 +196,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             maybeAutoRefresh(force = false)
             startTicker()
             warmUpRemote()
+            checkForUpdate(force = false)
+            // Back from "Install unknown apps": continue the update automatically.
+            if (_ui.value.needsInstallPermission && no.lionflow.app.update.Updater.canInstall(getApplication<Application>())) installUpdate()
         }
     }
 
@@ -317,6 +324,55 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun wakeUp() = runCommand("Wake car") { p -> remote.wakeUp(p) }
+
+    // ---------------- app updates ----------------
+
+    /** Looks for a newer release at most every 6 hours (or now when [force]); installs it if auto-update is on. */
+    fun checkForUpdate(force: Boolean) {
+        val now = System.currentTimeMillis()
+        if (!force && now - settings.lastUpdateCheck < 6 * 3600_000L) return
+        settings.lastUpdateCheck = now
+        viewModelScope.launch {
+            try {
+                val r = no.lionflow.app.update.Updater.latest()
+                if (r != null && no.lionflow.app.update.Updater.isNewer(r)) {
+                    _ui.update { it.copy(update = r, updateStatus = null) }
+                    if (settings.value.autoUpdate) installUpdate()
+                } else {
+                    _ui.update { it.copy(update = null) }
+                    if (force) toast("LionFlow is up to date (${no.lionflow.app.BuildConfig.VERSION_NAME})")
+                }
+            } catch (e: Exception) {
+                if (force) toast("Couldn't check for updates — ${no.lionflow.app.api.Http.describe(e)}")
+            }
+        }
+    }
+
+    fun installUpdate() {
+        val r = _ui.value.update ?: return
+        val ctx = getApplication<Application>()
+        if (!no.lionflow.app.update.Updater.canInstall(ctx)) {
+            _ui.update { it.copy(needsInstallPermission = true, updateStatus = "Allow LionFlow to install updates (one time)") }
+            return
+        }
+        if (_ui.value.updateStatus?.startsWith("Downloading") == true) return
+        viewModelScope.launch {
+            try {
+                _ui.update { it.copy(needsInstallPermission = false, updateStatus = "Downloading ${r.tag}…") }
+                val f = no.lionflow.app.update.Updater.download(ctx, r) { p -> _ui.update { it.copy(updateStatus = "Downloading ${r.tag}… $p %") } }
+                if (!no.lionflow.app.update.Updater.sameSigner(ctx, f)) {
+                    f.delete()
+                    _ui.update { it.copy(updateStatus = "The download isn't signed with LionFlow's key — not installed") }
+                    remote.addLog("update ${r.tag} rejected: signature mismatch")
+                    return@launch
+                }
+                _ui.update { it.copy(updateStatus = "Installing ${r.tag}…") }
+                no.lionflow.app.update.Updater.install(ctx, f)
+            } catch (e: Exception) {
+                _ui.update { it.copy(updateStatus = "Update failed — ${no.lionflow.app.api.Http.describe(e)}") }
+            }
+        }
+    }
 
     // ---------------- location, weather, chargers ----------------
 

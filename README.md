@@ -1,5 +1,7 @@
 # LionFlow
 
+**[⬇ Download the latest version (APK)](https://github.com/thocubeat/lionflow/releases/latest/download/LionFlow.apk)** · [All releases](https://github.com/thocubeat/lionflow/releases)
+
 A faster, simpler personal alternative to the MyPeugeot Android app.
 
 > **Unofficial, use at your own risk.** LionFlow is not affiliated with, endorsed by or supported by Peugeot or Stellantis. "Peugeot" and "MyPeugeot" are trademarks of their owners and are used only to say which cars the app works with.
@@ -13,7 +15,7 @@ A faster, simpler personal alternative to the MyPeugeot Android app.
 3. Open LionFlow and tap **Sign in with Peugeot**. After you sign in on Peugeot's page, Android may ask which app should open the link: choose **LionFlow**.
 4. Optional: turn on remote control with the SMS code and your MyPeugeot security code.
 
-Every push to `main` builds a new signed APK with GitHub Actions and publishes it as a release. New versions install over the old one.
+After the first install, LionFlow updates itself: it finds new releases, checks they're signed with the same key, and installs them (on Android 12+ without extra taps after the first update). Every push to `main` builds a new signed APK with GitHub Actions and publishes it as a release.
 
 ## How car data is updated
 
