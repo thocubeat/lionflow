@@ -35,6 +35,7 @@ object ChargePower {
      */
     fun record(raw: VehicleStatus): VehicleStatus {
         val st = fixRange(raw)
+        try { ChargeLog.observe(st) } catch (_: Exception) { }
         val p = prefs ?: return st
         if (!st.isCharging) { p.edit().remove("s").apply(); return st }
         val t = st.energyAtMillis ?: st.updatedAtMillis ?: return st
