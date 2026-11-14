@@ -167,8 +167,8 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
             ToggleRow("Map on the driver display", "Opening LionFlow in Android Auto puts its 3D map behind the wheel (if your car supports it). This ends a route running in another app; starting Google Maps navigation takes the display back", s.carCluster, showDivider = false) { v -> set { it.copy(carCluster = v) } }
         }
         Text(
-            if (vm.fromPlay) "Installed from Google Play, so LionFlow shows up in Android Auto's launcher (map) and as a media source."
-            else "Android Auto only shows LionFlow's map when it's installed from Google Play (internal test link). The media view also works with Android Auto's Unknown sources setting.",
+            if (vm.fromPlay) "Installed from Google Play, so LionFlow shows up in Android Auto's app launcher."
+            else "Android Auto only shows LionFlow when it's installed from Google Play (internal test link).",
             style = Type.tiny, color = c.muted, modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
         )
 

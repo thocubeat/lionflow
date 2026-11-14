@@ -41,16 +41,15 @@ Automatic updates can be turned off under Settings › Driving data. The refresh
 
 ## Android Auto
 
-LionFlow works in Android Auto in two places:
+LionFlow is a map app in Android Auto:
 
 - **App launcher → LionFlow:** a dark 3D vector map that follows you, with nearby chargers, where the car is parked and a battery/range card. Buttons: **Car** (status, pre-heat, charging, more actions), **Trips** (last 7 days summary and recent trips), **Chargers** (nearest first, tap to show on the map) and the **driver display** toggle.
-- **Media view → LionFlow:** *Car* and *Actions* tabs (status, pre-heat, charging, lock, flash lights). It plays no audio.
 
 On cars that let Android Auto use the driver display (cluster), LionFlow's map can be shown there. Starting navigation in Google Maps takes the display back.
 
 Android Auto only runs map apps that Android records as **installed from Google Play**. Turning on "Unknown sources" isn't enough for the map. So LionFlow is also published to a private Google Play internal test (invite only). Installed from Play, it appears in Android Auto, and Play handles updates. In that copy, the GitHub updater switches off by itself.
 
-For the GitHub APK, only the media view works, after turning on Android Auto's **Unknown sources** (Android Auto settings → tap *Version* 10 times → ⋮ → Developer settings).
+The GitHub APK doesn't appear in Android Auto, because it isn't installed from Google Play.
 
 ### Publishing to Google Play yourself (for forks)
 
@@ -59,7 +58,7 @@ For the GitHub APK, only the media view works, after turning on Android Auto's *
 3. Create a Google Cloud service account, enable the Google Play Android Developer API, invite the service account in Play Console (Users and permissions) with release rights, and add its JSON key as the GitHub secret `PLAY_SERVICE_ACCOUNT_JSON`.
 4. From then on, every push to `main` also uploads to internal testing.
 
-Remote actions from the car only run while the phone is connected to Android Auto. You can turn them off under Settings → Android Auto.
+Remote actions from the car (pre-heat, charging, lock) can be turned off under Settings → Android Auto.
 
 ## Features
 

@@ -83,15 +83,6 @@
             </intent-filter>
         </service>
 
-        <!-- Car status + quick actions in Android Auto's media view -->
-        <service
-            android:name=".car.CarMediaService"
-            android:exported="true"
-            android:label="LionFlow">
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
-            </intent-filter>
-        </service>
 
         <provider
             android:name="androidx.core.content.FileProvider"

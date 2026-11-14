@@ -32,7 +32,7 @@ import org.json.JSONObject
 import java.io.File
 
 /**
- * Shared car state for the Android Auto screens, the driver display and the media source.
+ * Shared car state for the Android Auto screens, and the driver display.
  * Each of those runs in its own session/service, so they all read from here.
  */
 object CarHub {
