@@ -47,6 +47,7 @@ LionFlow shows a simple car overview in Android Auto (no map):
 - **Car:** climate and outside temperature, doors, odometer and next service.
 - **Driving:** last 7 days summary; tap for recent trips. **Chargers nearby** lists the nearest chargers.
 - **Actions** (top right): lock/unlock, pre-heat, charging, lights, horn.
+- **YouTube — only while parked:** opens only when the car reports a speed of 0 (or the phone's GPS shows no movement for 10 s). The moment the car moves, video stops and the screen closes. If parking can't be confirmed, it won't open. Can be turned off in Settings → Android Auto.
 
 Android Auto only runs apps like this when Android records them as **installed from Google Play**. So LionFlow is also published to a private Google Play internal test (invite only). Installed from Play, it appears in Android Auto, and Play handles updates. In that copy, the GitHub updater switches off by itself.
 

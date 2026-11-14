@@ -54,6 +54,11 @@ private fun CarContext.listLimit(): Int = try {
 
 class MainSession : Session() {
     override fun onCreateScreen(intent: Intent): Screen {
+        val guard = ParkGuard(carContext)
+        lifecycle.addObserver(object : androidx.lifecycle.DefaultLifecycleObserver {
+            override fun onCreate(owner: androidx.lifecycle.LifecycleOwner) = guard.start()
+            override fun onDestroy(owner: androidx.lifecycle.LifecycleOwner) = guard.stop()
+        })
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 CarHub.notices.collect { m -> CarToast.makeText(carContext, m, CarToast.LENGTH_LONG).show() }
@@ -61,7 +66,7 @@ class MainSession : Session() {
         }
         CarHub.refresh(carContext)
         CarHub.loadTrips(carContext)
-        return OverviewScreen(carContext)
+        return OverviewScreen(carContext, guard)
     }
 }
 
@@ -79,10 +84,13 @@ abstract class LiveScreen(ctx: CarContext) : Screen(ctx) {
 
 // ---------------------------------------------------------------- overview
 
-class OverviewScreen(ctx: CarContext) : LiveScreen(ctx) {
+class OverviewScreen(ctx: CarContext, private val guard: ParkGuard) : LiveScreen(ctx) {
     init {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) { CarHub.trips.collect { invalidate() } }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) { guard.parked.collect { invalidate() } }
         }
     }
 
@@ -155,6 +163,22 @@ class OverviewScreen(ctx: CarContext) : LiveScreen(ctx) {
             .addSectionedList(SectionedItemList.create(charge.build(), "Battery"))
             .addSectionedList(SectionedItemList.create(car.build(), "Car"))
             .addSectionedList(SectionedItemList.create(driving.build(), "Driving"))
+            .apply {
+                if (s.carVideo) {
+                    guard.update()
+                    val parked = guard.parked.value
+                    addSectionedList(SectionedItemList.create(ItemList.Builder().addItem(Row.Builder()
+                        .setTitle("YouTube")
+                        .addText(if (parked) "Parked — tap to watch" else guard.reason)
+                        .setImage(carContext.icon(R.drawable.ic_car_play))
+                        .setBrowsable(true)
+                        .setOnClickListener {
+                            guard.update()
+                            if (guard.parked.value) screenManager.push(YouTubeScreen(carContext, guard))
+                            else CarToast.makeText(carContext, guard.reason, CarToast.LENGTH_LONG).show()
+                        }.build()).build(), "While parked"))
+                }
+            }
             .build()
     }
 
