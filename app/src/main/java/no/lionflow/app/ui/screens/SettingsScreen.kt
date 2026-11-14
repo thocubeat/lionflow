@@ -152,6 +152,16 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
             ToggleRow("Check for updates when the app opens", "Shows a popup when a new version is ready. Only versions signed with LionFlow's key are installed", s.autoUpdate, showDivider = false) { v -> set { it.copy(autoUpdate = v) } }
         }
 
+        SectionTitle("Android Auto")
+        GroupCard {
+            ToggleRow("Remote actions in the car", "Pre-heat, charging, lock and lights from the car screen. Only works while your phone is connected to Android Auto", s.carActions) { v -> set { it.copy(carActions = v) } }
+            ToggleRow("Map on the driver display", "When LionFlow is opened in Android Auto, its 3D map is offered to the driver display (if your car supports it). Starting Google Maps navigation takes it back", s.carCluster, showDivider = false) { v -> set { it.copy(carCluster = v) } }
+        }
+        Text(
+            "LionFlow isn't from the Play Store, so turn on Android Auto's \"Unknown sources\" once: Android Auto settings → tap Version 10 times → ⋮ Developer settings → Unknown sources. Then LionFlow shows up in the car's launcher (map) and as a media source.",
+            style = Type.tiny, color = c.muted, modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
+        )
+
         SectionTitle("Appearance")
         GroupCard {
             SegRow("Theme", listOf("dark" to "Dark", "light" to "Light", "system" to "System"), s.theme) { v -> set { it.copy(theme = v) } }

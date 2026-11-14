@@ -26,6 +26,8 @@ data class AppSettings(
     val wakeOnOpen: Boolean = true,
     val autoUpdate: Boolean = true,
     val chargerSource: String = "osm", // osm (free, no key) | nobil (needs key)
+    val carActions: Boolean = true,     // remote actions from Android Auto
+    val carCluster: Boolean = true,     // show LionFlow's map on the driver display when opened in Android Auto
 )
 
 /** Plain (non-secret) preferences, exposed as a StateFlow so the UI updates instantly. */
@@ -56,6 +58,8 @@ class SettingsStore(context: Context) {
         wakeOnOpen = p.getBoolean("wakeOnOpen", true),
         autoUpdate = p.getBoolean("autoUpdate", true),
         chargerSource = p.getString("chargerSource", "osm") ?: "osm",
+        carActions = p.getBoolean("carActions", true),
+        carCluster = p.getBoolean("carCluster", true),
     )
 
     fun update(block: (AppSettings) -> AppSettings) {
@@ -81,6 +85,8 @@ class SettingsStore(context: Context) {
             .putBoolean("wakeOnOpen", s.wakeOnOpen)
             .putBoolean("autoUpdate", s.autoUpdate)
             .putString("chargerSource", s.chargerSource)
+            .putBoolean("carActions", s.carActions)
+            .putBoolean("carCluster", s.carCluster)
             .apply()
         _state.value = s
     }
