@@ -395,6 +395,10 @@ class RemoteControl(private val api: StellantisApi, private val secure: SecureSt
     suspend fun preconditioning(on: Boolean, programs: JSONObject, t: Tracker = Tracker()) =
         send("/ThermalPrecond", JSONObject().put("asap", if (on) "activate" else "deactivate").put("programs", programs), t)
 
+    /** The car's own charge limit: daily = stop at the limit set in the car, trip = charge to 100 %. */
+    suspend fun chargeLimit(daily: Boolean, t: Tracker = Tracker()) =
+        send("/VehCharge/limit", JSONObject().put("action", if (daily) "daily" else "trip"), t)
+
     /** immediate = start now; delayed = wait for the scheduled start time (i.e. stop now). */
     suspend fun charging(startNow: Boolean, hour: Int, minute: Int, t: Tracker = Tracker()) =
         send("/VehCharge", JSONObject()

@@ -40,7 +40,8 @@ data class VehicleStatus(
     val residualKwh: Double? = null,   // energy in the battery now
     val capacityKwh: Double? = null,   // usable capacity reported by the car
     val energyAtMillis: Long? = null,  // when the battery reading was taken
-    val rangeEstimated: Boolean = false, // car sent no/0 range; LionFlow estimated it
+    val rangeEstimated: Boolean = false,
+    val chargeType: String? = null,     // Partial = car's daily charge limit on, Full = charge to 100 % // car sent no/0 range; LionFlow estimated it
 ) {
     val isCharging: Boolean get() = chargingStatus == "InProgress"
 
@@ -94,6 +95,7 @@ data class VehicleStatus(
                 plugged = charging?.optBoolean("plugged") ?: false,
                 chargingStatus = charging?.str("status"),
                 chargingMode = charging?.str("chargingMode"),
+                chargeType = charging?.str("type"),
                 chargingRateKmh = charging?.num("chargingRate"),
                 remainingMinutes = remaining,
                 nextDelayedHour = next?.first,

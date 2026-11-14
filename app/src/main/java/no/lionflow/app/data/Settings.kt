@@ -28,6 +28,8 @@ data class AppSettings(
     val chargerSource: String = "osm", // osm (free, no key) | nobil (needs key)
     val carActions: Boolean = true,     // remote actions from Android Auto
     val carVideo: Boolean = true,       // YouTube in Android Auto, only while parked
+    val chargeLimitOn: Boolean = false, // LionFlow stops charging at chargeLimitPct
+    val chargeLimitPct: Int = 80,
     val batteryKwh: Double = 0.0,       // usable battery size for kW maths; 0 = use what the car reports (else 73)
 )
 
@@ -62,6 +64,8 @@ class SettingsStore(context: Context) {
         carActions = p.getBoolean("carActions", true),
         carVideo = p.getBoolean("carVideo", true),
         batteryKwh = p.getFloat("batteryKwh", 0f).toDouble(),
+        chargeLimitOn = p.getBoolean("chargeLimitOn", false),
+        chargeLimitPct = p.getInt("chargeLimitPct", 80),
     )
 
     fun update(block: (AppSettings) -> AppSettings) {
@@ -90,6 +94,8 @@ class SettingsStore(context: Context) {
             .putBoolean("carActions", s.carActions)
             .putBoolean("carVideo", s.carVideo)
             .putFloat("batteryKwh", s.batteryKwh.toFloat())
+            .putBoolean("chargeLimitOn", s.chargeLimitOn)
+            .putInt("chargeLimitPct", s.chargeLimitPct)
             .apply()
         _state.value = s
     }
@@ -122,6 +128,11 @@ class SettingsStore(context: Context) {
     var pendingPrograms: String
         get() = p.getString("pendingPrograms", "") ?: ""
         set(v) { p.edit().putString("pendingPrograms", v).apply() }
+
+    /** Start time of the charging session LionFlow already stopped at the limit (so it only stops once). */
+    var limitStoppedFor: Long
+        get() = p.getLong("limitStoppedFor", 0L)
+        set(v) { p.edit().putLong("limitStoppedFor", v).apply() }
 
     var notifySnapshot: String
         get() = p.getString("notifySnapshot", "{}") ?: "{}"

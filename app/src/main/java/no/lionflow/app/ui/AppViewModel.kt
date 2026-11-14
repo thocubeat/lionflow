@@ -263,6 +263,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 settings.lastRefresh = now
                 no.lionflow.app.widget.WidgetData.save(getApplication<Application>(), st)
                 _ui.update { it.copy(vehicle = v, status = st, refreshing = false, lastRefresh = now, now = now) }
+                if (no.lionflow.app.work.ChargeLimit.due(getApplication(), st)) viewModelScope.launch {
+                    no.lionflow.app.work.ChargeLimit.check(getApplication(), st)?.let { toast(it); kotlinx.coroutines.delay(4000); refresh() }
+                }
             } catch (e: AuthExpiredException) {
                 _ui.update { it.copy(refreshing = false) }
                 toast("Your Peugeot session expired — please sign in again")
@@ -333,6 +336,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     /** True while schedules we sent haven't shown up in Peugeot's status yet. */
     fun programsPending(): Boolean = no.lionflow.app.model.ChargePower.pendingPrograms() != null
+
+    /** The car's own limit: daily (stops at the limit set in the car) or trip (charge to 100 %). */
+    fun setCarChargeLimit(daily: Boolean) = runCommand(if (daily) "Daily charge limit" else "Full charge for a trip",
+        { it.copy(chargeType = if (daily) "Partial" else "Full") }) { p -> remote.chargeLimit(daily, p) }
 
     fun charging(startNow: Boolean) = runCommand(if (startNow) "Charge now" else "Stop charging", { it.copy(chargingStatus = if (startNow) "InProgress" else "Stopped") }) { p ->
         val st = _ui.value.status

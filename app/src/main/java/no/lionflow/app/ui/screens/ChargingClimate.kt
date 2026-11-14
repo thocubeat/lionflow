@@ -99,9 +99,10 @@ fun ChargingScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean)
             confirm(if (start) "Start charging now" else "Stop charging") { vm.charging(start) }
         }
         Text(
-            "Charging power is worked out by LionFlow (the car only reports range per hour): measured from the energy added between two car reports, or estimated from the time left until then. Scheduled start time and charge limit are set in the car or in the MyPeugeot app; “Stop charging” waits until the scheduled time.",
+            "Charging power is worked out by LionFlow (the car only reports range per hour): measured from the energy added between two car reports, or estimated from the time left until then. Scheduled start time is set in the car or in the MyPeugeot app; “Stop charging” waits until the scheduled time.",
             style = Type.tiny, color = c.muted,
         )
+        ChargeLimitCard(vm, ui, s)
         ChargeLogSection(ui, s)
     }
 }

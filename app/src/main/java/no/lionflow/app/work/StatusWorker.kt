@@ -33,11 +33,14 @@ class StatusWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
             val st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(vehicle), null))
             no.lionflow.app.widget.WidgetData.save(applicationContext, st)
             // While charging, check again in ~10 minutes so the charging log gets a good start/end.
+            // LionFlow's own charge limit.
+            ChargeLimit.check(app, st)?.let { msg -> notify(7, "Charging stopped at your limit", msg) }
             if (st.isCharging) {
+                val near = s.chargeLimitOn && (st.batteryPct ?: 0.0) >= s.chargeLimitPct - 6
                 androidx.work.WorkManager.getInstance(applicationContext).enqueueUniqueWork(
                     "charge_follow", androidx.work.ExistingWorkPolicy.REPLACE,
                     androidx.work.OneTimeWorkRequestBuilder<StatusWorker>()
-                        .setInitialDelay(10, java.util.concurrent.TimeUnit.MINUTES)
+                        .setInitialDelay(if (near) 4L else 10L, java.util.concurrent.TimeUnit.MINUTES)
                         .setConstraints(androidx.work.Constraints.Builder().setRequiredNetworkType(androidx.work.NetworkType.CONNECTED).build())
                         .build())
             }
