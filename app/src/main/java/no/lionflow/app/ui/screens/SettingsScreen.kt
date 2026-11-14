@@ -61,6 +61,7 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
     val ctx = LocalContext.current
     var editName by remember { mutableStateOf(false) }
     var editNobil by remember { mutableStateOf(false) }
+    var editBattery by remember { mutableStateOf(false) }
     var confirmSignOut by remember { mutableStateOf(false) }
     var showLog by remember { mutableStateOf(false) }
     val importer = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -94,6 +95,8 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
             SegRow("Distance", listOf("km" to "km", "mi" to "miles"), s.distanceUnit) { v -> set { it.copy(distanceUnit = v) } }
             Divider()
             SegRow("Temperature", listOf("c" to "°C", "f" to "°F"), s.tempUnit) { v -> set { it.copy(tempUnit = v) } }
+            Divider()
+            LinkRow("Battery size", if (s.batteryKwh > 0) "${s.batteryKwh.toInt()} kWh usable · used to work out charging kW" else "Automatic (from the car, else 73 kWh) · used to work out charging kW", LfIcons.Bolt, last = true) { editBattery = true }
         }
 
         SectionTitle("Notifications")
@@ -210,6 +213,22 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
             },
             confirmButton = { TextButton(onClick = { set { it.copy(nobilKey = key) }; editNobil = false; vm.loadChargers() }) { Text("Save", color = c.accentInk) } },
             dismissButton = { TextButton(onClick = { editNobil = false }) { Text("Cancel", color = c.muted) } },
+        )
+    }
+    if (editBattery) {
+        var txt by remember { mutableStateOf(if (s.batteryKwh > 0) s.batteryKwh.toInt().toString() else "") }
+        AlertDialog(
+            onDismissRequest = { editBattery = false }, containerColor = c.card,
+            title = { Text("Battery size", color = c.text) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text("Usable capacity in kWh. Leave empty to use what the car reports (E-5008: 73 kWh standard range).", style = Type.small, color = c.muted)
+                    OutlinedTextField(txt, { txt = it.filter { ch -> ch.isDigit() || ch == '.' }.take(5) }, singleLine = true, label = { Text("kWh") }, colors = fieldColors,
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal))
+                }
+            },
+            confirmButton = { TextButton(onClick = { val v = txt.toDoubleOrNull()?.takeIf { it in 10.0..200.0 } ?: 0.0; set { it.copy(batteryKwh = v) }; editBattery = false }) { Text("Save", color = c.accentInk) } },
+            dismissButton = { TextButton(onClick = { editBattery = false }) { Text("Cancel", color = c.muted) } },
         )
     }
     if (showLog) {

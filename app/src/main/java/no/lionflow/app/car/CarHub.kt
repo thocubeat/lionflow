@@ -78,6 +78,7 @@ object CarHub {
                 val v = app.api.cachedVehicles().firstOrNull() ?: app.api.vehicles().firstOrNull()
                 if (v != null) {
                     val st = VehicleStatus.parse(app.api.status(v), null)
+                    no.lionflow.app.model.ChargePower.record(st)
                     _status.value = st
                     lastRefresh = System.currentTimeMillis()
                     no.lionflow.app.widget.WidgetData.save(ctx.applicationContext, st)
@@ -238,7 +239,7 @@ object CarHub {
     }
 
     fun chargingLine(st: VehicleStatus): String = when {
-        st.isCharging -> "Charging" + (st.remainingMinutes?.let { m -> " · ${m / 60} h ${m % 60} min left" } ?: "")
+        st.isCharging -> "Charging" + (no.lionflow.app.model.ChargePower.label(st)?.let { " at $it" } ?: "") + (st.remainingMinutes?.let { m -> " · ${m / 60} h ${m % 60} min left" } ?: "")
         st.chargingStatus == "Finished" -> "Charging complete"
         st.plugged -> "Plugged in, not charging"
         else -> "Not plugged in"

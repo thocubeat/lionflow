@@ -76,7 +76,9 @@ fun ChargingScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean)
                 "InProgress" -> "Charging"; "Finished" -> "Finished"; "Stopped" -> "Paused"; "Disconnected" -> "Unplugged"; "Failure" -> "Error"; null -> "—"; else -> st?.chargingStatus ?: "—"
             })
             Divider()
-            DetailRow("Charging speed", st?.chargingRateKmh?.takeIf { it > 0 }?.let { "${fmtDistance(it, s)}/h" } ?: "—")
+            DetailRow("Charging power", no.lionflow.app.model.ChargePower.label(st) ?: if (st?.isCharging == true) "Calculating…" else "—")
+            Divider()
+            DetailRow("Range added per hour", st?.chargingRateKmh?.takeIf { it > 0 }?.let { "${fmtDistance(it, s)}/h" } ?: "—")
             Divider()
             DetailRow("Type", when (st?.chargingMode) { "Quick" -> "Fast (DC)"; "Slow" -> "AC"; else -> "—" })
             Divider()
@@ -97,7 +99,7 @@ fun ChargingScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean)
             confirm(if (start) "Start charging now" else "Stop charging") { vm.charging(start) }
         }
         Text(
-            "Scheduled start time and charge limit are set in the car or in the MyPeugeot app; “Stop charging” waits until the scheduled time.",
+            "Charging power is worked out by LionFlow (the car only reports range per hour): measured from the energy added between two car reports, or estimated from the time left until then. Scheduled start time and charge limit are set in the car or in the MyPeugeot app; “Stop charging” waits until the scheduled time.",
             style = Type.tiny, color = c.muted,
         )
     }

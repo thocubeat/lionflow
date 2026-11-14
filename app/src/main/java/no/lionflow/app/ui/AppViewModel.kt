@@ -259,6 +259,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 val raw = api.status(v)
                 val maint = api.maintenance(v)
                 val st = VehicleStatus.parse(raw, maint)
+                no.lionflow.app.model.ChargePower.record(st)
                 val now = System.currentTimeMillis()
                 settings.lastRefresh = now
                 no.lionflow.app.widget.WidgetData.save(getApplication<Application>(), st)

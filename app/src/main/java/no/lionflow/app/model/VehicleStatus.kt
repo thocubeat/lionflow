@@ -37,6 +37,9 @@ data class VehicleStatus(
     val updatedAtMillis: Long?,
     val kmToService: Double?,
     val daysToService: Double?,
+    val residualKwh: Double? = null,   // energy in the battery now
+    val capacityKwh: Double? = null,   // usable capacity reported by the car
+    val energyAtMillis: Long? = null,  // when the battery reading was taken
 ) {
     val isCharging: Boolean get() = chargingStatus == "InProgress"
 
@@ -61,6 +64,10 @@ data class VehicleStatus(
             val electric = energies.firstOrNull { it.optString("type") == "Electric" }
             val charging = electric?.obj("extension", "electric", "charging")
             val health = electric?.obj("extension", "electric", "battery", "health")
+            val load = electric?.obj("extension", "electric", "battery", "load")
+            fun kwh(k: String) = load?.num(k)?.takeIf { it >= 1 }?.let { it / 1000.0 }
+            val cap = kwh("capacity")?.takeIf { it in 30.0..130.0 }
+            val res = kwh("residual")?.takeIf { cap == null || it <= cap * 1.05 }
             val doors = j.optJSONObject("doorsState")
             val lockedStates = doors?.optJSONArray("lockedStates")?.let { a -> (0 until a.length()).map { a.optString(it) } }.orEmpty()
             val openings = doors?.optJSONArray("opening")?.objects().orEmpty()
@@ -101,6 +108,9 @@ data class VehicleStatus(
                 updatedAtMillis = parseIso(j.optString("updatedAt")),
                 kmToService = m?.num("mileageBeforeMaintenance"),
                 daysToService = m?.num("daysBeforeMaintenance"),
+                residualKwh = res,
+                capacityKwh = cap,
+                energyAtMillis = parseIso(electric?.optString("updatedAt")),
             )
         }
 

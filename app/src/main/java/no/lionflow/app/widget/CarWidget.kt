@@ -39,6 +39,7 @@ object WidgetData {
             .put("charging", st.isCharging)
             .put("plugged", st.plugged)
             .put("remaining", st.remainingMinutes ?: -1)
+            .put("kw", no.lionflow.app.model.ChargePower.label(st) ?: "")
             .put("outside", st.outsideTempC ?: -999.0)
             .put("precond", st.preconditioningOn)
             .put("carTime", st.updatedAtMillis ?: now)
@@ -142,8 +143,8 @@ class CarWidget : AppWidgetProvider() {
                 v.setViewVisibility(R.id.w_bolt, if (charging) View.VISIBLE else View.GONE)
                 v.setViewVisibility(R.id.w_plug, if (charging) View.GONE else View.VISIBLE)
                 v.setTextViewText(R.id.w_charging, when {
-                    charging && remaining > 0 -> "Charging · ${remaining / 60} h ${remaining % 60} min left"
-                    charging -> "Charging"
+                    charging && remaining > 0 -> "Charging${snap.optString("kw").takeIf { it.isNotBlank() }?.let { " $it" } ?: ""} · ${remaining / 60} h ${remaining % 60} min left"
+                    charging -> "Charging${snap.optString("kw").takeIf { it.isNotBlank() }?.let { " $it" } ?: ""}"
                     plugged -> "Plugged in · not charging"
                     else -> "Not charging"
                 })
@@ -214,6 +215,7 @@ class WidgetRefreshWorker(ctx: Context, params: WorkerParameters) : CoroutineWor
             }
             try {
                 val st = VehicleStatus.parse(app.api.status(vehicle), null)
+                no.lionflow.app.model.ChargePower.record(st)
                 explainer.cancel()
                 WidgetData.save(ctx, st)
             } catch (e: AuthExpiredException) {
