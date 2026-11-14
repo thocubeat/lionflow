@@ -25,6 +25,7 @@ data class AppSettings(
     val carName: String = "My Peugeot",
     val wakeOnOpen: Boolean = true,
     val autoUpdate: Boolean = true,
+    val chargerSource: String = "osm", // osm (free, no key) | nobil (needs key)
 )
 
 /** Plain (non-secret) preferences, exposed as a StateFlow so the UI updates instantly. */
@@ -54,6 +55,7 @@ class SettingsStore(context: Context) {
         carName = p.getString("carName", "My Peugeot") ?: "My Peugeot",
         wakeOnOpen = p.getBoolean("wakeOnOpen", true),
         autoUpdate = p.getBoolean("autoUpdate", true),
+        chargerSource = p.getString("chargerSource", "osm") ?: "osm",
     )
 
     fun update(block: (AppSettings) -> AppSettings) {
@@ -78,6 +80,7 @@ class SettingsStore(context: Context) {
             .putString("carName", s.carName)
             .putBoolean("wakeOnOpen", s.wakeOnOpen)
             .putBoolean("autoUpdate", s.autoUpdate)
+            .putString("chargerSource", s.chargerSource)
             .apply()
         _state.value = s
     }

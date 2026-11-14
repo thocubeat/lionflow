@@ -235,7 +235,7 @@ fun MapScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
                     }.padding(8.dp))
                 }
             }
-            Text("Map © OpenStreetMap contributors · OpenFreeMap" + if (ui.chargers.isNotEmpty()) " · Chargers: NOBIL" else "", style = Type.tiny.copy(fontSize = 10.sp), color = c.muted,
+            Text("Map © OpenStreetMap contributors · OpenFreeMap" + if (ui.chargers.isNotEmpty()) (if (s.chargerSource == "nobil") " · Chargers: NOBIL" else " · Chargers: OpenStreetMap") else "", style = Type.tiny.copy(fontSize = 10.sp), color = c.muted,
                 modifier = Modifier.clickable { platform.openUrl("https://www.openstreetmap.org/copyright") })
         }
     }

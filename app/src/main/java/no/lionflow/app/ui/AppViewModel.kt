@@ -402,19 +402,20 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun loadChargers(lat: Double? = null, lon: Double? = null) {
+        val src = settings.value.chargerSource
         val key = settings.value.nobilKey.trim()
-        if (key.isEmpty()) {
-            _ui.update { it.copy(chargerError = "Add your free NOBIL key in Settings to show chargers") }
+        if (src == "nobil" && key.isEmpty()) {
+            _ui.update { it.copy(chargerError = "Add your NOBIL key in Settings, or switch to OpenStreetMap (free)") }
             return
         }
         val la = lat ?: _ui.value.myLat ?: _ui.value.status?.lat ?: return
         val lo = lon ?: _ui.value.myLon ?: _ui.value.status?.lon ?: return
         viewModelScope.launch {
             try {
-                val list = NobilApi.near(key, la, lo)
+                val list = if (src == "nobil") NobilApi.near(key, la, lo) else no.lionflow.app.api.OsmChargers.near(la, lo)
                 _ui.update { it.copy(chargers = list, chargerError = if (list.isEmpty()) "No chargers found nearby" else null) }
             } catch (e: Exception) {
-                _ui.update { it.copy(chargerError = "Chargers: ${e.message}") }
+                _ui.update { it.copy(chargerError = "Chargers: ${no.lionflow.app.api.Http.describe(e)}") }
             }
         }
     }

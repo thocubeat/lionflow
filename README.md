@@ -42,7 +42,7 @@ Automatic updates can be turned off under Settings › Driving data. The refresh
 - **Sign-in** on Peugeot's own page, "Remember me", and app lock with your security code or fingerprint
 - **Status:** battery, range, charging, doors, odometer, position and next service
 - **Remote control:** lock/unlock, lights, horn, pre-heating, and start/stop charging, confirmed with fingerprint or security code
-- **Map:** free vector map (MapLibre + OpenFreeMap) in 2D/3D that you can drag, zoom and rotate, showing you, the car and chargers from NOBIL (needs a free API key)
+- **Map:** free vector map (MapLibre + OpenFreeMap) in 2D/3D that you can drag, zoom and rotate, showing you, the car and charging stations — free from OpenStreetMap (no key), or from NOBIL if you add a free API key
 - **Weather** now and the forecast where you are (MET Norway)
 - **Trips** with CSV export and import, plus your own service history
 - **Home-screen widget:** battery %, charging, range, pre-heating and outside temperature
@@ -61,7 +61,7 @@ Automatic updates can be turned off under Settings › Driving data. The refresh
 
 - Tokens, the remote-control state and your security code are encrypted with an Android Keystore key (AES-256-GCM).
 - Your password is only typed on Peugeot's own page. The app never sees it.
-- There is no backend and no analytics. The app talks directly to Peugeot, OpenFreeMap, MET Norway and NOBIL.
+- There is no backend and no analytics. The app talks directly to Peugeot, OpenFreeMap, OpenStreetMap (Overpass), MET Norway, GitHub (updates) and — only if you choose it — NOBIL.
 - The release signing key lives only in GitHub Secrets (`KEYSTORE_B64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`). It is restored during the build and deleted afterwards.
 
 ## License

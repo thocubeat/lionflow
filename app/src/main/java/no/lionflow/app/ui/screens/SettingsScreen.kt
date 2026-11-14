@@ -133,7 +133,13 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
 
         SectionTitle("Chargers on the map")
         GroupCard {
-            LinkRow(if (s.nobilKey.isBlank()) "Add NOBIL API key" else "NOBIL API key added", "Free key from info.nobil.no/api", LfIcons.Bolt, last = true) { editNobil = true }
+            SegRow("Source", listOf("osm" to "OpenStreetMap", "nobil" to "NOBIL"), s.chargerSource) { v -> set { it.copy(chargerSource = v) }; vm.loadChargers() }
+            Divider()
+            if (s.chargerSource == "nobil") {
+                LinkRow(if (s.nobilKey.isBlank()) "Add NOBIL API key" else "NOBIL API key added", "Free key from info.nobil.no/api · official Nordic register", LfIcons.Bolt, last = true) { editNobil = true }
+            } else {
+                Text("Free and worldwide, no key needed. Data from OpenStreetMap volunteers — usually complete, power is sometimes missing.", style = Type.tiny, color = c.muted, modifier = Modifier.padding(16.dp))
+            }
         }
 
         SectionTitle("App updates")
@@ -153,7 +159,7 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
 
         SecondaryButton("Sign out", Modifier.fillMaxWidth().padding(top = 14.dp), textColor = c.danger) { confirmSignOut = true }
         Text(
-            "LionFlow ${BuildConfig.VERSION_NAME} · Not affiliated with Peugeot or Stellantis.\nMap © OpenStreetMap contributors, OpenFreeMap · Weather MET Norway · Chargers NOBIL",
+            "LionFlow ${BuildConfig.VERSION_NAME} · Not affiliated with Peugeot or Stellantis.\nMap and chargers © OpenStreetMap contributors, OpenFreeMap · Weather MET Norway · Chargers NOBIL (optional)",
             style = Type.tiny, color = c.muted, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(),
         )
     }

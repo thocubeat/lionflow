@@ -141,3 +141,52 @@ object NobilApi {
         }
     }
 }
+
+
+// ---------------- Chargers: OpenStreetMap via Overpass (free, no key) ----------------
+
+object OsmChargers {
+    private const val ENDPOINT = "https://overpass-api.de/api/interpreter"
+
+    suspend fun near(lat: Double, lon: Double, radiusM: Int = 15000, limit: Int = 80): List<Charger> {
+        val q = "[out:json][timeout:25];(" +
+            "node[\"amenity\"=\"charging_station\"](around:$radiusM,$lat,$lon);" +
+            "way[\"amenity\"=\"charging_station\"](around:$radiusM,$lat,$lon);" +
+            ");out center $limit;"
+        val req = Request.Builder().url(ENDPOINT)
+            .header("User-Agent", Http.USER_AGENT)
+            .post(okhttp3.FormBody.Builder().add("data", q).build())
+            .build()
+        val j = Http.json(req) as? JSONObject ?: return emptyList()
+        val els = j.optJSONArray("elements") ?: return emptyList()
+        return els.objects().mapNotNull { e ->
+            val la = if (e.has("lat")) e.optDouble("lat") else e.optJSONObject("center")?.optDouble("lat") ?: return@mapNotNull null
+            val lo = if (e.has("lon")) e.optDouble("lon") else e.optJSONObject("center")?.optDouble("lon") ?: return@mapNotNull null
+            val t = e.optJSONObject("tags") ?: JSONObject()
+            var maxKw = 0.0
+            for (k in t.keys()) {
+                if (k.endsWith(":output") || k == "maxpower" || k == "charging_station:output") {
+                    val v = t.optString(k).lowercase()
+                    val num = Regex("([0-9]+(?:[.,][0-9]+)?)").find(v)?.groupValues?.get(1)?.replace(',', '.')?.toDoubleOrNull() ?: continue
+                    val kw = when {
+                        v.contains("mw") -> num * 1000
+                        v.contains("kw") -> num
+                        num > 1000 -> num / 1000 // plain watts
+                        else -> num
+                    }
+                    if (kw > maxKw) maxKw = kw
+                }
+            }
+            val name = listOf("name", "operator", "brand", "network").map { t.optString(it) }.firstOrNull { it.isNotBlank() } ?: "Charging station"
+            Charger(
+                id = "osm-${e.optString("type")}-${e.optLong("id")}",
+                name = name,
+                lat = la, lon = lo,
+                maxKw = maxKw,
+                points = t.optString("capacity").toIntOrNull() ?: 0,
+                address = listOf(t.optString("addr:street"), t.optString("addr:housenumber"), t.optString("addr:city")).filter { it.isNotBlank() }.joinToString(" "),
+                distanceM = null,
+            )
+        }
+    }
+}

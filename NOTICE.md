@@ -46,4 +46,4 @@ SOFTWARE.
 ## Data and services
 - Map data © OpenStreetMap contributors (ODbL), tiles by OpenFreeMap
 - Weather data from MET Norway (NLOD / CC BY 4.0)
-- Charging stations from NOBIL (CC BY 3.0), requires your own free API key
+- Charging stations from OpenStreetMap via the Overpass API (ODbL, default), or from NOBIL (CC BY 3.0) with your own free API key
