@@ -39,6 +39,14 @@ After the first install, LionFlow updates itself: it finds new releases, checks 
 
 Automatic updates can be turned off under Settings › Driving data. The refresh button always works.
 
+## Charging log
+
+The Charging tab keeps a log of every charging session LionFlow sees: when, from what % to what %, energy (kWh), duration, average and peak kW, AC or DC, and where. The address comes from the car's position, and the charger's name if it's a known public one.
+
+Under **Places & prices**, set your **Home** (sessions within 50 m count as home) and up to **5 known chargers** (work, cabin, a free charger) with a price per kWh. Empty means free. You can also set estimate prices for other AC/DC chargers. The log shows home vs away kWh and estimated costs for the last 30 days.
+
+The car has no charging history of its own, so the log is built from its status reports. While charging, LionFlow checks every ~10 minutes, so times can be a few minutes off. Everything stays on the phone.
+
 ## Android Auto
 
 LionFlow shows a simple car overview in Android Auto (no map):

@@ -26,6 +26,7 @@ class LionFlowApp : Application() {
         api = StellantisApi(this, secure, settings)
         remote = RemoteControl(api, secure)
         no.lionflow.app.model.ChargePower.init(this, settings)
+        no.lionflow.app.model.ChargeLog.init(this)
 
         // "Remember me" off: start every cold launch signed out.
         if (!settings.value.rememberMe && api.isSignedIn) {

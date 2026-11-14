@@ -32,6 +32,15 @@ class StatusWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
         return try {
             val st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(vehicle), null))
             no.lionflow.app.widget.WidgetData.save(applicationContext, st)
+            // While charging, check again in ~10 minutes so the charging log gets a good start/end.
+            if (st.isCharging) {
+                androidx.work.WorkManager.getInstance(applicationContext).enqueueUniqueWork(
+                    "charge_follow", androidx.work.ExistingWorkPolicy.REPLACE,
+                    androidx.work.OneTimeWorkRequestBuilder<StatusWorker>()
+                        .setInitialDelay(10, java.util.concurrent.TimeUnit.MINUTES)
+                        .setConstraints(androidx.work.Constraints.Builder().setRequiredNetworkType(androidx.work.NetworkType.CONNECTED).build())
+                        .build())
+            }
             if (!anyOn) return Result.success()
             val prev = JSONObject(app.settings.notifySnapshot)
             val now = System.currentTimeMillis()

@@ -11,7 +11,8 @@ LionFlow is an unofficial, open-source app for controlling your own Peugeot. It 
 | Your Peugeot sign-in (OAuth tokens), remote-control code state | To read your car's status and send commands | Stellantis/Peugeot (`api.groupe-psa.com`, `idpcvs.peugeot.com`, `mwa.mpsa.com`, `otp.mpsa.com`). Stored encrypted on your phone with Android Keystore. |
 | Car status, trips, maintenance | Shown in the app, widget and Android Auto | Fetched from Stellantis; kept on your phone only |
 | Your location (only while the app or Android Auto map is open) | Map position, weather, nearby chargers | Approximate coordinates go to MET Norway (weather), OpenStreetMap Overpass or NOBIL (chargers) and OpenFreeMap (map tiles for the area you view) |
-| Car photo, service history, imported trips | Your own notes | Stay on your phone |
+| Car photo, service history, imported trips, charging log, home and charger places | Your own notes | Stay on your phone |
+| Address of a charging spot / your home or charger address | Show where you charged; find coordinates for an address you type | OpenStreetMap Nominatim (`nominatim.openstreetmap.org`) receives the coordinates or the address for the lookup |
 | Update checks (GitHub version only) | Finding new versions | GitHub (`api.github.com`) |
 
 No data is sold or shared for advertising. Nothing is backed up to the cloud by the app (Android backup is turned off).
