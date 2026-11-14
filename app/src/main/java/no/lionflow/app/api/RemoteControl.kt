@@ -282,6 +282,12 @@ class RemoteControl(private val api: StellantisApi, private val secure: SecureSt
                 services.remove(correlation)
                 val reason = reasons.remove(correlation)
                 val pReason = peugeotReasons.remove(correlation)
+                if (code == "300" && attempt == 1) {
+                    // No answer in time — often the car was waking up or briefly out of coverage. That attempt woke it; try once more.
+                    tracker.onProgress("Car didn't answer — trying again…")
+                    delay(5_000)
+                    continue
+                }
                 if (code == "502" && attempt == 1) {
                     // The car was still busy with an earlier request: wait a little and send once more.
                     tracker.onProgress("Car was busy — trying again…")
