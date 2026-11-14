@@ -144,26 +144,7 @@ fun ClimateScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) 
             }
         }
 
-        // Departure programs (read from the car)
-        LfCard(padding = PaddingValues(0.dp)) {
-            Text("Departure times", style = Type.label, color = c.text, modifier = Modifier.padding(start = 18.dp, top = 16.dp, end = 18.dp))
-            val programs = st?.programs.orEmpty().sortedBy { it.slot }
-            if (programs.isEmpty()) {
-                Text("No departure times set in the car.", style = Type.small, color = c.muted, modifier = Modifier.padding(start = 18.dp, end = 18.dp, bottom = 16.dp))
-            } else {
-                for (p in programs) {
-                    Divider()
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text(String.format(Locale.US, "%02d:%02d", p.hour, p.minute), style = Type.stat, color = c.text)
-                            Text(daysLabel(p.days), style = Type.small, color = c.muted)
-                        }
-                        Pill(if (p.enabled) "On" else "Off", if (p.enabled) c.okBg else c.raised, if (p.enabled) c.okText else c.muted)
-                    }
-                }
-                Text("Change departure times in the car or MyPeugeot.", style = Type.tiny, color = c.muted, modifier = Modifier.padding(start = 18.dp, end = 18.dp, bottom = 14.dp))
-            }
-        }
+        PreheatSchedules(vm, ui)
 
         // Weather where you are
         LfCard {

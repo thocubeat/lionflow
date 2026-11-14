@@ -45,21 +45,24 @@ data class VehicleStatus(
     val isCharging: Boolean get() = chargingStatus == "InProgress"
 
     /** The program block the remote-preconditioning command expects. */
-    fun programsJson(): JSONObject {
-        val out = JSONObject()
-        for (slot in 1..4) {
-            val p = programs.firstOrNull { it.slot == slot }
-            val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun").map { if (p != null && it in p.days) 1 else 0 }
-            out.put("program$slot", JSONObject()
-                .put("day", JSONArray(days))
-                .put("hour", p?.hour ?: 34)
-                .put("minute", p?.minute ?: 7)
-                .put("on", if (p?.enabled == true) 1 else 0))
-        }
-        return out
-    }
+    fun programsJson(): JSONObject = programsJsonOf(programs)
 
     companion object {
+        /** The car's 4 schedule slots. An empty slot is sent as 34:07, off (as MyPeugeot does). */
+        fun programsJsonOf(programs: List<Program>): JSONObject {
+            val out = JSONObject()
+            for (slot in 1..4) {
+                val p = programs.firstOrNull { it.slot == slot }
+                val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun").map { if (p != null && it in p.days) 1 else 0 }
+                out.put("program$slot", JSONObject()
+                    .put("day", JSONArray(days))
+                    .put("hour", p?.hour ?: 34)
+                    .put("minute", p?.minute ?: 7)
+                    .put("on", if (p?.enabled == true) 1 else 0))
+            }
+            return out
+        }
+
         fun parse(j: JSONObject, maintenance: JSONObject?): VehicleStatus {
             val energies = j.optJSONArray("energies")?.objects().orEmpty()
             val electric = energies.firstOrNull { it.optString("type") == "Electric" }

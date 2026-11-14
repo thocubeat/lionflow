@@ -323,6 +323,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         remote.preconditioning(on, st.programsJson(), p)
     }
 
+    /** Saves pre-heating schedules to the car (its 4 program slots), keeping pre-heating on/off as it is. */
+    fun savePrograms(programs: List<no.lionflow.app.model.Program>) = runCommand("Saving schedule", { it.copy(programs = programs) }) { p ->
+        val st = _ui.value.status ?: return@runCommand CommandResult.Failed("No status yet")
+        remote.preconditioning(st.preconditioningOn, VehicleStatus.programsJsonOf(programs), p)
+    }
+
     fun charging(startNow: Boolean) = runCommand(if (startNow) "Charge now" else "Stop charging", { it.copy(chargingStatus = if (startNow) "InProgress" else "Stopped") }) { p ->
         val st = _ui.value.status
         remote.charging(startNow, st?.nextDelayedHour ?: 1, st?.nextDelayedMinute ?: 0, p)
