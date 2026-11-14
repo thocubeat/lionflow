@@ -46,7 +46,16 @@ LionFlow works in Android Auto in two places:
 
 On cars that let Android Auto use the driver display (cluster), LionFlow's map can be shown there. Starting navigation in Google Maps takes the display back.
 
-Because LionFlow isn't from the Play Store, turn this on once: **Android Auto settings → tap *Version* 10 times → ⋮ → Developer settings → Unknown sources**.
+Android Auto only runs map apps that Android records as **installed from Google Play**. Turning on "Unknown sources" isn't enough for the map. So LionFlow is also published to a private Google Play internal test (invite only). Installed from Play, it appears in Android Auto, and Play handles updates. In that copy, the GitHub updater switches off by itself.
+
+For the GitHub APK, only the media view works, after turning on Android Auto's **Unknown sources** (Android Auto settings → tap *Version* 10 times → ⋮ → Developer settings).
+
+### Publishing to Google Play yourself (for forks)
+
+1. Create a Google Play developer account and an app with package `no.lionflow.app`. Upload the first `LionFlow-1.0.N.aab` from Releases to **Testing → Internal testing** by hand and add testers.
+2. Advanced settings → Form factors → add **Android Auto**.
+3. Create a Google Cloud service account, enable the Google Play Android Developer API, invite the service account in Play Console (Users and permissions) with release rights, and add its JSON key as the GitHub secret `PLAY_SERVICE_ACCOUNT_JSON`.
+4. From then on, every push to `main` also uploads to internal testing.
 
 Remote actions from the car only run while the phone is connected to Android Auto. You can turn them off under Settings → Android Auto.
 

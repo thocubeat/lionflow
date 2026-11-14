@@ -23,6 +23,17 @@ data class Release(val tag: String, val versionCode: Int, val apkUrl: String, va
  * once LionFlow has installed itself once (Android's "update ownership" rule).
  */
 object Updater {
+    /**
+     * True when this copy came from Google Play. Then Play handles updates: installing a GitHub
+     * build on top would drop the "from Google Play" mark that Android Auto needs.
+     */
+    fun installedFromPlay(ctx: Context): Boolean = try {
+        val pm = ctx.packageManager
+        val installer = if (android.os.Build.VERSION.SDK_INT >= 30) pm.getInstallSourceInfo(ctx.packageName).installingPackageName
+        else @Suppress("DEPRECATION") pm.getInstallerPackageName(ctx.packageName)
+        installer == "com.android.vending"
+    } catch (_: Exception) { false }
+
     private const val LATEST = "https://api.github.com/repos/thocubeat/lionflow/releases/latest"
 
     suspend fun latest(): Release? {

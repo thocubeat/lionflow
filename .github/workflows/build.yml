@@ -3,7 +3,7 @@ name: Build APK
 on:
   push:
     branches: [ main ]
-    paths-ignore: [ "README.md" ]
+    paths-ignore: [ "README.md", "PRIVACY.md" ]
   workflow_dispatch:
 
 permissions:
@@ -12,6 +12,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      HAS_PLAY_KEY: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -34,19 +36,20 @@ jobs:
           fi
           echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
 
-      - name: Build signed release APK
+      - name: Build signed release APK and Play bundle
         env:
           SIGNING_STORE_FILE: ${{ runner.temp }}/release.jks
           SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: gradle :app:assembleRelease --stacktrace --no-daemon
+        run: gradle :app:assembleRelease :app:bundleRelease --stacktrace --no-daemon
 
 
       - name: Rename APK
         run: |
           cp app/build/outputs/apk/release/app-release.apk LionFlow-1.0.${{ github.run_number }}.apk
           cp app/build/outputs/apk/release/app-release.apk LionFlow.apk
+          cp app/build/outputs/bundle/release/app-release.aab LionFlow-1.0.${{ github.run_number }}.aab
 
       - name: Show signing certificate fingerprint (public, for developer registration)
         env:
@@ -67,7 +70,22 @@ jobs:
           files: |
             LionFlow-*.apk
             LionFlow.apk
+            LionFlow-*.aab
           make_latest: true
+
+      # Google Play internal testing: installs from Play are trusted by Android Auto.
+      # Runs only when the PLAY_SERVICE_ACCOUNT_JSON secret exists. The very first upload must be done by hand in Play Console.
+      - name: Upload to Google Play (internal testing)
+        if: env.HAS_PLAY_KEY == 'true'
+        continue-on-error: true
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: no.lionflow.app
+          releaseFiles: LionFlow-1.0.${{ github.run_number }}.aab
+          releaseName: "1.0.${{ github.run_number }}"
+          track: internal
+          status: completed
 
       - name: Remove signing key
         if: always()

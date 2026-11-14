@@ -143,13 +143,19 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
         }
 
         SectionTitle("App updates")
-        GroupCard {
-            LinkRow(
-                if (ui.update != null) "Install ${ui.update?.tag}" else "Check for updates",
-                ui.updateStatus ?: "You have ${BuildConfig.VERSION_NAME}",
-                LfIcons.Download,
-            ) { if (ui.update != null) { if (ui.needsInstallPermission) platform.openInstallPermission() else vm.installUpdate() } else vm.checkForUpdate(force = true) }
-            ToggleRow("Check for updates when the app opens", "Shows a popup when a new version is ready. Only versions signed with LionFlow's key are installed", s.autoUpdate, showDivider = false) { v -> set { it.copy(autoUpdate = v) } }
+        if (vm.fromPlay) {
+            GroupCard {
+                LinkRow("Updates come from Google Play", "You have ${BuildConfig.VERSION_NAME}. Installed from Play, so Android Auto trusts it", LfIcons.Download) { }
+            }
+        } else {
+            GroupCard {
+                LinkRow(
+                    if (ui.update != null) "Install ${ui.update?.tag}" else "Check for updates",
+                    ui.updateStatus ?: "You have ${BuildConfig.VERSION_NAME}",
+                    LfIcons.Download,
+                ) { if (ui.update != null) { if (ui.needsInstallPermission) platform.openInstallPermission() else vm.installUpdate() } else vm.checkForUpdate(force = true) }
+                ToggleRow("Check for updates when the app opens", "Shows a popup when a new version is ready. Only versions signed with LionFlow's key are installed", s.autoUpdate, showDivider = false) { v -> set { it.copy(autoUpdate = v) } }
+            }
         }
 
         SectionTitle("Android Auto")
@@ -158,7 +164,8 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
             ToggleRow("Map on the driver display", "Opening LionFlow in Android Auto puts its 3D map behind the wheel (if your car supports it). This ends a route running in another app; starting Google Maps navigation takes the display back", s.carCluster, showDivider = false) { v -> set { it.copy(carCluster = v) } }
         }
         Text(
-            "LionFlow isn't from the Play Store, so turn on Android Auto's \"Unknown sources\" once: Android Auto settings → tap Version 10 times → ⋮ Developer settings → Unknown sources. Then LionFlow shows up in the car's launcher (map) and as a media source.",
+            if (vm.fromPlay) "Installed from Google Play, so LionFlow shows up in Android Auto's launcher (map) and as a media source."
+            else "Android Auto only shows LionFlow's map when it's installed from Google Play (internal test link). The media view also works with Android Auto's Unknown sources setting.",
             style = Type.tiny, color = c.muted, modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
         )
 

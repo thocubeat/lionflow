@@ -333,7 +333,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     // ---------------- app updates ----------------
 
     /** Looks for a newer release each time the app opens (at most every 10 min); shows the update popup. */
+    val fromPlay: Boolean by lazy { no.lionflow.app.update.Updater.installedFromPlay(getApplication()) }
+
     fun checkForUpdate(force: Boolean) {
+        if (fromPlay) return // Google Play keeps this copy up to date
         if (!force && !settings.value.autoUpdate) return
         val now = System.currentTimeMillis()
         if (!force && now - settings.lastUpdateCheck < 10 * 60_000L) return
