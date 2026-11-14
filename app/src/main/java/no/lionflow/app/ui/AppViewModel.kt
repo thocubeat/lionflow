@@ -69,6 +69,7 @@ data class UiState(
     val update: no.lionflow.app.update.Release? = null,
     val updateStatus: String? = null,
     val needsInstallPermission: Boolean = false,
+    val updateDismissed: Boolean = false,
 )
 
 class AppViewModel(app: Application) : AndroidViewModel(app) {
@@ -88,6 +89,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     init {
         _ui.update { it.copy(lastRefresh = settings.lastRefresh, photoPath = settings.photoPath, serviceHistory = loadHistory()) }
         decideStartPhase()
+        checkForUpdate(force = false)
     }
 
     private fun decideStartPhase() {
@@ -193,6 +195,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Called when the app comes to the foreground. */
     fun onForeground() {
+        checkForUpdate(force = false)
+        if (_ui.value.needsInstallPermission && no.lionflow.app.update.Updater.canInstall(getApplication<Application>())) installUpdate()
         if (_ui.value.phase == Phase.Ready) {
             maybeAutoRefresh(force = false)
             startTicker()
@@ -328,17 +332,18 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     // ---------------- app updates ----------------
 
-    /** Looks for a newer release at most every 6 hours (or now when [force]); installs it if auto-update is on. */
+    /** Looks for a newer release each time the app opens (at most every 10 min); shows the update popup. */
     fun checkForUpdate(force: Boolean) {
+        if (!force && !settings.value.autoUpdate) return
         val now = System.currentTimeMillis()
-        if (!force && now - settings.lastUpdateCheck < 6 * 3600_000L) return
+        if (!force && now - settings.lastUpdateCheck < 10 * 60_000L) return
         settings.lastUpdateCheck = now
         viewModelScope.launch {
             try {
                 val r = no.lionflow.app.update.Updater.latest()
                 if (r != null && no.lionflow.app.update.Updater.isNewer(r)) {
-                    _ui.update { it.copy(update = r, updateStatus = null) }
-                    if (settings.value.autoUpdate) installUpdate()
+                    val same = _ui.value.update?.tag == r.tag
+                    _ui.update { it.copy(update = r, updateDismissed = if (same) it.updateDismissed && !force else false) }
                 } else {
                     _ui.update { it.copy(update = null) }
                     if (force) toast("LionFlow is up to date (${no.lionflow.app.BuildConfig.VERSION_NAME})")
@@ -349,11 +354,14 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun dismissUpdate() = _ui.update { it.copy(updateDismissed = true, needsInstallPermission = false, updateStatus = null) }
+
     fun installUpdate() {
         val r = _ui.value.update ?: return
         val ctx = getApplication<Application>()
+        _ui.update { it.copy(updateDismissed = false) }
         if (!no.lionflow.app.update.Updater.canInstall(ctx)) {
-            _ui.update { it.copy(needsInstallPermission = true, updateStatus = "Allow LionFlow to install updates (one time)") }
+            _ui.update { it.copy(needsInstallPermission = true, updateStatus = "One time: allow LionFlow to install updates, then come back") }
             return
         }
         if (_ui.value.updateStatus?.startsWith("Downloading") == true) return

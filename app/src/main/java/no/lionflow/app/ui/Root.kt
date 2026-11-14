@@ -103,6 +103,37 @@ fun LionFlowRoot(vm: AppViewModel, platform: Platform) {
                     Phase.Locked -> LockScreen(vm, settings)
                     Phase.Ready -> MainShell(vm, ui, settings)
                 }
+                val upd = ui.update
+                if (upd != null && !ui.updateDismissed) {
+                    val busy = ui.updateStatus?.let { it.startsWith("Downloading") || it.startsWith("Installing") } == true
+                    androidx.compose.material3.AlertDialog(
+                        onDismissRequest = { if (!busy) vm.dismissUpdate() },
+                        containerColor = c.card,
+                        icon = { LfIcon(LfIcons.Download, c.accentInk, 28.dp) },
+                        title = { Text("Update available", color = c.text) },
+                        text = {
+                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text("LionFlow ${upd.tag.removePrefix("v")} is ready. You have ${no.lionflow.app.BuildConfig.VERSION_NAME}.", style = Type.body, color = c.text)
+                                val notes = upd.notes.lines().map { it.trim() }.filter { it.isNotBlank() && !it.startsWith("Co-Authored-By") && !it.startsWith("Claude-Session") }.take(6)
+                                if (notes.isNotEmpty()) Text(notes.joinToString("\n"), style = Type.small, color = c.muted)
+                                ui.updateStatus?.let { st ->
+                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        if (busy) Busy()
+                                        Text(st, style = Type.small, color = c.text2)
+                                    }
+                                }
+                            }
+                        },
+                        confirmButton = {
+                            androidx.compose.material3.TextButton(enabled = !busy, onClick = {
+                                if (ui.needsInstallPermission) platform.openInstallPermission() else vm.installUpdate()
+                            }) { Text(if (ui.needsInstallPermission) "Allow" else "Install now", color = if (busy) c.muted else c.accentInk) }
+                        },
+                        dismissButton = {
+                            androidx.compose.material3.TextButton(enabled = !busy, onClick = { vm.dismissUpdate() }) { Text("Later", color = c.muted) }
+                        },
+                    )
+                }
                 pinFor?.let { (label, action) ->
                     PinDialog(
                         title = label,

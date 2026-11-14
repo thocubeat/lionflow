@@ -149,7 +149,7 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
                 ui.updateStatus ?: "You have ${BuildConfig.VERSION_NAME}",
                 LfIcons.Download,
             ) { if (ui.update != null) { if (ui.needsInstallPermission) platform.openInstallPermission() else vm.installUpdate() } else vm.checkForUpdate(force = true) }
-            ToggleRow("Install updates automatically", "Only versions signed with LionFlow's key. No taps needed on Android 12+ after the first update", s.autoUpdate, showDivider = false) { v -> set { it.copy(autoUpdate = v) } }
+            ToggleRow("Check for updates when the app opens", "Shows a popup when a new version is ready. Only versions signed with LionFlow's key are installed", s.autoUpdate, showDivider = false) { v -> set { it.copy(autoUpdate = v) } }
         }
 
         SectionTitle("Appearance")

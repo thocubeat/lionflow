@@ -123,7 +123,7 @@ private fun HomeMain(vm: AppViewModel, ui: UiState, s: AppSettings) {
         }
     }
 
-    ui.update?.let { r ->
+    ui.update?.takeIf { ui.updateDismissed }?.let { r ->
         val platform = no.lionflow.app.ui.LocalPlatform.current
         LfCard(radius = 20.dp, padding = androidx.compose.foundation.layout.PaddingValues(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {

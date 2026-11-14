@@ -63,6 +63,7 @@ jobs:
         with:
           tag_name: v1.0.${{ github.run_number }}
           name: LionFlow 1.0.${{ github.run_number }}
+          body: ${{ github.event.head_commit.message }}
           files: |
             LionFlow-*.apk
             LionFlow.apk
