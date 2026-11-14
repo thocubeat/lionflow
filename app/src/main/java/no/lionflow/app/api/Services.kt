@@ -146,14 +146,37 @@ object NobilApi {
 // ---------------- Chargers: OpenStreetMap via Overpass (free, no key) ----------------
 
 object OsmChargers {
-    private const val ENDPOINT = "https://overpass-api.de/api/interpreter"
+    /** Free public Overpass servers, tried in order — the main one is often busy (HTTP 429). */
+    private val ENDPOINTS = listOf(
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.private.coffee/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+    )
 
-    suspend fun near(lat: Double, lon: Double, radiusM: Int = 15000, limit: Int = 80): List<Charger> {
+    class BusyException : Exception("The free charger servers are busy right now")
+
+    suspend fun near(lat: Double, lon: Double, radiusM: Int = 12000, limit: Int = 80): List<Charger> {
+        var last: Exception? = null
+        for (url in ENDPOINTS) {
+            try {
+                return query(url, lat, lon, radiusM, limit)
+            } catch (e: ApiException) {
+                last = e
+                if (e.code != 429 && e.code < 500) throw e
+            } catch (e: java.io.IOException) {
+                last = e
+            }
+        }
+        throw if (last is ApiException || last == null) BusyException() else last
+    }
+
+    private suspend fun query(endpoint: String, lat: Double, lon: Double, radiusM: Int, limit: Int): List<Charger> {
         val q = "[out:json][timeout:25];(" +
             "node[\"amenity\"=\"charging_station\"](around:$radiusM,$lat,$lon);" +
             "way[\"amenity\"=\"charging_station\"](around:$radiusM,$lat,$lon);" +
             ");out center $limit;"
-        val req = Request.Builder().url(ENDPOINT)
+        val req = Request.Builder().url(endpoint)
             .header("User-Agent", Http.USER_AGENT)
             .post(okhttp3.FormBody.Builder().add("data", q).build())
             .build()
@@ -190,3 +213,12 @@ object OsmChargers {
         }
     }
 }
+
+
+fun Charger.toJson(): JSONObject = JSONObject().put("id", id).put("name", name).put("lat", lat).put("lon", lon)
+    .put("kw", maxKw).put("points", points).put("address", address)
+
+fun chargerFromJson(j: JSONObject) = Charger(
+    id = j.optString("id"), name = j.optString("name"), lat = j.optDouble("lat"), lon = j.optDouble("lon"),
+    maxKw = j.optDouble("kw", 0.0), points = j.optInt("points"), address = j.optString("address"), distanceM = null,
+)

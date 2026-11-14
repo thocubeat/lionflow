@@ -26,6 +26,7 @@ import no.lionflow.app.api.Vehicle
 import no.lionflow.app.api.Weather
 import no.lionflow.app.api.WeatherApi
 import no.lionflow.app.api.objects
+import no.lionflow.app.api.toJson
 import no.lionflow.app.model.Trip
 import no.lionflow.app.model.VehicleStatus
 import org.json.JSONArray
@@ -401,21 +402,53 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         loadChargers(lat, lon)
     }
 
+    private val chargerCache: File get() = File(getApplication<Application>().cacheDir, "chargers.json")
+
+    /** Saved chargers for this area (within ~3 km), so the map fills instantly and survives busy servers. */
+    private fun cachedChargers(src: String, lat: Double, lon: Double, maxAgeMs: Long): List<Charger>? = try {
+        val j = JSONObject(chargerCache.readText())
+        val near = Math.abs(j.getDouble("lat") - lat) < 0.03 && Math.abs(j.getDouble("lon") - lon) < 0.05
+        if (j.optString("src") == src && near && System.currentTimeMillis() - j.getLong("time") < maxAgeMs)
+            j.getJSONArray("items").objects().map { no.lionflow.app.api.chargerFromJson(it) } else null
+    } catch (_: Exception) { null }
+
+    private fun saveChargers(src: String, lat: Double, lon: Double, list: List<Charger>) {
+        try {
+            chargerCache.writeText(JSONObject().put("src", src).put("lat", lat).put("lon", lon).put("time", System.currentTimeMillis())
+                .put("items", JSONArray(list.map { it.toJson() })).toString())
+        } catch (_: Exception) { }
+    }
+
     fun loadChargers(lat: Double? = null, lon: Double? = null) {
         val src = settings.value.chargerSource
         val key = settings.value.nobilKey.trim()
         if (src == "nobil" && key.isEmpty()) {
-            _ui.update { it.copy(chargerError = "Add your NOBIL key in Settings, or switch to OpenStreetMap (free)") }
+            _ui.update { it.copy(chargerError = "Add your NOBIL key in Settings, or switch to OpenStreetMap") }
             return
         }
         val la = lat ?: _ui.value.myLat ?: _ui.value.status?.lat ?: return
         val lo = lon ?: _ui.value.myLon ?: _ui.value.status?.lon ?: return
+        // Fresh enough (6 h) → no network at all.
+        cachedChargers(src, la, lo, 6 * 3600_000L)?.let { list ->
+            _ui.update { it.copy(chargers = list, chargerError = null) }
+            return
+        }
+        // Show older saved chargers right away while fetching.
+        cachedChargers(src, la, lo, 30L * 86_400_000L)?.let { list -> _ui.update { it.copy(chargers = list) } }
         viewModelScope.launch {
             try {
                 val list = if (src == "nobil") NobilApi.near(key, la, lo) else no.lionflow.app.api.OsmChargers.near(la, lo)
+                if (list.isNotEmpty()) saveChargers(src, la, lo, list)
                 _ui.update { it.copy(chargers = list, chargerError = if (list.isEmpty()) "No chargers found nearby" else null) }
             } catch (e: Exception) {
-                _ui.update { it.copy(chargerError = "Chargers: ${no.lionflow.app.api.Http.describe(e)}") }
+                val haveOld = _ui.value.chargers.isNotEmpty()
+                val short = when (e) {
+                    is no.lionflow.app.api.OsmChargers.BusyException -> "Charger servers are busy"
+                    is java.io.IOException -> "No connection"
+                    else -> "Couldn't load chargers"
+                }
+                remote.addLog("chargers failed: ${no.lionflow.app.api.Http.describe(e)}")
+                _ui.update { it.copy(chargerError = if (haveOld) "$short — showing saved chargers" else "$short — try again in a minute") }
             }
         }
     }

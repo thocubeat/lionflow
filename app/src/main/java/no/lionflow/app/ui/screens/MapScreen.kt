@@ -162,8 +162,8 @@ fun MapScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
                 FilterChip("Fast 50 kW+", filter == "fast") { filter = "fast" }
             }
             ui.chargerError?.let {
-                Text(it, style = Type.small, color = c.text, modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(c.card).padding(horizontal = 12.dp, vertical = 8.dp)
-                    .clickable { vm.setTab(no.lionflow.app.ui.Tab.Settings) })
+                Text(it, style = Type.small, color = c.text, maxLines = 2, modifier = Modifier.padding(end = 64.dp).clip(RoundedCornerShape(12.dp)).background(c.card).padding(horizontal = 12.dp, vertical = 8.dp)
+                    .clickable { vm.loadChargers() })
             }
         }
 
