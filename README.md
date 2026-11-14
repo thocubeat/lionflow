@@ -41,13 +41,14 @@ Automatic updates can be turned off under Settings › Driving data. The refresh
 
 ## Android Auto
 
-LionFlow is a map app in Android Auto:
+LionFlow shows a simple car overview in Android Auto (no map):
 
-- **App launcher → LionFlow:** a dark 3D vector map that follows you, with nearby chargers, where the car is parked and a battery/range card. Buttons: **Car** (status, pre-heat, charging, more actions), **Trips** (last 7 days summary and recent trips), **Chargers** (nearest first, tap to show on the map) and the **driver display** toggle.
+- **Battery:** battery %, range, charging status, and charging power in kW while charging.
+- **Car:** climate and outside temperature, doors, odometer and next service.
+- **Driving:** last 7 days summary; tap for recent trips. **Chargers nearby** lists the nearest chargers.
+- **Actions** (top right): lock/unlock, pre-heat, charging, lights, horn.
 
-On cars that let Android Auto use the driver display (cluster), LionFlow's map can be shown there. Starting navigation in Google Maps takes the display back.
-
-Android Auto only runs map apps that Android records as **installed from Google Play**. Turning on "Unknown sources" isn't enough for the map. So LionFlow is also published to a private Google Play internal test (invite only). Installed from Play, it appears in Android Auto, and Play handles updates. In that copy, the GitHub updater switches off by itself.
+Android Auto only runs apps like this when Android records them as **installed from Google Play**. So LionFlow is also published to a private Google Play internal test (invite only). Installed from Play, it appears in Android Auto, and Play handles updates. In that copy, the GitHub updater switches off by itself.
 
 The GitHub APK doesn't appear in Android Auto, because it isn't installed from Google Play.
 

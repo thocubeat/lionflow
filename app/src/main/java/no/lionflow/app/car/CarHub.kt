@@ -56,10 +56,10 @@ object CarHub {
     val busy: StateFlow<Boolean> = _busy
 
     /** Charger the driver picked in the list; the map flies there. */
-    val focus = MutableStateFlow<Charger?>(null)
+
 
     /** True while LionFlow holds the driver display (navigation "started" without a route). */
-    val driverDisplay = MutableStateFlow(false)
+
 
     private var lastRefresh = 0L
     private var refreshing = false

@@ -163,8 +163,7 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
 
         SectionTitle("Android Auto")
         GroupCard {
-            ToggleRow("Remote actions in the car", "Pre-heat, charging, lock and lights from the car screen. Only works while your phone is connected to Android Auto", s.carActions) { v -> set { it.copy(carActions = v) } }
-            ToggleRow("Map on the driver display", "Opening LionFlow in Android Auto puts its 3D map behind the wheel (if your car supports it). This ends a route running in another app; starting Google Maps navigation takes the display back", s.carCluster, showDivider = false) { v -> set { it.copy(carCluster = v) } }
+            ToggleRow("Remote actions in the car", "Pre-heat, charging, lock and lights from the car screen. Only works while your phone is connected to Android Auto", s.carActions, showDivider = false) { v -> set { it.copy(carActions = v) } }
         }
         Text(
             if (vm.fromPlay) "Installed from Google Play, so LionFlow shows up in Android Auto's app launcher."

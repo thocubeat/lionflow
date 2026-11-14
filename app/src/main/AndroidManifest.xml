@@ -9,9 +9,6 @@
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
-    <!-- Android Auto: navigation templates + drawing our own map -->
-    <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />
-    <uses-permission android:name="androidx.car.app.ACCESS_SURFACE" />
 
     <application
         android:name=".LionFlowApp"
@@ -65,12 +62,12 @@
             android:resource="@xml/automotive_app_desc" />
         <meta-data
             android:name="androidx.car.app.minCarApiLevel"
-            android:value="1" />
+            android:value="5" />
         <meta-data
             android:name="com.google.android.gms.car.notification.SmallIcon"
             android:resource="@drawable/ic_notification" />
 
-        <!-- 3D map on the centre screen and the driver display (cluster) -->
+        <!-- Car overview in Android Auto (connected-device / IoT category: lists, no map) -->
         <service
             android:name=".car.LionFlowCarService"
             android:exported="true"
@@ -78,8 +75,7 @@
             android:label="LionFlow">
             <intent-filter>
                 <action android:name="androidx.car.app.CarAppService" />
-                <category android:name="androidx.car.app.category.NAVIGATION" />
-                <category android:name="androidx.car.app.category.FEATURE_CLUSTER" />
+                <category android:name="androidx.car.app.category.IOT" />
             </intent-filter>
         </service>
 

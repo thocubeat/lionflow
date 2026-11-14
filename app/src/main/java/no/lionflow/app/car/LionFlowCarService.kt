@@ -7,7 +7,6 @@ import androidx.car.app.CarContext
 import androidx.car.app.CarToast
 import androidx.car.app.Screen
 import androidx.car.app.Session
-import androidx.car.app.SessionInfo
 import androidx.car.app.model.Action
 import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.CarColor
@@ -15,29 +14,24 @@ import androidx.car.app.model.CarIcon
 import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.MessageTemplate
-import androidx.car.app.model.Pane
-import androidx.car.app.model.PaneTemplate
 import androidx.car.app.model.Row
+import androidx.car.app.model.SectionedItemList
 import androidx.car.app.model.Template
-import androidx.car.app.navigation.NavigationManager
-import androidx.car.app.navigation.NavigationManagerCallback
-import androidx.car.app.navigation.model.NavigationTemplate
 import androidx.car.app.validation.HostValidator
 import androidx.core.graphics.drawable.IconCompat
-import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import no.lionflow.app.R
+import no.lionflow.app.model.ChargePower
 import no.lionflow.app.ui.fmtDistance
 import no.lionflow.app.ui.fmtTemp
 
 /**
- * LionFlow in Android Auto: a navigation-category car app so it can draw its own 3D map
- * on the centre screen and, in cars that offer it, on the driver display (cluster).
+ * LionFlow in Android Auto: a simple overview of the car (battery, charging power, range, climate,
+ * doors, service, trips) with a few remote actions. No map.
  */
 class LionFlowCarService : CarAppService() {
 
@@ -47,57 +41,27 @@ class LionFlowCarService : CarAppService() {
         else HostValidator.Builder(applicationContext).addAllowedHosts(androidx.car.app.R.array.hosts_allowlist_sample).build()
     }
 
-    override fun onCreateSession(sessionInfo: SessionInfo): Session =
-        if (sessionInfo.displayType == SessionInfo.DISPLAY_TYPE_CLUSTER) ClusterSession() else MainSession()
-
-    @Deprecated("Older hosts")
     override fun onCreateSession(): Session = MainSession()
 }
 
 private fun CarContext.icon(res: Int, tint: CarColor? = null): CarIcon =
     CarIcon.Builder(IconCompat.createWithResource(this, res)).apply { tint?.let { setTint(it) } }.build()
 
-// ---------------------------------------------------------------- centre screen
+private fun CarContext.listLimit(): Int = try {
+    getCarService(androidx.car.app.constraints.ConstraintManager::class.java)
+        .getContentLimit(androidx.car.app.constraints.ConstraintManager.CONTENT_LIMIT_TYPE_LIST)
+} catch (_: Exception) { 6 }
 
 class MainSession : Session() {
-    private lateinit var renderer: CarMapRenderer
-
     override fun onCreateScreen(intent: Intent): Screen {
-        renderer = CarMapRenderer(carContext, this, cluster = false)
-        val nav = carContext.getCarService(NavigationManager::class.java)
-        nav.setNavigationManagerCallback(object : NavigationManagerCallback {
-            override fun onStopNavigation() {
-                // Another app (e.g. Google Maps) started navigating: give the driver display back.
-                CarHub.driverDisplay.value = false
-            }
-            override fun onAutoDriveEnabled() {}
-        })
-        lifecycle.addObserver(object : DefaultLifecycleObserver {
-            override fun onDestroy(owner: LifecycleOwner) {
-                if (CarHub.driverDisplay.value) try { nav.navigationEnded() } catch (_: Exception) { }
-                CarHub.driverDisplay.value = false
-            }
-        })
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 CarHub.notices.collect { m -> CarToast.makeText(carContext, m, CarToast.LENGTH_LONG).show() }
             }
         }
         CarHub.refresh(carContext)
-        // Offer our map to the driver display straight away, if the user wants that.
-        if (CarHub.app(carContext).settings.value.carCluster && CarHub.app(carContext).api.isSignedIn) setDriverDisplay(true)
-        return MapScreen(carContext, renderer, ::setDriverDisplay)
-    }
-
-    private fun setDriverDisplay(on: Boolean) {
-        val nav = carContext.getCarService(NavigationManager::class.java)
-        try {
-            if (on) nav.navigationStarted() else nav.navigationEnded()
-            CarHub.driverDisplay.value = on
-        } catch (e: Exception) {
-            CarHub.driverDisplay.value = false
-            CarToast.makeText(carContext, "Driver display isn't available right now", CarToast.LENGTH_LONG).show()
-        }
+        CarHub.loadTrips(carContext)
+        return OverviewScreen(carContext)
     }
 }
 
@@ -106,110 +70,107 @@ abstract class LiveScreen(ctx: CarContext) : Screen(ctx) {
     init {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                combine(CarHub.status, CarHub.message, CarHub.busy, CarHub.driverDisplay, CarHub.chargers) { _, _, _, _, _ -> Unit }
+                combine(CarHub.status, CarHub.message, CarHub.busy, CarHub.chargers) { _, _, _, _ -> Unit }
                     .collect { invalidate() }
             }
         }
     }
 }
 
-class MapScreen(
-    ctx: CarContext,
-    private val renderer: CarMapRenderer,
-    private val setDriverDisplay: (Boolean) -> Unit,
-) : LiveScreen(ctx) {
+// ---------------------------------------------------------------- overview
+
+class OverviewScreen(ctx: CarContext) : LiveScreen(ctx) {
     init {
-        renderer.onStateChanged = { invalidate() }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) { CarHub.trips.collect { invalidate() } }
+        }
     }
 
     override fun onGetTemplate(): Template {
         val app = CarHub.app(carContext)
         if (!app.api.isSignedIn) {
             return MessageTemplate.Builder("Open LionFlow on your phone and sign in with your Peugeot account.")
-                .setTitle("LionFlow")
-                .setHeaderAction(Action.APP_ICON)
-                .build()
+                .setTitle("LionFlow").setHeaderAction(Action.APP_ICON).build()
         }
-        val strip = ActionStrip.Builder()
-            .addAction(Action.Builder().setTitle("Car").setIcon(carContext.icon(R.drawable.ic_car_battery))
-                .setOnClickListener { screenManager.push(StatusScreen(carContext)) }.build())
-            .addAction(Action.Builder().setTitle("Chargers").setIcon(carContext.icon(R.drawable.ic_car_charger))
-                .setOnClickListener { screenManager.push(ChargersScreen(carContext, renderer)) }.build())
-            .addAction(Action.Builder().setTitle("Trips").setIcon(carContext.icon(R.drawable.ic_car_route))
-                .setOnClickListener { screenManager.push(TripsScreen(carContext)) }.build())
-            .addAction(Action.Builder()
-                .setIcon(carContext.icon(R.drawable.ic_car_cluster, if (CarHub.driverDisplay.value) CarColor.GREEN else null))
-                .setOnClickListener {
-                    val on = !CarHub.driverDisplay.value
-                    setDriverDisplay(on)
-                    CarToast.makeText(carContext, if (on) "Map offered to the driver display" else "Driver display released", CarToast.LENGTH_SHORT).show()
-                }.build())
-            .build()
-
-        val mapStrip = ActionStrip.Builder()
-            .addAction(Action.PAN)
-            .addAction(
-                if (renderer.following)
-                    Action.Builder().setIcon(carContext.icon(if (renderer.is3d) R.drawable.ic_car_2d else R.drawable.ic_car_3d))
-                        .setOnClickListener { renderer.toggle3d() }.build()
-                else
-                    Action.Builder().setIcon(carContext.icon(R.drawable.ic_car_center))
-                        .setOnClickListener { renderer.recenter() }.build()
-            )
-            .addAction(Action.Builder().setIcon(carContext.icon(R.drawable.ic_car_plus)).setOnClickListener { renderer.zoom(1.0) }.build())
-            .addAction(Action.Builder().setIcon(carContext.icon(R.drawable.ic_car_minus)).setOnClickListener { renderer.zoom(-1.0) }.build())
-            .build()
-
-        return NavigationTemplate.Builder()
-            .setActionStrip(strip)
-            .setMapActionStrip(mapStrip)
-            .setBackgroundColor(CarColor.SECONDARY)
-            .build()
-    }
-}
-
-// ---------------------------------------------------------------- car status + actions
-
-class StatusScreen(ctx: CarContext) : LiveScreen(ctx) {
-    init { CarHub.refresh(ctx) }
-
-    override fun onGetTemplate(): Template {
+        val s = app.settings.value
         val st = CarHub.status.value
-        val s = CarHub.app(carContext).settings.value
-        val pane = Pane.Builder()
-        if (st == null) {
-            pane.setLoading(true)
-        } else {
-            pane.addRow(Row.Builder().setTitle(CarHub.batteryLine(carContext)).addText(CarHub.chargingLine(st))
+        val strip = ActionStrip.Builder()
+            .addAction(Action.Builder().setTitle("Refresh").setOnClickListener {
+                CarHub.refresh(carContext, force = true); CarHub.loadTrips(carContext, force = true); CarHub.say("Updating…")
+            }.build())
+        if (CarHub.actionsAllowed(carContext) == null)
+            strip.addAction(Action.Builder().setTitle("Actions").setOnClickListener { screenManager.push(ActionsScreen(carContext)) }.build())
+        val b = ListTemplate.Builder().setTitle(s.carName).setHeaderAction(Action.APP_ICON).setActionStrip(strip.build())
+        if (st == null) return b.setLoading(true).build()
+
+        // Battery & charging
+        val power = ChargePower.label(st)
+        val charge = ItemList.Builder()
+            .addItem(Row.Builder()
+                .setTitle("${st.batteryPct?.toInt() ?: "—"} %  ·  ≈ ${fmtDistance(st.rangeKm, s)}" + if (st.rangeEstimated) " (est.)" else "")
+                .addText(CarHub.chargingLine(st))
                 .setImage(carContext.icon(R.drawable.ic_car_battery)).build())
-            pane.addRow(Row.Builder().setTitle(if (st.preconditioningOn) "Pre-heating is on" else "Pre-heating is off")
+        if (st.isCharging) charge.addItem(Row.Builder()
+            .setTitle("Charging power: ${power ?: "calculating…"}")
+            .addText(st.chargingRateKmh?.takeIf { it > 0 }?.let { "Adds ${fmtDistance(it, s)} of range per hour" } ?: "Measured from the energy going into the battery")
+            .setImage(carContext.icon(R.drawable.ic_car_bolt, CarColor.GREEN)).build())
+
+        // Car
+        val car = ItemList.Builder()
+            .addItem(Row.Builder()
+                .setTitle(if (st.preconditioningOn) "Pre-heating is on" else "Climate")
                 .addText(st.outsideTempC?.let { "${fmtTemp(it, s)} outside" } ?: "Outside temperature unknown")
                 .setImage(carContext.icon(R.drawable.ic_car_climate)).build())
-            pane.addRow(Row.Builder().setTitle("Doors: ${CarHub.doorsLine(st)}")
-                .addText(st.odometerKm?.let { "Odometer ${fmtDistance(it, s)}" } ?: CarHub.updatedLine())
+            .addItem(Row.Builder()
+                .setTitle("Doors: ${CarHub.doorsLine(st)}")
+                .addText(CarHub.updatedLine())
                 .setImage(carContext.icon(R.drawable.ic_car_lock)).build())
-            pane.addRow(Row.Builder().setTitle(CarHub.message.value ?: CarHub.updatedLine()).build())
+            .addItem(Row.Builder()
+                .setTitle(st.odometerKm?.let { "Odometer ${fmtDistance(it, s)}" } ?: "Odometer unknown")
+                .addText(serviceLine(st, s))
+                .setImage(carContext.icon(R.drawable.ic_car_refresh)).build())
 
-            if (CarHub.actionsAllowed(carContext) == null) {
-                pane.addAction(Action.Builder().setTitle(if (st.preconditioningOn) "Stop pre-heat" else "Pre-heat")
-                    .setFlags(Action.FLAG_PRIMARY).setEnabled(!CarHub.busy.value)
-                    .setOnClickListener { CarHub.preheat(carContext, !st.preconditioningOn) }.build())
-                pane.addAction(Action.Builder().setTitle(if (st.isCharging) "Stop charging" else "Charge now")
-                    .setEnabled(!CarHub.busy.value && (st.plugged || st.isCharging))
-                    .setOnClickListener { CarHub.charge(carContext, !st.isCharging) }.build())
-            }
-        }
-        val strip = ActionStrip.Builder()
-            .addAction(Action.Builder().setTitle("Refresh").setOnClickListener { CarHub.refresh(carContext, force = true); CarHub.say("Updating…") }.build())
-        if (CarHub.actionsAllowed(carContext) == null)
-            strip.addAction(Action.Builder().setTitle("More").setOnClickListener { screenManager.push(ActionsScreen(carContext)) }.build())
-        return PaneTemplate.Builder(pane.build())
-            .setTitle(CarHub.app(carContext).settings.value.carName)
-            .setHeaderAction(Action.BACK)
-            .setActionStrip(strip.build())
+        // Driving
+        val trips = CarHub.trips.value
+        val week = trips?.filter { (it.startMillis ?: 0L) >= System.currentTimeMillis() - 7 * 86_400_000L }
+        val km = week?.sumOf { it.distanceKm } ?: 0.0
+        val kwh = week?.mapNotNull { it.kwh }?.sum() ?: 0.0
+        val driving = ItemList.Builder().addItem(Row.Builder()
+            .setTitle(if (trips == null) "Driving history" else "Last 7 days: ${fmtDistance(km, s)} · ${week?.size ?: 0} trips")
+            .addText(when {
+                trips == null -> "Loading…"
+                km > 1 && kwh > 0 -> consumption(kwh / km * 100, s) + " average · tap for trips"
+                else -> "Tap for recent trips"
+            })
+            .setImage(carContext.icon(R.drawable.ic_car_route))
+            .setBrowsable(true)
+            .setOnClickListener { screenManager.push(TripsScreen(carContext)) }.build())
+            .addItem(Row.Builder().setTitle("Chargers nearby").addText("Nearest first")
+                .setImage(carContext.icon(R.drawable.ic_car_charger)).setBrowsable(true)
+                .setOnClickListener { screenManager.push(ChargersScreen(carContext)) }.build())
+
+        CarHub.message.value?.let { m -> car.addItem(Row.Builder().setTitle(m).build()) }
+
+        return b
+            .addSectionedList(SectionedItemList.create(charge.build(), "Battery"))
+            .addSectionedList(SectionedItemList.create(car.build(), "Car"))
+            .addSectionedList(SectionedItemList.create(driving.build(), "Driving"))
             .build()
     }
+
+    private fun serviceLine(st: no.lionflow.app.model.VehicleStatus, s: no.lionflow.app.data.AppSettings): String {
+        val parts = mutableListOf<String>()
+        st.kmToService?.let { parts += "service in ${fmtDistance(it, s)}" }
+        st.daysToService?.let { d -> parts += if (d >= 60) "${(d / 30).toInt()} months" else "${d.toInt()} days" }
+        return if (parts.isEmpty()) "Next service unknown" else "Next " + parts.joinToString(" or ")
+    }
+
+    private fun consumption(kwhPer100Km: Double, s: no.lionflow.app.data.AppSettings) =
+        if (s.distanceUnit == "mi") String.format(java.util.Locale.US, "%.1f mi/kWh", 100 / kwhPer100Km / 1.609344)
+        else String.format(java.util.Locale.US, "%.1f kWh/100 km", kwhPer100Km)
 }
+
+// ---------------------------------------------------------------- remote actions
 
 class ActionsScreen(ctx: CarContext) : LiveScreen(ctx) {
     override fun onGetTemplate(): Template {
@@ -237,7 +198,9 @@ class ActionsScreen(ctx: CarContext) : LiveScreen(ctx) {
     }
 }
 
-class ChargersScreen(ctx: CarContext, private val renderer: CarMapRenderer) : LiveScreen(ctx) {
+// ---------------------------------------------------------------- chargers (list only)
+
+class ChargersScreen(ctx: CarContext) : LiveScreen(ctx) {
     init {
         CarHub.status.value?.let { st -> st.lat?.let { la -> st.lon?.let { lo -> CarHub.loadChargers(ctx, la, lo) } } }
     }
@@ -245,24 +208,16 @@ class ChargersScreen(ctx: CarContext, private val renderer: CarMapRenderer) : Li
     override fun onGetTemplate(): Template {
         val s = CarHub.app(carContext).settings.value
         val all = CarHub.chargers.value
-        val b = ListTemplate.Builder().setTitle("Chargers nearby").setHeaderAction(Action.BACK)
+        val b = ListTemplate.Builder().setTitle("Chargers near the car").setHeaderAction(Action.BACK)
         if (all.isEmpty()) return b.setLoading(true).build()
-        val max = try {
-            carContext.getCarService(androidx.car.app.constraints.ConstraintManager::class.java)
-                .getContentLimit(androidx.car.app.constraints.ConstraintManager.CONTENT_LIMIT_TYPE_LIST)
-        } catch (_: Exception) { 6 }
         val list = ItemList.Builder()
-        all.take(max).forEach { ch ->
+        all.take(carContext.listLimit()).forEach { ch ->
             val bits = mutableListOf<String>()
             ch.distanceM?.let { m -> bits += if (s.distanceUnit != "mi" && m < 1000) "$m m" else if (s.distanceUnit != "mi" && m < 10_000) String.format(java.util.Locale.US, "%.1f km", m / 1000.0) else fmtDistance(m / 1000.0, s) }
             if (ch.maxKw > 0) bits += "${ch.maxKw.toInt()} kW"
             if (ch.points > 0) bits += "${ch.points} points"
             list.addItem(Row.Builder().setTitle(ch.name).addText(bits.joinToString(" · ").ifBlank { ch.address })
-                .setImage(carContext.icon(R.drawable.ic_car_charger, if (ch.maxKw >= 50) CarColor.GREEN else null))
-                .setOnClickListener {
-                    CarHub.focus.value = ch
-                    screenManager.pop()
-                }.build())
+                .setImage(carContext.icon(R.drawable.ic_car_charger, if (ch.maxKw >= 50) CarColor.GREEN else null)).build())
         }
         return b.setSingleList(list.build()).build()
     }
@@ -327,18 +282,3 @@ class TripsScreen(ctx: CarContext) : Screen(ctx) {
         else String.format(java.util.Locale.US, "%.1f kWh/100 km", kwhPer100Km)
 }
 
-// ---------------------------------------------------------------- driver display
-
-class ClusterSession : Session() {
-    private var keep: CarMapRenderer? = null
-
-    override fun onCreateScreen(intent: Intent): Screen {
-        val renderer = CarMapRenderer(carContext, this, cluster = true)
-        return object : Screen(carContext) {
-            override fun onGetTemplate(): Template = NavigationTemplate.Builder()
-                // The cluster has no input; the host only shows the map. An action strip is still required.
-                .setActionStrip(ActionStrip.Builder().addAction(Action.Builder().setTitle("LionFlow").setOnClickListener { }.build()).build())
-                .build()
-        }.also { keep = renderer }
-    }
-}

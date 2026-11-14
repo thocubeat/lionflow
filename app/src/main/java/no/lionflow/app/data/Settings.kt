@@ -27,7 +27,6 @@ data class AppSettings(
     val autoUpdate: Boolean = true,
     val chargerSource: String = "osm", // osm (free, no key) | nobil (needs key)
     val carActions: Boolean = true,     // remote actions from Android Auto
-    val carCluster: Boolean = true,     // show LionFlow's map on the driver display when opened in Android Auto
     val batteryKwh: Double = 0.0,       // usable battery size for kW maths; 0 = use what the car reports (else 73)
 )
 
@@ -60,7 +59,6 @@ class SettingsStore(context: Context) {
         autoUpdate = p.getBoolean("autoUpdate", true),
         chargerSource = p.getString("chargerSource", "osm") ?: "osm",
         carActions = p.getBoolean("carActions", true),
-        carCluster = p.getBoolean("carCluster", true),
         batteryKwh = p.getFloat("batteryKwh", 0f).toDouble(),
     )
 
@@ -88,7 +86,6 @@ class SettingsStore(context: Context) {
             .putBoolean("autoUpdate", s.autoUpdate)
             .putString("chargerSource", s.chargerSource)
             .putBoolean("carActions", s.carActions)
-            .putBoolean("carCluster", s.carCluster)
             .putFloat("batteryKwh", s.batteryKwh.toFloat())
             .apply()
         _state.value = s
