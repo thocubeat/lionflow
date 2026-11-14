@@ -2,7 +2,7 @@ name: Compile check
 
 on:
   push:
-    branches-ignore: [ main ]
+    branches-ignore: [ main, stats ]
   workflow_dispatch:
 
 jobs:

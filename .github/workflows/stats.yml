@@ -1,0 +1,34 @@
+name: Download count
+
+# Counts downloads of LionFlow.apk (the README / first-install link) across all releases,
+# using GitHub's own public download counters. Nothing is collected by the app or by us.
+on:
+  workflow_run:
+    workflows: [ "Build APK" ]
+    types: [ completed ]
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Count downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          n=$(gh api --paginate "repos/${{ github.repository }}/releases?per_page=100" \
+              -q '[.[].assets[] | select(.name=="LionFlow.apk") | .download_count] | add // 0' | awk '{s+=$1} END {print s+0}')
+          echo "Downloads: $n"
+          mkdir out && cd out
+          printf '{"schemaVersion":1,"label":"downloads","message":"%s","color":"8bc34a"}\n' "$n" > downloads.json
+          git init -q -b stats
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add downloads.json
+          git commit -q -m "Download count: $n"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" stats

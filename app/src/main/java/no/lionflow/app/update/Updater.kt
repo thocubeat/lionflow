@@ -48,7 +48,8 @@ object Updater {
         var url: String? = null
         for (i in 0 until assets.length()) {
             val a = assets.optJSONObject(i) ?: continue
-            if (a.optString("name").endsWith(".apk")) { url = a.optString("browser_download_url"); break }
+            // The versioned file; the plain "LionFlow.apk" is left for first-time downloads (that's what the download count shows).
+            if (a.optString("name").matches(Regex("LionFlow-.*\\.apk"))) { url = a.optString("browser_download_url"); break }
         }
         return Release(tag, code, url ?: return null, j.optString("body"))
     }

@@ -1,5 +1,7 @@
 # LionFlow
 
+![Downloads](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/thocubeat/lionflow/stats/downloads.json)
+
 **[⬇ Download the latest version (APK)](https://github.com/thocubeat/lionflow/releases/latest/download/LionFlow.apk)** · [All releases](https://github.com/thocubeat/lionflow/releases)
 
 ### First sign-in (2 minutes)
@@ -85,6 +87,10 @@ Remote actions from the car only run while the phone is connected to Android Aut
 - Your password is only typed on Peugeot's own page. The app never sees it.
 - There is no backend and no analytics. The app talks directly to Peugeot, OpenFreeMap, OpenStreetMap (Overpass), MET Norway, GitHub (updates) and — only if you choose it — NOBIL.
 - The release signing key lives only in GitHub Secrets (`KEYSTORE_B64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`). It is restored during the build and deleted afterwards.
+
+## Download count
+
+The badge at the top is GitHub's own public counter for the APK link, added up across releases. In-app updates download a different file, so they don't inflate it. LionFlow has no analytics or tracking: the app sends nothing anywhere about you.
 
 ## License
 
