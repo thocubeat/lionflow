@@ -34,7 +34,7 @@ object ChargePower {
      * Returns the status to use.
      */
     fun record(raw: VehicleStatus): VehicleStatus {
-        val st = fixRange(raw)
+        val st = applyPendingPrograms(fixRange(raw))
         try { ChargeLog.observe(st) } catch (_: Exception) { }
         val p = prefs ?: return st
         if (!st.isCharging) { p.edit().remove("s").apply(); return st }
@@ -45,6 +45,42 @@ object ChargePower {
         val keep = (arr + (t to e)).filter { t - it.first <= 45 * 60_000L }.takeLast(12)
         p.edit().putString("s", JSONArray(keep.map { JSONArray().put(it.first).put(it.second) }).toString()).apply()
         return st
+    }
+
+    // ---------------- pre-heating schedules just sent ----------------
+
+    private fun key(p: Program) = listOf(p.days.sorted().joinToString(","), p.hour, p.minute, p.enabled).joinToString("|")
+
+    /** Remember schedules sent to the car; Peugeot's status can show the old ones for a while. */
+    fun setPendingPrograms(list: List<Program>) {
+        settings?.pendingPrograms = org.json.JSONObject().put("time", System.currentTimeMillis())
+            .put("programs", JSONArray(list.map { p ->
+                org.json.JSONObject().put("slot", p.slot).put("days", JSONArray(p.days)).put("hour", p.hour).put("minute", p.minute).put("on", p.enabled)
+            })).toString()
+    }
+
+    fun pendingPrograms(): List<Program>? = try {
+        val raw = settings?.pendingPrograms.orEmpty()
+        if (raw.isBlank()) null else {
+            val j = org.json.JSONObject(raw)
+            if (System.currentTimeMillis() - j.getLong("time") > 24 * 3_600_000L) { settings?.pendingPrograms = ""; null }
+            else {
+                val a = j.getJSONArray("programs")
+                (0 until a.length()).map { i ->
+                    val o = a.getJSONObject(i); val d = o.getJSONArray("days")
+                    Program(o.getInt("slot"), (0 until d.length()).map { d.getString(it) }, o.getInt("hour"), o.getInt("minute"), o.getBoolean("on"))
+                }
+            }
+        }
+    } catch (_: Exception) { null }
+
+    /** Until the car's status shows the new schedules, use the ones we sent (so they don't vanish or get overwritten). */
+    private fun applyPendingPrograms(st: VehicleStatus): VehicleStatus {
+        val pend = pendingPrograms() ?: return st
+        val car = st.programs.map { key(it) }.toSet()
+        val want = pend.map { key(it) }.toSet()
+        if (car == want) { settings?.pendingPrograms = ""; return st }
+        return st.copy(programs = pend)
     }
 
     /**

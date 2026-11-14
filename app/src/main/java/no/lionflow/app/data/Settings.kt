@@ -118,6 +118,11 @@ class SettingsStore(context: Context) {
         set(v) { p.edit().putString("importedTrips", v).apply() }
 
     /** Last status snapshot used by the background notifier to detect changes. */
+    /** Schedules just sent to the car, shown until Peugeot's status catches up ({"time":..,"programs":[..]}). */
+    var pendingPrograms: String
+        get() = p.getString("pendingPrograms", "") ?: ""
+        set(v) { p.edit().putString("pendingPrograms", v).apply() }
+
     var notifySnapshot: String
         get() = p.getString("notifySnapshot", "{}") ?: "{}"
         set(v) { p.edit().putString("notifySnapshot", v).apply() }

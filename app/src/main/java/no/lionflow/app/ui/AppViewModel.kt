@@ -326,8 +326,13 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     /** Saves pre-heating schedules to the car (its 4 program slots), keeping pre-heating on/off as it is. */
     fun savePrograms(programs: List<no.lionflow.app.model.Program>) = runCommand("Saving schedule", { it.copy(programs = programs) }) { p ->
         val st = _ui.value.status ?: return@runCommand CommandResult.Failed("No status yet")
-        remote.preconditioning(st.preconditioningOn, VehicleStatus.programsJsonOf(programs), p)
+        val r = remote.preconditioning(st.preconditioningOn, VehicleStatus.programsJsonOf(programs), p)
+        if (r !is CommandResult.Failed) no.lionflow.app.model.ChargePower.setPendingPrograms(programs)
+        r
     }
+
+    /** True while schedules we sent haven't shown up in Peugeot's status yet. */
+    fun programsPending(): Boolean = no.lionflow.app.model.ChargePower.pendingPrograms() != null
 
     fun charging(startNow: Boolean) = runCommand(if (startNow) "Charge now" else "Stop charging", { it.copy(chargingStatus = if (startNow) "InProgress" else "Stopped") }) { p ->
         val st = _ui.value.status

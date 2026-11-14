@@ -64,7 +64,10 @@ fun PreheatSchedules(vm: AppViewModel, ui: UiState) {
 
     LfCard(padding = PaddingValues(0.dp)) {
         Text("Pre-heating schedules", style = Type.label, color = c.text, modifier = Modifier.padding(start = 18.dp, top = 16.dp, end = 18.dp))
-        Text("The car makes the cabin warm (or cool) by the time you set.", style = Type.tiny, color = c.muted, modifier = Modifier.padding(start = 18.dp, end = 18.dp, bottom = 6.dp))
+        Text(
+            if (vm.programsPending() && ui.commandInProgress == null) "Sent to the car. Peugeot's status can take a while to show the change."
+            else "The car makes the cabin warm (or cool) by the time you set.",
+            style = Type.tiny, color = c.muted, modifier = Modifier.padding(start = 18.dp, end = 18.dp, bottom = 6.dp))
         if (programs.isEmpty()) {
             Text("No schedules yet.", style = Type.small, color = c.muted, modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp))
         }

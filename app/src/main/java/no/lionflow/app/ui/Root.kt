@@ -248,8 +248,20 @@ private fun RailItem(item: NavItem, active: Boolean, onClick: () -> Unit) {
     }
 }
 
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 private fun TabContent(vm: AppViewModel, ui: UiState, settings: AppSettings, wide: Boolean, expanded: Boolean) {
+    // Pull down to refresh on every tab except the map (dragging there moves the map).
+    if (ui.tab == Tab.Map) { MapScreen(vm, ui, settings); return }
+    androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+        isRefreshing = ui.refreshing,
+        onRefresh = { vm.refresh() },
+        modifier = Modifier.fillMaxSize(),
+    ) { TabScreens(vm, ui, settings, wide, expanded) }
+}
+
+@Composable
+private fun TabScreens(vm: AppViewModel, ui: UiState, settings: AppSettings, wide: Boolean, expanded: Boolean) {
     when (ui.tab) {
         Tab.Home -> HomeScreen(vm, ui, settings, wide, expanded)
         Tab.Charging -> ChargingScreen(vm, ui, settings, wide)
