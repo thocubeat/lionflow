@@ -37,6 +37,19 @@ After the first install, LionFlow updates itself: it finds new releases, checks 
 
 Automatic updates can be turned off under Settings › Driving data. The refresh button always works.
 
+## Android Auto
+
+LionFlow works in Android Auto in two places:
+
+- **App launcher → LionFlow:** a 3D vector map that follows you, with nearby chargers, where the car is parked and a battery/range card. Buttons: **Car** (status, pre-heat, charging, more actions), **Chargers** (nearest first, tap to show on the map) and the **driver display** toggle.
+- **Media view → LionFlow:** *Car* and *Actions* tabs (status, pre-heat, charging, lock, flash lights). It plays no audio.
+
+On cars that let Android Auto use the driver display (cluster), LionFlow's map can be shown there. Starting navigation in Google Maps takes the display back.
+
+Because LionFlow isn't from the Play Store, turn this on once: **Android Auto settings → tap *Version* 10 times → ⋮ → Developer settings → Unknown sources**.
+
+Remote actions from the car only run while the phone is connected to Android Auto. You can turn them off under Settings → Android Auto.
+
 ## Features
 
 - **Sign-in** on Peugeot's own page, "Remember me", and app lock with your security code or fingerprint
