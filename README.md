@@ -41,7 +41,7 @@ Automatic updates can be turned off under Settings › Driving data. The refresh
 
 LionFlow works in Android Auto in two places:
 
-- **App launcher → LionFlow:** a dark 3D vector map that follows you, with nearby chargers, where the car is parked and a battery/range card. Buttons: **Car** (status, pre-heat, charging, more actions), **Chargers** (nearest first, tap to show on the map) and the **driver display** toggle.
+- **App launcher → LionFlow:** a dark 3D vector map that follows you, with nearby chargers, where the car is parked and a battery/range card. Buttons: **Car** (status, pre-heat, charging, more actions), **Trips** (last 7 days summary and recent trips), **Chargers** (nearest first, tap to show on the map) and the **driver display** toggle.
 - **Media view → LionFlow:** *Car* and *Actions* tabs (status, pre-heat, charging, lock, flash lights). It plays no audio.
 
 On cars that let Android Auto use the driver display (cluster), LionFlow's map can be shown there. Starting navigation in Google Maps takes the display back.

@@ -22,6 +22,7 @@ import no.lionflow.app.api.Tracker
 import no.lionflow.app.api.chargerFromJson
 import no.lionflow.app.api.objects
 import no.lionflow.app.api.toJson
+import no.lionflow.app.model.Trip
 import no.lionflow.app.model.VehicleStatus
 import no.lionflow.app.ui.fmtDistance
 import no.lionflow.app.ui.fmtTemp
@@ -149,6 +150,43 @@ object CarHub {
         if (!sticky) _notices.tryEmit(text)
         clearJob?.cancel()
         if (!sticky) clearJob = scope.launch { delay(12_000); if (_message.value == text) _message.value = null }
+    }
+
+    // ---------------- trips ----------------
+
+    private val _trips = MutableStateFlow<List<Trip>?>(null)
+    val trips: StateFlow<List<Trip>?> = _trips
+    private var tripsLoadedAt = 0L
+
+    /** Last 30 days of trips from Peugeot (newest first), at most every 5 minutes. */
+    fun loadTrips(ctx: Context, force: Boolean = false) {
+        val app = app(ctx)
+        if (!app.api.isSignedIn) return
+        if (!force && _trips.value != null && System.currentTimeMillis() - tripsLoadedAt < 5 * 60_000) return
+        tripsLoadedAt = System.currentTimeMillis()
+        scope.launch {
+            try {
+                val v = app.api.cachedVehicles().firstOrNull() ?: app.api.vehicles().firstOrNull() ?: return@launch
+                val since = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
+                    .apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
+                    .format(java.util.Date(System.currentTimeMillis() - 30 * 86_400_000L))
+                val all = mutableListOf<Trip>()
+                var page: String? = null
+                var guard = 0
+                do {
+                    val j = app.api.trips(v, since, page)
+                    j.optJSONObject("_embedded")?.optJSONArray("trips")?.objects()?.forEach { all += Trip.parse(it) }
+                    page = j.optJSONObject("_links")?.optJSONObject("next")?.optString("href")
+                        ?.substringAfter("pageToken=", "")?.substringBefore("&")?.ifEmpty { null }
+                    guard++
+                } while (page != null && guard < 10)
+                _trips.value = all.distinctBy { it.id }.sortedByDescending { it.startMillis ?: 0L }
+            } catch (e: Exception) {
+                tripsLoadedAt = 0L
+                if (_trips.value == null) _trips.value = emptyList()
+                say("Couldn't load trips — ${Http.describe(e)}")
+            }
+        }
     }
 
     // ---------------- chargers ----------------

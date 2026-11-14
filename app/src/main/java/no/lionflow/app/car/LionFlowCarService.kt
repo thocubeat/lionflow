@@ -135,6 +135,8 @@ class MapScreen(
                 .setOnClickListener { screenManager.push(StatusScreen(carContext)) }.build())
             .addAction(Action.Builder().setTitle("Chargers").setIcon(carContext.icon(R.drawable.ic_car_charger))
                 .setOnClickListener { screenManager.push(ChargersScreen(carContext, renderer)) }.build())
+            .addAction(Action.Builder().setTitle("Trips").setIcon(carContext.icon(R.drawable.ic_car_route))
+                .setOnClickListener { screenManager.push(TripsScreen(carContext)) }.build())
             .addAction(Action.Builder()
                 .setIcon(carContext.icon(R.drawable.ic_car_cluster, if (CarHub.driverDisplay.value) CarColor.GREEN else null))
                 .setOnClickListener {
@@ -264,6 +266,65 @@ class ChargersScreen(ctx: CarContext, private val renderer: CarMapRenderer) : Li
         }
         return b.setSingleList(list.build()).build()
     }
+}
+
+// ---------------------------------------------------------------- driving history
+
+class TripsScreen(ctx: CarContext) : Screen(ctx) {
+    init {
+        CarHub.loadTrips(ctx)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) { CarHub.trips.collect { invalidate() } }
+        }
+    }
+
+    override fun onGetTemplate(): Template {
+        val s = CarHub.app(carContext).settings.value
+        val trips = CarHub.trips.value
+        val b = ListTemplate.Builder().setTitle("Driving history").setHeaderAction(Action.BACK)
+            .setActionStrip(ActionStrip.Builder().addAction(Action.Builder().setTitle("Refresh")
+                .setOnClickListener { CarHub.loadTrips(carContext, force = true) }.build()).build())
+        if (trips == null) return b.setLoading(true).build()
+        val list = ItemList.Builder()
+        if (trips.isEmpty()) {
+            list.setNoItemsMessage("No trips in the last 30 days")
+            return b.setSingleList(list.build()).build()
+        }
+        val max = try {
+            carContext.getCarService(androidx.car.app.constraints.ConstraintManager::class.java)
+                .getContentLimit(androidx.car.app.constraints.ConstraintManager.CONTENT_LIMIT_TYPE_LIST)
+        } catch (_: Exception) { 6 }
+
+        // Summary of the last 7 days first.
+        val weekAgo = System.currentTimeMillis() - 7 * 86_400_000L
+        val week = trips.filter { (it.startMillis ?: 0L) >= weekAgo }
+        val km = week.sumOf { it.distanceKm }
+        val kwh = week.mapNotNull { it.kwh }.sum()
+        val avg = if (km > 1 && kwh > 0) kwh / km * 100 else null
+        list.addItem(Row.Builder()
+            .setTitle("Last 7 days: ${fmtDistance(km, s)} · ${week.size} trips")
+            .addText(avg?.let { consumption(it, s) } ?: "Consumption not reported")
+            .setImage(carContext.icon(R.drawable.ic_car_route)).build())
+
+        val day = java.text.SimpleDateFormat("EEE d MMM", java.util.Locale.ENGLISH)
+        val time = java.text.SimpleDateFormat("HH:mm", java.util.Locale.ENGLISH)
+        val today = day.format(java.util.Date())
+        trips.take((max - 1).coerceAtLeast(1)).forEach { t ->
+            val start = t.startMillis?.let { java.util.Date(it) }
+            val whenTxt = start?.let { d -> (if (day.format(d) == today) "Today" else day.format(d)) + " " + time.format(d) } ?: "Trip"
+            val bits = mutableListOf<String>()
+            t.durationSec?.takeIf { it > 0 }?.let { sec -> val m = (sec / 60).toInt(); bits += if (m >= 60) "${m / 60} h ${m % 60} min" else "$m min" }
+            t.avgKwhPer100?.let { bits += consumption(it, s) }
+            t.avgSpeedKmh?.takeIf { it > 0 }?.let { v -> bits += if (s.distanceUnit == "mi") "${Math.round(v * 0.621371)} mph avg" else "${Math.round(v)} km/h avg" }
+            list.addItem(Row.Builder().setTitle("$whenTxt · ${fmtDistance(t.distanceKm, s)}")
+                .addText(bits.joinToString(" · ").ifBlank { "No details" }).build())
+        }
+        return b.setSingleList(list.build()).build()
+    }
+
+    private fun consumption(kwhPer100Km: Double, s: no.lionflow.app.data.AppSettings) =
+        if (s.distanceUnit == "mi") String.format(java.util.Locale.US, "%.1f mi/kWh", 100 / kwhPer100Km / 1.609344)
+        else String.format(java.util.Locale.US, "%.1f kWh/100 km", kwhPer100Km)
 }
 
 // ---------------------------------------------------------------- driver display
