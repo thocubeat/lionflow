@@ -197,7 +197,8 @@ class CarMapRenderer(
         placeCard()
     }
 
-    private fun styleUrl() = if (cluster || carContext.isDarkMode) STYLE_DARK else STYLE_LIGHT
+    // The car map is always dark: easier on the eyes and matches the car's own screens.
+    private fun styleUrl() = STYLE_DARK
 
     private fun loadStyle(m: MapLibreMap, url: String) {
         m.setStyle(Style.Builder().fromUri(url)) { st ->
@@ -318,7 +319,7 @@ class CarMapRenderer(
     private fun add3d(st: Style) {
         if (!is3d || st.getLayer("lf-3d") != null) return
         val src = listOf("openmaptiles", "composite").firstOrNull { st.getSource(it) != null } ?: return
-        val dark = cluster || carContext.isDarkMode
+        val dark = true
         val layer = FillExtrusionLayer("lf-3d", src).apply {
             sourceLayer = "building"
             setProperties(
@@ -414,7 +415,6 @@ class CarMapRenderer(
     }
 
     companion object {
-        const val STYLE_LIGHT = "https://tiles.openfreemap.org/styles/positron"
         const val STYLE_DARK = "https://tiles.openfreemap.org/styles/dark"
         const val ACCENT = "#C8F560"
     }
