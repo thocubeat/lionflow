@@ -258,8 +258,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 val v = _ui.value.vehicle ?: api.vehicles().firstOrNull() ?: throw IllegalStateException("No car on this account")
                 val raw = api.status(v)
                 val maint = api.maintenance(v)
-                val st = VehicleStatus.parse(raw, maint)
-                no.lionflow.app.model.ChargePower.record(st)
+                val st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(raw, maint))
                 val now = System.currentTimeMillis()
                 settings.lastRefresh = now
                 no.lionflow.app.widget.WidgetData.save(getApplication<Application>(), st)

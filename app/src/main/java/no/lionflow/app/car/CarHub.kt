@@ -77,8 +77,7 @@ object CarHub {
             try {
                 val v = app.api.cachedVehicles().firstOrNull() ?: app.api.vehicles().firstOrNull()
                 if (v != null) {
-                    val st = VehicleStatus.parse(app.api.status(v), null)
-                    no.lionflow.app.model.ChargePower.record(st)
+                    val st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(v), null))
                     _status.value = st
                     lastRefresh = System.currentTimeMillis()
                     no.lionflow.app.widget.WidgetData.save(ctx.applicationContext, st)

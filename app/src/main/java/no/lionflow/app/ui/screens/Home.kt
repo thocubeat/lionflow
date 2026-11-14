@@ -168,7 +168,7 @@ private fun HomeMain(vm: AppViewModel, ui: UiState, s: AppSettings) {
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text("≈ ${fmtDistance(st?.rangeKm, s)}", style = Type.display.copy(fontSize = 24.sp), color = c.text)
-                Text("range", style = Type.small, color = c.muted)
+                Text(if (ui.status?.rangeEstimated == true) "range (est.)" else "range", style = Type.small, color = c.muted)
             }
         }
         ProgressBar(((st?.batteryPct ?: 0.0) / 100.0).toFloat(), c.meter)

@@ -29,16 +29,41 @@ object ChargePower {
     private fun energyIn(st: VehicleStatus): Double? =
         st.residualKwh ?: st.batteryPct?.let { it / 100.0 * usableKwh(st) }
 
-    /** Remember this report while charging; forget the session when charging stops. */
-    fun record(st: VehicleStatus) {
-        val p = prefs ?: return
-        if (!st.isCharging) { p.edit().remove("s").apply(); return }
-        val t = st.energyAtMillis ?: st.updatedAtMillis ?: return
-        val e = energyIn(st) ?: return
+    /**
+     * Call on every fresh car report. Fixes a missing/0 range and remembers charging samples.
+     * Returns the status to use.
+     */
+    fun record(raw: VehicleStatus): VehicleStatus {
+        val st = fixRange(raw)
+        val p = prefs ?: return st
+        if (!st.isCharging) { p.edit().remove("s").apply(); return st }
+        val t = st.energyAtMillis ?: st.updatedAtMillis ?: return st
+        val e = energyIn(st) ?: return st
         val arr = load()
-        if (arr.isNotEmpty() && arr.last().first == t) return
+        if (arr.isNotEmpty() && arr.last().first == t) return st
         val keep = (arr + (t to e)).filter { t - it.first <= 45 * 60_000L }.takeLast(12)
         p.edit().putString("s", JSONArray(keep.map { JSONArray().put(it.first).put(it.second) }).toString()).apply()
+        return st
+    }
+
+    /**
+     * Peugeot's API sometimes reports 0 km range (often when plugged in or asleep) even with a full battery.
+     * Then we use km-per-% learned from the last real reading, or a plain estimate (usable kWh at ~19 kWh/100 km).
+     */
+    private fun fixRange(st: VehicleStatus): VehicleStatus {
+        val p = prefs
+        val pct = st.batteryPct ?: return st
+        val range = st.rangeKm
+        if (range != null && range > 0 && pct >= 5) {
+            val perPct = range / pct
+            if (perPct in 1.0..10.0) p?.edit()?.putFloat("kmPerPct", perPct.toFloat())?.apply()
+            return st
+        }
+        if (range != null && range > 0) return st
+        if (pct < 1) return st
+        val learned = p?.getFloat("kmPerPct", 0f)?.toDouble()?.takeIf { it > 0 }
+        val perPct = learned ?: (usableKwh(st) / 19.0 * 100.0 / 100.0)
+        return st.copy(rangeKm = Math.round(pct * perPct).toDouble(), rangeEstimated = true)
     }
 
     private fun load(): List<Pair<Long, Double>> = try {

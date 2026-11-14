@@ -214,8 +214,7 @@ class WidgetRefreshWorker(ctx: Context, params: WorkerParameters) : CoroutineWor
                 WidgetData.setRefresh(ctx, true, "Almost there — Peugeot sometimes needs up to 30 seconds")
             }
             try {
-                val st = VehicleStatus.parse(app.api.status(vehicle), null)
-                no.lionflow.app.model.ChargePower.record(st)
+                val st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(vehicle), null))
                 explainer.cancel()
                 WidgetData.save(ctx, st)
             } catch (e: AuthExpiredException) {
