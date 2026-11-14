@@ -4,6 +4,23 @@
 
 **[⬇ Download the latest version (APK)](https://github.com/thocubeat/lionflow/releases/latest/download/LionFlow.apk)** · [All releases](https://github.com/thocubeat/lionflow/releases)
 
+## What is LionFlow?
+
+LionFlow is a free, open-source Android app for your own connected Peugeot. It's an unofficial alternative to the MyPeugeot app, built for the E-5008 but meant for any connected Peugeot EV. It signs in with your normal MyPeugeot account and talks to the same Peugeot servers, so it shows the same car data and sends the same remote commands. The difference is how it's built and what it does with that data.
+
+**How it differs from MyPeugeot**
+
+- **Quick and to the point:** opens straight to battery, range and charging, with no menus or offers in the way. It wakes the car in the background when the app opens, so commands get through faster, and shows each step while a command is on its way ("Waking the car…", "Car received it").
+- **Real charging power in kW:** the car only reports "km of range per hour". LionFlow works out the actual kW from the energy going into the battery.
+- **Charging log:** every session with time, % from–to, kWh, duration, average and peak kW, and where. Splits home from away, and estimates cost from your home price and up to 5 known chargers.
+- **Pre-heating schedules:** set "ready at 07:00, Monday to Friday" in a few taps.
+- **Range that makes sense:** when Peugeot's server reports 0 km by mistake, LionFlow estimates from your own driving instead.
+- **Clear errors:** when something fails you get the actual reason and code, not a generic "try again later".
+- **More on screen:** a home-screen widget, a free 2D/3D charger map, local weather and forecast, Android Auto overview, and layouts for foldables and tablets.
+- **Private and secure:** no ads, no analytics, no tracking. Sign-in tokens are encrypted on the phone, and remote actions can require your fingerprint. All the code is public, so anyone can check what it does.
+
+**What you still need MyPeugeot for:** adding the car to your account and getting the remote-control security code (one time), and a few car settings Peugeot only exposes there, such as the charge limit. LionFlow is not made or supported by Peugeot or Stellantis.
+
 ### First sign-in (2 minutes)
 
 1. **Have MyPeugeot working first.** Your car must already be added in the official MyPeugeot app, and you need its 4-digit security code.
