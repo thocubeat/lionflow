@@ -171,7 +171,6 @@ private fun SessionDialog(sess: ChargeSession, cfg: PlacesConfig, s: AppSettings
         title = { Text(m.label, color = c.text) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                fun line(k: String, v: String) = Row { Text(k, style = Type.small, color = c.muted, modifier = Modifier.width(110.dp)); Text(v, style = Type.small, color = c.text) }
                 line("Started", fmt.format(Date(sess.start)))
                 line("Ended", fmt.format(Date(sess.end)))
                 line("Duration", dur(sess.hours))
@@ -192,6 +191,12 @@ private fun SessionDialog(sess: ChargeSession, cfg: PlacesConfig, s: AppSettings
             }
         },
     )
+}
+
+@Composable
+private fun line(k: String, v: String) {
+    val c = LocalLf.current
+    Row { Text(k, style = Type.small, color = c.muted, modifier = Modifier.width(110.dp)); Text(v, style = Type.small, color = c.text) }
 }
 
 @Composable
