@@ -1,0 +1,43 @@
+--------- beginning of system
+W/ActivityManager(  525): Slow operation: 56ms so far, now at startProcess: returned from zygote!
+W/ActivityManager(  525): Slow operation: 57ms so far, now at startProcess: done updating battery stats
+W/ActivityManager(  525): Slow operation: 66ms so far, now at startProcess: building log message
+W/ActivityManager(  525): Slow operation: 68ms so far, now at startProcess: starting to update pids map
+W/ActivityManager(  525): Slow operation: 68ms so far, now at startProcess: done updating pids map
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.chimera.GmsIntentOperationService in 1000ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.chimera.container.ExternalFileApkService in 11000ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.chimera.GmsApiService in 21000ms for connection
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.chimera.GmsBoundBrokerService in 31000ms for connection
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.common.stats.GmsCoreStatsService in 20955ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/com.google.android.location.network.NetworkLocationService in 30955ms for connection
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.GoogleLocationManagerService in 40955ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.nearby.sharing.ReceiveSurfaceService in 50955ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.deviceconnection.service.DeviceConnectionWatcherService in 60955ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentDirectBootAwareApiService in 70954ms for connection
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.nearby.exposurenotification.service.ExposureNotificationInternalService in 80954ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.thunderbird.EmergencyPersistentService in 90954ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.nearby.exposurenotification.service.ExposureMatchingService in 100954ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.server.HardwareArProviderService in 110954ms for connection
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.server.GoogleLocationService in 120946ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentBoundBrokerService in 130946ms for connection
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.location.geocode.GeocodeService in 140946ms for connection
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.auth.setup.devicesignals.LockScreenService in 150946ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.gcm.GcmService in 160946ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentApiService in 170946ms for connection
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.nearby.messages.service.NearbyMessagesService in 180946ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/com.google.android.location.fused.FusedLocationService in 190946ms for connection
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentIntentOperationService in 200946ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/com.google.android.contextmanager.service.ContextManagerService in 210946ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.location.persistent.LocationPersistentService in 220946ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.clearcut.debug.ClearcutDebugDumpService in 230944ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.gcm.nts.SchedulerService in 240944ms for start-requested
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.geotimezone.GeoTimeZoneService in 250944ms for connection
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.fido.fido2.pollux.CableAuthenticatorService in 260944ms for start-requested
+W/ActivityManager(  525): Rescheduling restart of crashed service com.google.android.gms/.chimera.GmsIntentOperationService in 890ms for other
+W/ActivityManager(  525): Rescheduling restart of crashed service com.google.android.gms/.chimera.container.ExternalFileApkService in 10890ms for other
+W/ActivityManager(  525): Scheduling restart of crashed service com.google.android.gms/.chimera.UiIntentOperationService in 1000ms for start-requested
+W/ActivityManager(  525): Unable to start service Intent { act=com.google.android.gms.home.service.START pkg=com.google.android.gms } U=0: not found
+W/ActivityManager(  525): Unbind failed: could not find connection for android.os.BinderProxy@e013fe2
+W/ActivityManager(  525): Unable to start service Intent { act=com.google.android.gms.drive.ApiService.RESET_AFTER_BOOT flg=0x4 cmp=com.google.android.gms/.drive.api.ApiService (has extras) } U=0: not found
+W/ActivityManager(  525): setHasOverlayUi called on unknown pid: 5205
+W/ActivityManager(  525): setHasOverlayUi called on unknown pid: 5944
