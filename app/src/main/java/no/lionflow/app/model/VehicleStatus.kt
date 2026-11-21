@@ -83,13 +83,15 @@ data class VehicleStatus(
         /**
          * The level the car reports can be stale: an E-5008 reported 89 % with the charge limit off ("Full") and 79 % the
          * moment the daily limit ("Partial") was switched back on, with exactly the same energy in the battery (68.5 of
-         * 75.9 kWh). The energy is the reliable figure, so when the two disagree by more than 4 points, the level is
-         * worked out from it. Plug-in hybrids are left alone (their capacity figure is less reliable).
+         * 75.9 kWh). In that case the level was too LOW, so only then (energy says more than 4 points above the level)
+         * is the level worked out from the energy. The other way round the car's level is kept: on other cars the
+         * energy figures don't add up to the level at all (a car at 79 % in MyPeugeot gave 68 % from residual/capacity),
+         * and the official app always shows the car's own level. Plug-in hybrids are left alone.
          */
         private fun checkedLevel(level: Double?, res: Double?, cap: Double?, hybrid: Boolean): Double? {
             if (hybrid || res == null || cap == null || cap < 30) return level
             val fromEnergy = (res / cap * 100).coerceIn(0.0, 100.0)
-            return if (level == null || kotlin.math.abs(fromEnergy - level) > 4) kotlin.math.round(fromEnergy) else level
+            return if (level == null || fromEnergy - level > 4) kotlin.math.round(fromEnergy) else level
         }
 
         fun parse(j: JSONObject, maintenance: JSONObject?): VehicleStatus {

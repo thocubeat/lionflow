@@ -172,7 +172,7 @@ object CarHub {
     }
 
     fun preheat(ctx: Context, on: Boolean) = command(ctx, if (on) "Pre-heating" else "Stop pre-heating") { rc, st, t ->
-        rc.preconditioning(on, st?.programsJson() ?: JSONObject(), t)
+        rc.preconditioning(on, st?.programsJson() ?: VehicleStatus.programsJsonOf(emptyList()), t)
     }
 
     fun charge(ctx: Context, start: Boolean) = command(ctx, if (start) "Charge now" else "Stop charging") { rc, st, t ->
