@@ -329,13 +329,14 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setMildHybridOverride(enabled: Boolean?) {
         val vehicle = _ui.value.vehicle ?: return
+        if (settings.mildHybridOverride(vehicle.vin) == enabled) return
         val previouslyMildHybrid = api.isMildHybrid(vehicle)
         settings.setMildHybridOverride(vehicle.vin, enabled)
-        if (previouslyMildHybrid != api.isMildHybrid(vehicle)) updateMildHybridStatus()
+        updateMildHybridStatus(reloadTrips = previouslyMildHybrid != api.isMildHybrid(vehicle))
         if (enabled == null && vehicle.needsBranding && (api.profile to vehicle.vin) !in brandingAttempts) refresh()
     }
 
-    private fun updateMildHybridStatus() {
+    private fun updateMildHybridStatus(reloadTrips: Boolean = true) {
         val current = _ui.value
         val vehicle = current.vehicle ?: return
         current.status?.let { previous ->
@@ -346,7 +347,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             _ui.update { it.copy(status = status, tab = if (Caps.tab(it.tab, status)) it.tab else Tab.Home) }
             no.lionflow.app.widget.WidgetData.save(getApplication(), status)
         }
-        if (current.trips.isNotEmpty() && !current.tripsLoading) loadTrips()
+        if (reloadTrips && current.trips.isNotEmpty() && !current.tripsLoading) loadTrips()
     }
 
     fun vehicleKind(v: Vehicle): String = v.kind(settings.mildHybridOverride(v.vin))

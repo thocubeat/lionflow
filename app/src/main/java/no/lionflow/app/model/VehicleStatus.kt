@@ -90,10 +90,11 @@ data class VehicleStatus(
             val energies = j.optJSONArray("energies")?.objects().orEmpty()
             val reportedElectric = energies.firstOrNull { it.optString("type") == "Electric" }
             val reportedCharging = reportedElectric?.obj("extension", "electric", "charging")
-            // Generic hybrid metadata needs positive evidence of an external charge connection.
-            val externalCharging = reportedCharging?.optBoolean("plugged") == true ||
-                reportedCharging?.str("status") in setOf("InProgress", "Finished")
-            val fuelOnly = mildHybrid || (requireChargingEvidence && !externalCharging)
+            // Stellantis can report a full or partial charge target even when the car is unplugged.
+            val supportsExternalCharging = reportedCharging?.optBoolean("plugged") == true ||
+                reportedCharging?.str("status") in setOf("InProgress", "Finished") ||
+                reportedCharging?.str("type") in setOf("Full", "Partial")
+            val fuelOnly = mildHybrid || (requireChargingEvidence && !supportsExternalCharging)
             val electric = reportedElectric.takeUnless { fuelOnly }
             val fuel = energies.firstOrNull { it.optString("type") == "Fuel" }
             val charging = electric?.obj("extension", "electric", "charging")

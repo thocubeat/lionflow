@@ -107,7 +107,8 @@ data class Vehicle(
     }
 
     internal fun parseStatus(status: JSONObject, maintenance: JSONObject?, manualOverride: Boolean?): VehicleStatus {
-        val needsEvidence = !reportsPlugInHybrid && (powertrain in genericHybridMotorizations || reportsMildHybrid ||
+        // Off opts out of mild-hybrid handling and restores the standard status parser.
+        val needsEvidence = manualOverride == null && !reportsPlugInHybrid && (powertrain in genericHybridMotorizations ||
             (powertrain in ambiguousMotorizations && status.optJSONArray("energies")?.objects()
                 ?.any { it.optString("type") == "Fuel" } == true))
         return VehicleStatus.parse(status, maintenance, mildHybrid = isMildHybrid(manualOverride),

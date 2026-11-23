@@ -198,21 +198,58 @@ class MildHybridStatusTest {
         val vehicle = Vehicle.fromApi(apiVehicle(), "Peugeot")
         val electricOnlyTelemetry = JSONObject("""{"type":"Electric","level":63,"autonomy":240,
             "extension":{"electric":{"charging":{"status":"Disconnected","plugged":false}}}}""")
-        for (override in listOf(null, false)) {
-            val st = vehicle.parseStatus(status(fuel, electricOnlyTelemetry), null, override)
-            assertEquals("Hybrid (type unknown)", vehicle.kind(override))
-            assertFalse(st.isMildHybrid)
-            assertEquals(59.0, st.batteryPct)
-            assertEquals(360.0, st.rangeKm)
-            assertFalse(Caps.tab(Tab.Charging, st))
-            assertNull(st.chargingStatus)
-        }
+        val st = vehicle.parseStatus(status(fuel, electricOnlyTelemetry), null, null)
+        assertEquals("Hybrid (type unknown)", vehicle.kind(null))
+        assertFalse(st.isMildHybrid)
+        assertEquals(59.0, st.batteryPct)
+        assertEquals(360.0, st.rangeKm)
+        assertFalse(Caps.tab(Tab.Charging, st))
+        assertNull(st.chargingStatus)
         val connected = vehicle.parseStatus(status(fuel, electric), null, null)
         assertTrue(Caps.tab(Tab.Charging, connected))
         assertEquals("Hybrid (type unknown)", vehicle.kind(null))
         val forced = vehicle.parseStatus(status(fuel, electric), null, true)
         assertEquals("48 V mild hybrid", vehicle.kind(true))
         assertFalse(Caps.tab(Tab.Charging, forced))
+    }
+
+    @Test fun unpluggedGenericPlugInWithChargeTargetKeepsBothEnergySources() {
+        val vehicle = Vehicle.fromApi(apiVehicle(), "Peugeot")
+        val battery = JSONObject("""{"type":"Electric","level":63,"autonomy":42,
+            "extension":{"electric":{"charging":{"status":"Disconnected","plugged":false,"type":"Partial"},
+                "battery":{"load":{"capacity":13200,"residual":8316}}}}}""")
+        val raw = status(fuel, battery)
+        for (override in listOf(null, false)) {
+            val unplugged = vehicle.parseStatus(raw, null, override)
+            assertEquals("Hybrid (type unknown)", vehicle.kind(override))
+            assertEquals("Hybrid", unplugged.energyType)
+            assertEquals(63.0, unplugged.batteryPct)
+            assertEquals(42.0, unplugged.rangeKm)
+            assertEquals(360.0, unplugged.fuelRangeKm)
+            assertTrue(Caps.tab(Tab.Charging, unplugged))
+            assertFalse(unplugged.plugged)
+            assertFalse(unplugged.isCharging)
+            assertFalse(unplugged.isMildHybrid)
+        }
+        val forced = vehicle.parseStatus(raw, null, true)
+        assertTrue(forced.isMildHybrid)
+        assertEquals("Fuel", forced.energyType)
+        assertFalse(Caps.tab(Tab.Charging, forced))
+    }
+
+    @Test fun offRestoresStandardParsingForGenericPlugInWithOnlyFuelAndBatteryReadings() {
+        val vehicle = Vehicle.fromApi(apiVehicle(), "Peugeot")
+        val battery = JSONObject("""{"type":"Electric","level":63,"autonomy":42,
+            "extension":{"electric":{"battery":{"load":{"capacity":13200,"residual":8316}}}}}""")
+        val raw = status(fuel, battery)
+        val off = vehicle.parseStatus(raw, null, false)
+        assertEquals(VehicleStatus.parse(raw, null), off)
+        assertEquals("Hybrid (type unknown)", vehicle.kind(false))
+        assertEquals("Hybrid", off.energyType)
+        assertTrue(Caps.tab(Tab.Charging, off))
+        assertFalse(off.isCharging)
+        assertFalse(off.plugged)
+        assertEquals("Fuel", vehicle.parseStatus(raw, null, null).energyType)
     }
 
     @Test fun missingVehicleMetadataDoesNotInferPlugInFromFuelAndElectricReadings() {
