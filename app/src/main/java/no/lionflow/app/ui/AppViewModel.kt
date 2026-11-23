@@ -671,7 +671,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun userPrograms(st: VehicleStatus?): List<no.lionflow.app.model.Program> =
         (if (settings.value.smartMode.isNotEmpty()) no.lionflow.app.work.SmartSchedule.desired(app()) else null) ?: st?.programs.orEmpty()
 
-    fun smartOffSlots(): Set<Int> = if (settings.value.smartMode.isEmpty()) emptySet() else no.lionflow.app.work.SmartSchedule.switchedOff(app())
+    fun smartOffSlots(): Set<Int> = if (settings.value.smartMode.isEmpty() && !settings.value.smartPlugged) emptySet() else no.lionflow.app.work.SmartSchedule.switchedOff(app())
+    fun smartWhy(slot: Int) = no.lionflow.app.work.SmartSchedule.why(app(), slot)
 
     /** Turn Smart schedule on/off or change its limit. */
     fun setSmart(mode: String, temp: Int) {

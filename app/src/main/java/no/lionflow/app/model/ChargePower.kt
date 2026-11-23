@@ -72,8 +72,33 @@ object ChargePower {
         p.edit().putString(k("hist"), (listOf(line) + old).take(30).joinToString("\n")).apply()
     }
 
+    /**
+     * An electric car can suddenly report a much lower level with the same energy in the battery: an E-5008 went from
+     * 89 % to 79 % the moment its daily charge limit was switched back on (68.5 kWh both times), and then counted down
+     * slowly from the old number. Only when exactly that is seen (level drops 5 points or more between two reports while
+     * the energy stays put), the level from before the drop is kept and moved by the change in energy, until the car's
+     * own number has caught up. The energy figure alone is never used: on other cars it doesn't match the level.
+     */
+    private fun fixLevel(st: VehicleStatus): VehicleStatus {
+        val p = prefs ?: return st
+        val level = st.batteryPct; val res = st.residualKwh; val cap = st.capacityKwh
+        if (st.energyType != "Electric" || level == null || res == null || cap == null || cap < 30) return st
+        val now = System.currentTimeMillis()
+        val last = p.getString(k("lvl"), "")!!.split(",").mapNotNull { it.toDoubleOrNull() }
+        var anchor = p.getString(k("lvlAnchor"), "")!!.split(",").mapNotNull { it.toDoubleOrNull() }
+        if (last.size == 2 && last[0] - level >= 5 && kotlin.math.abs(last[1] - res) < 1.0) anchor = listOf(last[0], last[1], now.toDouble())
+        var out = st
+        if (anchor.size == 3) {
+            val est = anchor[0] + (res - anchor[1]) / cap * 100
+            if (now - anchor[2] > 3 * 86_400_000L || est - level <= 2 || est > 100.5) anchor = emptyList()
+            else out = st.copy(batteryPct = Math.round(est).toDouble())
+        }
+        p.edit().putString(k("lvl"), "$level,$res").putString(k("lvlAnchor"), anchor.joinToString(",")).apply()
+        return out
+    }
+
     fun record(raw: VehicleStatus): VehicleStatus {
-        val st = applyPendingPrograms(fixRange(raw))
+        val st = applyPendingPrograms(fixRange(fixLevel(raw)))
         try { ChargeLog.observe(st) } catch (_: Exception) { }
         val p = prefs ?: return st
         remember(p, st)

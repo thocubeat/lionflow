@@ -83,7 +83,19 @@ fun PreheatSchedules(vm: AppViewModel, ui: UiState) {
                 Column(Modifier.weight(1f)) {
                     Text("Ready at " + no.lionflow.app.ui.l10n.TimeFmt.hm(p.hour, p.minute), style = Type.stat, color = if (p.enabled) c.text else c.muted)
                     Text(daysText(p.days), style = Type.small, color = c.muted)
-                    if (p.slot in skipped) Text("Skipped by Smart schedule", style = Type.tiny, color = c.orangeInk)
+                    if (p.slot in skipped) {
+                        val w = vm.smartWhy(p.slot)
+                        val reason = when {
+                            w == null -> ""
+                            w.notPlugged -> " · " + no.lionflow.app.ui.l10n.L10n.tr("not plugged in")
+                            else -> " · " + no.lionflow.app.ui.l10n.L10n.tr("forecast {0}").replace("{0}", "${w.temp}°C")
+                        }
+                        val past = w != null && w.at < System.currentTimeMillis()
+                        androidx.compose.material3.Text(
+                            no.lionflow.app.ui.l10n.L10n.tr(if (past) "Skipped last time" else "Skipped by Smart schedule") + reason,
+                            style = Type.tiny, color = c.orangeInk)
+                        if (past || w == null) Text("Checked again about an hour before the next one", style = Type.tiny, color = c.muted)
+                    }
                 }
                 Toggle(p.enabled, "Schedule on") { on ->
                     if (!busy) save(programs.map { if (it.slot == p.slot) it.copy(enabled = on) else it }, if (on) "Turn schedule on" else "Turn schedule off")

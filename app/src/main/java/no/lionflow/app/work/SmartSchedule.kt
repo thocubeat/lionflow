@@ -20,6 +20,7 @@ object SmartSchedule {
     private const val K_DESIRED = "smartDesired"   // what the user wants (all schedules as they set them)
     private const val K_OFF = "smartOff"           // slots we have switched off because of the temperature
     private const val K_EVAL = "smartEval"         // slot -> occurrence already checked
+    private const val K_WHY = "smartWhy"           // slot -> why it was switched off: {at, plug, temp}
 
     private val DAYS = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
@@ -34,8 +35,15 @@ object SmartSchedule {
     /** Remember what the user wants (called whenever they save schedules). Also forgets what we had switched off. */
     fun setDesired(app: LionFlowApp, list: List<Program>) {
         app.settings.setRaw(K_DESIRED, JSONArray(list.map { p -> JSONObject().put("slot", p.slot).put("days", JSONArray(p.days)).put("hour", p.hour).put("minute", p.minute).put("on", p.enabled) }).toString())
-        app.settings.setRaw(K_OFF, ""); app.settings.setRaw(K_EVAL, "")
+        app.settings.setRaw(K_OFF, ""); app.settings.setRaw(K_EVAL, ""); app.settings.setRaw(K_WHY, "")
     }
+
+    /** Why a schedule was switched off: the time it was due, whether because the car wasn't plugged in, and the forecast. */
+    data class Why(val at: Long, val notPlugged: Boolean, val temp: Int)
+
+    fun why(app: LionFlowApp, slot: Int): Why? = try {
+        JSONObject(app.settings.raw(K_WHY).ifBlank { "{}" }).optJSONObject(slot.toString())?.let { Why(it.getLong("at"), it.getBoolean("plug"), it.getInt("temp")) }
+    } catch (_: Exception) { null }
 
     /** Pick up schedules that were added, changed or removed outside LionFlow (MyPeugeot, another phone) so they aren't hidden. */
     fun syncFromCar(app: LionFlowApp, car: List<Program>) {
@@ -61,7 +69,7 @@ object SmartSchedule {
     /** Check again (for example after the limit changed). */
     fun recheck(app: LionFlowApp) { app.settings.setRaw(K_EVAL, "") }
 
-    fun clear(app: LionFlowApp) { listOf(K_DESIRED, K_OFF, K_EVAL).forEach { app.settings.setRaw(it, "") } }
+    fun clear(app: LionFlowApp) { listOf(K_DESIRED, K_OFF, K_EVAL, K_WHY).forEach { app.settings.setRaw(it, "") } }
 
     fun switchedOff(app: LionFlowApp): Set<Int> = app.settings.raw(K_OFF).split(",").mapNotNull { it.toIntOrNull() }.toSet()
 
@@ -108,16 +116,19 @@ object SmartSchedule {
         val lat = st.lat ?: return null; val lon = st.lon ?: return null
         val weather = WeatherApi.forecast(lat, lon)
         val off = switchedOff(app).toMutableSet()
+        val why = try { JSONObject(app.settings.raw(K_WHY).ifBlank { "{}" }) } catch (_: Exception) { JSONObject() }
         var text: String? = null
         for ((p, at) in due) {
             val temp = weather.hours.minByOrNull { kotlin.math.abs(it.timeMillis - at) }?.tempC ?: weather.tempC
-            val tempOk = when (s.smartMode) { "below" -> temp <= s.smartTemp; "above" -> temp >= s.smartTemp; else -> true }
+            val tempOk = when (s.smartMode) { "below" -> temp < s.smartTemp; "above" -> temp > s.smartTemp; else -> true }
             val ok = tempOk && (!s.smartPlugged || st.plugged)
-            if (ok) off.remove(p.slot) else off.add(p.slot)
+            if (ok) { off.remove(p.slot); why.remove(p.slot.toString()) }
+            else { off.add(p.slot); why.put(p.slot.toString(), JSONObject().put("at", at).put("plug", tempOk).put("temp", Math.round(temp).toInt())) }
             evaluated.put(p.slot.toString(), at)
             text = (if (ok) "Pre-heat stays on at " else if (tempOk) "Pre-heat skipped (not plugged in) at " else "Pre-heat skipped at ") + no.lionflow.app.ui.l10n.TimeFmt.hm(p.hour, p.minute) + " (" + Math.round(temp) + "°C)"
         }
         app.settings.setRaw(K_EVAL, evaluated.toString())
+        app.settings.setRaw(K_WHY, why.toString())
         if (off == switchedOff(app)) return null
         app.settings.setRaw(K_OFF, off.joinToString(","))
         val send = effective(app, desired)

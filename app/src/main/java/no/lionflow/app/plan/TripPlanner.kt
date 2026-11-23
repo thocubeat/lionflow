@@ -26,6 +26,32 @@ class RouteData(
     val totalKm: Double get() = if (size == 0) 0.0 else km[size - 1]
     val totalMin: Double get() = if (size == 0) 0.0 else min[size - 1]
 
+    /** There and back on the same road: the route followed by itself in reverse (ferries included). */
+    fun roundTrip(): RouteData {
+        val n = size
+        if (n < 2) return this
+        val m = 2 * n - 1
+        val la = DoubleArray(m); val lo = DoubleArray(m); val k = DoubleArray(m); val t = DoubleArray(m); val v = DoubleArray(m)
+        for (i in 0 until n) { la[i] = lat[i]; lo[i] = lon[i]; k[i] = km[i]; t[i] = min[i]; v[i] = speed[i] }
+        for (j in n until m) {
+            val o = m - 1 - j
+            la[j] = lat[o]; lo[j] = lon[o]
+            k[j] = k[j - 1] + (km[o + 1] - km[o]); t[j] = t[j - 1] + (min[o + 1] - min[o]); v[j] = speed[o + 1]
+        }
+        val r = RouteData(la, lo, k, t, v)
+        r.ferries = ferries + ferries.map { f ->
+            val e = if (f.endIdx > f.idx) f.endIdx else f.idx + 1
+            f.copy(aLat = f.bLat, aLon = f.bLon, bLat = f.aLat, bLon = f.aLon, idx = (m - 1 - e).coerceAtLeast(0), endIdx = m - 1 - f.idx)
+        }
+        return r
+    }
+
+    /** The part of the route from point [from] to point [to] (inclusive), as a route of its own. */
+    fun slice(from: Int, to: Int) = RouteData(
+        lat.copyOfRange(from, to + 1), lon.copyOfRange(from, to + 1), km.copyOfRange(from, to + 1),
+        min.copyOfRange(from, to + 1), speed.copyOfRange(from, to + 1),
+    )
+
     /** Energy used up to each point (kWh) for a car with this consumption factor. */
     fun energy(factor: Double): DoubleArray {
         val e = DoubleArray(size)

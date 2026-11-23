@@ -76,32 +76,45 @@ private fun CarContext.listLimit(): Int = try {
  * The car's own "navigate" intent can end up back at LionFlow (it is a navigation-category app too),
  * so Google Maps is started directly through the phone, which Android Auto then shows on the car screen.
  */
-private var lastMapsOpen = 0L
+private var lastCarAsk = 0L
+private var lastPhoneStart = 0L
 
-internal fun openInGoogleMaps(ctx: CarContext, lat: Double, lon: Double, name: String, fromCar: Boolean = false) {
-    // One request at a time: if the car hands our own request back to us, a second start would loop and make the screen flicker forever.
+/** Starts Google Maps through the phone; Android Auto then shows it on the car screen. */
+private fun startMapsOnPhone(ctx: CarContext, lat: Double, lon: Double) {
     val now = System.currentTimeMillis()
-    if (now - lastMapsOpen < 6000) return
-    lastMapsOpen = now
-    val geo = android.net.Uri.parse("geo:$lat,$lon?q=$lat,$lon(${android.net.Uri.encode(name)})")
-    CarToast.makeText(ctx, tr("Navigating to") + " " + name, CarToast.LENGTH_SHORT).show()
-    // 1) Ask the car to open the navigation in Google Maps itself (the car host may start apps the phone side cannot).
-    if (!fromCar) {
-        try {
-            ctx.startCarApp(Intent(CarContext.ACTION_NAVIGATE, geo).setPackage("com.google.android.apps.maps"))
-            return
-        } catch (e: Exception) {
-            android.util.Log.w("LionFlowCar", "startCarApp(maps) failed", e)
-        }
-    }
-    // 2) Start Google Maps through the phone.
+    if (now - lastPhoneStart < 6000) return   // one at a time, so a request handed back and forth can't loop
+    lastPhoneStart = now
     try {
-        ctx.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse("google.navigation:q=$lat,$lon&mode=d"))
-            .setPackage("com.google.android.apps.maps").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        val i = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("google.navigation:q=$lat,$lon&mode=d"))
+            .setPackage("com.google.android.apps.maps").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        try { ctx.startActivity(i) } catch (_: Exception) { CarHub.app(ctx).startActivity(i) }
     } catch (e: Exception) {
         android.util.Log.w("LionFlowCar", "direct Google Maps start failed", e)
         CarToast.makeText(ctx, tr("Couldn't open navigation"), CarToast.LENGTH_LONG).show()
     }
+}
+
+/**
+ * Starts navigation to a place in Google Maps. First the car is asked to open it; when the car hands the request
+ * back to LionFlow (a navigation app too), or nothing has happened after a few seconds, Maps is started through the phone.
+ * [stillHere] says whether LionFlow is still showing (then Maps didn't open).
+ */
+internal fun openInGoogleMaps(ctx: CarContext, lat: Double, lon: Double, name: String, fromCar: Boolean = false, stillHere: (() -> Boolean)? = null) {
+    if (fromCar) { startMapsOnPhone(ctx, lat, lon); return }
+    val now = System.currentTimeMillis()
+    if (now - lastCarAsk < 3000) return
+    lastCarAsk = now
+    val geo = android.net.Uri.parse("geo:$lat,$lon?q=$lat,$lon(${android.net.Uri.encode(name)})")
+    if (name.isNotBlank()) CarToast.makeText(ctx, tr("Navigating to") + " " + name, CarToast.LENGTH_SHORT).show()
+    try {
+        ctx.startCarApp(Intent(CarContext.ACTION_NAVIGATE, geo))
+    } catch (e: Exception) {
+        android.util.Log.w("LionFlowCar", "startCarApp(navigate) failed", e)
+        startMapsOnPhone(ctx, lat, lon); return
+    }
+    if (stillHere != null) android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+        if (stillHere()) startMapsOnPhone(ctx, lat, lon)
+    }, 3500)
 }
 
 class MainSession : Session() {
@@ -219,6 +232,12 @@ class OverviewScreen(ctx: CarContext, private val guard: ParkGuard) : LiveScreen
         val km = week?.sumOf { it.distanceKm } ?: 0.0
         tile(1, if (trips == null) "Trips" else "7 days: ${fmtDistance(km, s)}", if (trips == null) "Loading…" else "${week?.size ?: 0} trips",
             R.drawable.ic_car_route, lion) { screenManager.push(TripsScreen(carContext)) }
+        if (no.lionflow.app.plan.SavedRoutes.fromPlay(carContext)) {
+            val saved = no.lionflow.app.plan.SavedRoutes.all(carContext)
+            if (saved.isNotEmpty()) tile(3, "Saved routes", if (saved.size == 1) saved[0].name else "${saved.size} routes", R.drawable.ic_car_route, lion) {
+                screenManager.push(SavedRoutesScreen(carContext))
+            }
+        }
         val fuelOnly = st.energyType == "Fuel"
         tile(2, if (fuelOnly) "Fuel stations" else if (st.energyType == "Hybrid") "Chargers & fuel" else "Chargers", "Nearest first",
             if (fuelOnly) R.drawable.ic_car_fuel else R.drawable.ic_car_charger, lion) { screenManager.push(ChargersScreen(carContext)) }
@@ -257,7 +276,7 @@ class ChargersScreen(ctx: CarContext) : LiveScreen(ctx) {
     }
 
     /** Opens Google Maps with the place as the destination. */
-    private fun navigateTo(ch: no.lionflow.app.api.Charger) = openInGoogleMaps(carContext, ch.lat, ch.lon, ch.name)
+    private fun navigateTo(ch: no.lionflow.app.api.Charger) = openInGoogleMaps(carContext, ch.lat, ch.lon, ch.name, stillHere = { lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) })
 
     override fun build(): Template {
         val s = CarHub.app(carContext).settings.value
@@ -370,4 +389,3 @@ class TripsScreen(ctx: CarContext) : Screen(ctx) {
         if (s.distanceUnit == "mi") String.format(java.util.Locale.US, "%.1f mi/kWh", 100 / kwhPer100Km / 1.609344)
         else String.format(java.util.Locale.US, "%.1f kWh/100 km", kwhPer100Km)
 }
-

@@ -6,6 +6,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.zIndex
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -98,7 +102,7 @@ private fun Plain(text: String, style: TextStyle, color: Color, modifier: Modifi
 /** Keeps touches on a panel from reaching the map under it. */
 fun Modifier.blockTouches(): Modifier = this.pointerInput(Unit) { detectTapGestures { } }
 
-fun placeName(p: Place): String = if (p.detail.isEmpty() && (p.name == "Car's position" || p.name == "My position")) L10n.tr(p.name) else p.name
+fun placeName(p: Place): String = if (p.detail.isEmpty() && (p.name == "Car's position" || p.name == "My position" || p.name == "Where the car was")) L10n.tr(p.name) else p.name
 
 private fun clockAt(p: Planner, minutes: Double): String {
     val cal = java.util.Calendar.getInstance().apply { timeInMillis = p.departMillis(); add(java.util.Calendar.MINUTE, minutes.roundToInt()) }
@@ -148,17 +152,60 @@ fun PlanForm(p: Planner, ui: UiState, s: AppSettings) {
     fun pick(place: Place?) { if (field == 0) p.from = place else if (field == 1) p.to = place else p.setVia(field - 2, place); done() }
 
     val carHere = ui.status?.lat != null
-    val fromText = p.from?.name ?: L10n.tr(if (carHere) "Car's position" else "My position")
+    val fromText = p.from?.let { placeName(it) } ?: L10n.tr(if (carHere) "Car's position" else "My position")
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 AddressRow(LfIcons.Car, c.orangeInk, "From", fromText, field == 0, query, requester, { query = it; p.search(it) }, { open(0) }, { done() })
-                p.vias.forEachIndexed { i, v ->
-                    AddressRow(LfIcons.Pin, c.muted, "Via", v?.name, field == i + 2, query, requester, { query = it; p.search(it) }, { open(i + 2) },
-                        { if (v == null) p.removeVia(i); done() }, onRemove = { p.removeVia(i); done() })
+                if (p.from != null && field < 0) Text(
+                    if (carHere) "Start from the car's position now" else "Start from my position now",
+                    style = Type.small.copy(fontWeight = FontWeight.SemiBold), color = c.accentInk,
+                    modifier = Modifier.clickable(role = Role.Button) { p.startAtCar() }.padding(horizontal = 4.dp, vertical = 6.dp),
+                )
+                // Stops on the way and the destination: hold one and drag it to change the order.
+                val count = p.vias.size + 1
+                var dragging by remember { mutableStateOf(-1) }
+                var dragY by remember { mutableStateOf(0f) }
+                var rowH by remember { mutableStateOf(1f) }
+                val gap = with(androidx.compose.ui.platform.LocalDensity.current) { 6.dp.toPx() }
+                val canDrag = field < 0 && p.to != null && p.vias.isNotEmpty()
+                fun target(): Int = if (dragging < 0) -1 else (dragging + Math.round(dragY / (rowH + gap))).coerceIn(0, count - 1)
+                for (pos in 0 until count) {
+                    val t = target()
+                    // While dragging, the other rows make room for the one being moved.
+                    val shift = when {
+                        dragging < 0 || pos == dragging -> 0f
+                        pos in (dragging + 1)..t -> -(rowH + gap)
+                        pos in t until dragging -> rowH + gap
+                        else -> 0f
+                    }
+                    val mod = Modifier
+                        .onGloballyPositioned { rowH = it.size.height.toFloat() }
+                        .zIndex(if (pos == dragging) 1f else 0f)
+                        .graphicsLayer {
+                            translationY = if (pos == dragging) dragY else shift
+                            if (pos == dragging) { scaleX = 1.02f; scaleY = 1.02f; shadowElevation = 12f }
+                        }
+                        .then(if (!canDrag) Modifier else Modifier.pointerInput(count, p.to) {
+                            detectDragGesturesAfterLongPress(
+                                onDragStart = { dragging = pos; dragY = 0f },
+                                onDrag = { ch, d -> ch.consume(); dragY += d.y },
+                                onDragEnd = { val to = target(); val from = dragging; dragging = -1; dragY = 0f; if (to >= 0 && to != from) p.moveStop(from, to) },
+                                onDragCancel = { dragging = -1; dragY = 0f },
+                            )
+                        })
+                    Box(mod) {
+                        if (pos < p.vias.size) {
+                            val i = pos; val v = p.vias[i]
+                            AddressRow(LfIcons.Pin, c.muted, "Via", v?.name, field == i + 2, query, requester, { query = it; p.search(it) }, { open(i + 2) },
+                                { if (v == null) p.removeVia(i); done() }, onRemove = { p.removeVia(i); done() })
+                        } else {
+                            AddressRow(LfIcons.Pin, c.accentInk, "Where to?", p.to?.name, field == 1, query, requester, { query = it; p.search(it) }, { open(1) }, { if (p.to != null) done() else { query = ""; p.clearSearch() } })
+                        }
+                    }
                 }
-                AddressRow(LfIcons.Pin, c.accentInk, "Where to?", p.to?.name, field == 1, query, requester, { query = it; p.search(it) }, { open(1) }, { if (p.to != null) done() else { query = ""; p.clearSearch() } })
+                if (canDrag) Text("Hold and drag a stop to change the order", style = Type.tiny, color = c.muted, modifier = Modifier.padding(horizontal = 4.dp))
                 if (field < 0 && p.vias.size < 3) Text(
                     "Add a stop on the way", style = Type.small.copy(fontWeight = FontWeight.SemiBold), color = c.accentInk,
                     modifier = Modifier.clickable(role = Role.Button) { p.addVia(); open(p.vias.size + 1) }.padding(horizontal = 4.dp, vertical = 6.dp),
@@ -194,11 +241,44 @@ fun PlanForm(p: Planner, ui: UiState, s: AppSettings) {
             ViaStays(p)
             BatteryOptions(p)
             PrimaryButton(if (p.plan != null) "Plan again" else "Plan trip", Modifier.fillMaxWidth(), icon = LfIcons.Route, enabled = p.to != null && p.busy == null) { p.go() }
+            if (p.plan == null && p.busy == null) SavedTrips(p, s)
         }
         p.busy?.let { msg ->
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) { Busy(); Text(msg, style = Type.small, color = c.text2) }
         }
         p.error?.let { Text(it, style = Type.small, color = c.danger) }
+    }
+}
+
+@Composable
+private fun SaveChoice(title: String, text: String, onClick: () -> Unit) {
+    val c = LocalLf.current
+    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(c.raised).clickable(role = Role.Button, onClick = onClick).padding(14.dp)) {
+        Text(title, style = Type.body.copy(fontWeight = FontWeight.SemiBold), color = c.text)
+        Text(text, style = Type.small, color = c.muted)
+    }
+}
+
+/** Trips saved earlier: tap one to plan it again, the cross deletes it. */
+@Composable
+private fun SavedTrips(p: Planner, s: AppSettings) {
+    val c = LocalLf.current
+    val list = p.savedTrips.filter { it.setup != null }
+    if (list.isEmpty()) return
+    Text("Saved trips", style = Type.label, color = c.text, modifier = Modifier.padding(start = 4.dp, top = 8.dp))
+    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(c.raised).padding(vertical = 4.dp)) {
+        for (t in list) {
+            Row(Modifier.fillMaxWidth().clickable(role = Role.Button) { p.openTrip(t) }.padding(start = 14.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                LfIcon(LfIcons.Route, c.accentInk, 18.dp)
+                Column(Modifier.weight(1f).padding(start = 10.dp)) {
+                    Plain(t.name, Type.body, c.text)
+                    Plain(fmtDistance(t.totalKm, s) + " · " + L10n.tr(when (t.stops.size) { 0 -> "no charging stops"; 1 -> "1 charging stop"; else -> "${t.stops.size} charging stops" }), Type.tiny, c.muted)
+                }
+                Box(Modifier.size(44.dp).clip(CircleShape).clickable(role = Role.Button) { p.deleteTrip(t.id) }
+                    .semantics { contentDescription = L10n.tr("Delete") }, contentAlignment = Alignment.Center) { LfIcon(LfIcons.Close, c.muted, 16.dp) }
+            }
+        }
     }
 }
 
@@ -271,8 +351,8 @@ private fun BatteryOptions(p: Planner) {
         }
         if (p.roundTrip) {
             val m = p.destStay
-            OptionRow(p.to?.let { "Stay at ${placeName(it)}" } ?: "Stay at the destination", "$m min",
-                { p.changeDestStay(m - if (m > 30) 15 else 5) }, { p.changeDestStay(m + if (m >= 30) 15 else 5) })
+            OptionRow(p.to?.let { "Stay at ${placeName(it)}" } ?: "Stay at the destination", stayText(m),
+                { p.changeDestStay(stayLess(m)) }, { p.changeDestStay(stayMore(m)) })
         }
         val dep = p.departAt?.takeIf { it > System.currentTimeMillis() }
         val leaveText = if (dep == null) L10n.tr("Now") else {
@@ -292,6 +372,10 @@ private fun BatteryOptions(p: Planner) {
         }
         if (pickTime) DepartPicker(p.departAt?.takeIf { it > System.currentTimeMillis() }, { p.setDepart(it); pickTime = false }, { pickTime = false })
         OptionRow(if (p.startPct == null) "Start with (car now)" else "Start with", "$start %", { p.setStart(((start - 1) / 5) * 5) }, { p.setStart((start / 5 + 1) * 5) })
+        if (p.startPct != null) Text(
+            "Use the car's battery % now", style = Type.small.copy(fontWeight = FontWeight.SemiBold), color = c.accentInk,
+            modifier = Modifier.clickable(role = Role.Button) { p.setStart(null) }.padding(start = 14.dp, end = 14.dp, bottom = 8.dp),
+        )
         OptionRow("Never below", "${p.minPct} %", { p.setMin(p.minPct - 5) }, { p.setMin(p.minPct + 5) })
         OptionRow("Charge to", "${p.targetPct} %", { p.setTarget(p.targetPct - 5) }, { p.setTarget(p.targetPct + 5) })
     }
@@ -328,10 +412,15 @@ private fun ViaStays(p: Planner) {
     Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(c.raised).padding(vertical = 4.dp)) {
         for ((i, v) in rows) {
             val m = p.stays.getOrElse(i) { 0 }
-            OptionRow("Stay at ${placeName(v!!)}", "$m min", { p.setStay(i, m - if (m > 30) 15 else 5) }, { p.setStay(i, m + if (m >= 30) 15 else 5) })
+            OptionRow("Stay at ${placeName(v!!)}", stayText(m), { p.setStay(i, stayLess(m)) }, { p.setStay(i, stayMore(m)) })
         }
     }
 }
+
+/** Stay steps: 5 min up to 30, 10 min up to 1 h, then 1 h 30 min and half hours (2 h, 2 h 30 min …). */
+private fun stayMore(m: Int) = when { m < 30 -> (m / 5 + 1) * 5; m < 60 -> (m / 10 + 1) * 10; m < 90 -> 90; else -> (m / 30 + 1) * 30 }
+private fun stayLess(m: Int) = when { m <= 30 -> ((m - 1) / 5) * 5; m <= 60 -> ((m - 1) / 10) * 10; m <= 90 -> 60; else -> ((m - 1) / 30) * 30 }.coerceAtLeast(0)
+private fun stayText(m: Int) = if (m < 60) "$m min" else if (m % 60 == 0) "${m / 60}h" else "${m / 60}h ${m % 60}m"
 
 @Composable
 private fun OptionRow(label: String, value: String, onMinus: () -> Unit, onPlus: () -> Unit) {
@@ -381,7 +470,7 @@ fun PlanResult(p: Planner, s: AppSettings, options: Boolean, onShow: (Double, Do
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(dur(plan.totalMin), style = Type.stat.copy(fontSize = 26.sp), color = c.text, modifier = Modifier.weight(1f))
                 if (plan.ok) {
-                    val cal = java.util.Calendar.getInstance().apply { timeInMillis = p.departMillis(); add(java.util.Calendar.MINUTE, plan.totalMin.roundToInt()) }
+                    val cal = java.util.Calendar.getInstance().apply { timeInMillis = p.departMillis(); add(java.util.Calendar.MINUTE, (plan.totalMin + p.farStay).roundToInt()) }
                     Text("Arrive " + TimeFmt.hm(cal.get(java.util.Calendar.HOUR_OF_DAY), cal.get(java.util.Calendar.MINUTE)), style = Type.label, color = c.text2)
                 }
             }
@@ -424,9 +513,9 @@ fun PlanResult(p: Planner, s: AppSettings, options: Boolean, onShow: (Double, Do
         while (vi < vias.size) { ViaRow(p, vias[vi].first, vias[vi].third, s, onShow); vi++ }
         if (to != null) {
             // On a round trip: how long the drive back takes (from leaving the destination).
-            val back = if (p.planRound) p.planVias.lastOrNull()?.let { d -> p.minutesTo(d.lat, d.lon)?.let { plan.totalMin - it - p.planStays.lastOrNull().let { s0 -> s0 ?: 0 } } } else null
+            val back = if (p.planRound) p.planVias.lastOrNull()?.let { d -> p.minutesTo(d.lat, d.lon)?.let { plan.totalMin - it } } else null
             EndRow(c.accentInk, placeName(to), to.detail, if (plan.ok) "${plan.arrivePct.roundToInt()} %" else "—",
-                back?.let { L10n.tr("Back: {0}").replace("{0}", dur(it)) + " · " + L10n.tr("arrive {0}").replace("{0}", clockAt(p, plan.totalMin)) }) { onShow(to.lat, to.lon) }
+                back?.let { L10n.tr("Back: {0}").replace("{0}", dur(it)) + " · " + L10n.tr("arrive {0}").replace("{0}", clockAt(p, plan.totalMin + p.farStay)) }) { onShow(to.lat, to.lon) }
         }
 
         if (options) { ViaStays(p); BatteryOptions(p) }
@@ -438,6 +527,23 @@ fun PlanResult(p: Planner, s: AppSettings, options: Boolean, onShow: (Double, Do
             platform.openUrl(
                 "https://www.google.com/maps/dir/?api=1&travelmode=driving&origin=${from.lat},${from.lon}&destination=${to.lat},${to.lon}" +
                     if (stops.isNotEmpty()) "&waypoints=$stops" else "",
+            )
+        }
+        if (plan.ok) {
+            var saved by remember(plan) { mutableStateOf(false) }
+            var ask by remember { mutableStateOf(false) }
+            no.lionflow.app.ui.components.SecondaryButton(if (saved) "Trip saved" else "Save trip", Modifier.fillMaxWidth()) { if (!saved) ask = true }
+            if (ask) androidx.compose.material3.AlertDialog(
+                onDismissRequest = { ask = false }, containerColor = c.card,
+                title = { Text("Save trip", color = c.text) },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        SaveChoice("Exactly as planned now", "Opens at once with this route, these stops, times and battery %.") { ask = false; if (p.saveTrip(true)) saved = true }
+                        SaveChoice("Plan again when opened", "Keeps the places. Opening it plans again from the car's position and battery % at that time.") { ask = false; if (p.saveTrip(false)) saved = true }
+                    }
+                },
+                confirmButton = {},
+                dismissButton = { androidx.compose.material3.TextButton(onClick = { ask = false }) { Text("Cancel", color = c.muted) } },
             )
         }
         if (p.changed) Text("Undo my changes to the stops", style = Type.small.copy(fontWeight = FontWeight.SemiBold), color = c.accentInk, modifier = Modifier.clickable { p.resetStops() })

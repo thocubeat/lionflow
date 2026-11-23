@@ -912,3 +912,46 @@ What's new	Nouveautés	Neuigkeiten	Novedades	Nyheter
 Everything added and fixed, version by version	Tout ce qui a été ajouté et corrigé, version par version	Alles Neue und Behobene, Version für Version	Todo lo añadido y corregido, versión a versión	Alt som er lagt til og rettet, versjon for versjon
 installed	installée	installiert	instalada	installert
 Active: the car is set to charge to 100 %. If your phone is offline or LionFlow can't run in the background, it will not stop at {0} %. After a stop, the car stays like this until you unplug, then goes back to its daily limit.	Actif : la voiture est réglée pour charger à 100 %. Si votre téléphone est hors ligne ou si LionFlow ne peut pas tourner en arrière-plan, elle ne s'arrêtera pas à {0} %. Après un arrêt, la voiture reste ainsi jusqu'au débranchement, puis revient à sa limite quotidienne.	Aktiv: Das Auto ist auf Laden bis 100 % eingestellt. Ist Ihr Telefon offline oder darf LionFlow nicht im Hintergrund laufen, stoppt es nicht bei {0} %. Nach einem Stopp bleibt das Auto so, bis Sie ausstecken, dann geht es zurück auf sein Tageslimit.	Activo: el coche está configurado para cargar al 100 %. Si tu teléfono está sin conexión o LionFlow no puede funcionar en segundo plano, no parará en el {0} %. Tras una parada, el coche sigue así hasta que desenchufes y luego vuelve a su límite diario.	Aktiv: bilen er satt til å lade til 100 %. Er telefonen uten nett eller LionFlow ikke får kjøre i bakgrunnen, stopper den ikke på {0} %. Etter et stopp står bilen slik til du kobler fra, så går den tilbake til den daglige grensen.
+not plugged in	pas branchée	nicht angesteckt	no enchufado	ikke koblet til lader
+forecast {0}	prévision {0}	Vorhersage {0}	previsión {0}	varslet {0}
+Skipped last time	Ignoré la dernière fois	Letztes Mal übersprungen	Omitida la última vez	Hoppet over sist
+Checked again about an hour before the next one	Vérifié à nouveau environ une heure avant le prochain	Wird etwa eine Stunde vor dem nächsten erneut geprüft	Se vuelve a comprobar una hora antes de la siguiente	Sjekkes på nytt omtrent en time før neste
+Save to Android Auto	Enregistrer pour Android Auto	Für Android Auto speichern	Guardar para Android Auto	Lagre til Android Auto
+Saved to Android Auto	Enregistré pour Android Auto	Für Android Auto gespeichert	Guardado para Android Auto	Lagret til Android Auto
+Saved routes	Itinéraires enregistrés	Gespeicherte Routen	Rutas guardadas	Lagrede ruter
+Plan a trip on your phone and tap Save to Android Auto.	Planifiez un trajet sur votre téléphone et touchez Enregistrer pour Android Auto.	Plane eine Fahrt auf dem Handy und tippe auf Für Android Auto speichern.	Planifica un viaje en el teléfono y toca Guardar para Android Auto.	Planlegg en tur på telefonen og trykk Lagre til Android Auto.
+This route was deleted.	Cet itinéraire a été supprimé.	Diese Route wurde gelöscht.	Esta ruta se eliminó.	Denne ruten ble slettet.
+{0} left	{0} restants	noch {0}	quedan {0}	{0} igjen
+The car is {0} from the route	La voiture est à {0} de l'itinéraire	Das Auto ist {0} von der Route entfernt	El coche está a {0} de la ruta	Bilen er {0} fra ruten
+No charging stops left	Plus d'arrêt de recharge	Keine Ladestopps mehr	No quedan paradas de carga	Ingen ladestopp igjen
+1 charging stop left	1 arrêt de recharge restant	Noch 1 Ladestopp	Queda 1 parada de carga	1 ladestopp igjen
+{0} charging stops left	{0} arrêts de recharge restants	Noch {0} Ladestopps	Quedan {0} paradas de carga	{0} ladestopp igjen
+Next stop: {0}	Prochain arrêt : {0}	Nächster Stopp: {0}	Próxima parada: {0}	Neste stopp: {0}
+About {0} % at the next stop	Environ {0} % au prochain arrêt	Etwa {0} % am nächsten Stopp	Unos {0} % en la próxima parada	Ca. {0} % ved neste stopp
+About {0} % at the end	Environ {0} % à l'arrivée	Etwa {0} % am Ziel	Unos {0} % al final	Ca. {0} % ved målet
+From the battery now: {0} %	D'après la batterie actuelle : {0} %	Ausgehend vom Akku jetzt: {0} %	Según la batería actual: {0} %	Ut fra batteriet nå: {0} %
+no charging stops	aucun arrêt de recharge	keine Ladestopps	sin paradas de carga	ingen ladestopp
+1 charging stop	1 arrêt de recharge	1 Ladestopp	1 parada de carga	1 ladestopp
+{0} charging stops	{0} arrêts de recharge	{0} Ladestopps	{0} paradas de carga	{0} ladestopp
+{0} routes	{0} itinéraires	{0} Routen	{0} rutas	{0} ruter
+Hold and drag a stop to change the order	Maintenez et faites glisser un arrêt pour changer l'ordre	Halte einen Stopp gedrückt und ziehe ihn, um die Reihenfolge zu ändern	Mantén pulsada una parada y arrástrala para cambiar el orden	Hold inne og dra et stopp for å endre rekkefølgen
+Save trip	Enregistrer le trajet	Fahrt speichern	Guardar viaje	Lagre tur
+Trip saved	Trajet enregistré	Fahrt gespeichert	Viaje guardado	Turen er lagret
+Saved trips	Trajets enregistrés	Gespeicherte Fahrten	Viajes guardados	Lagrede turer
+Plan a trip on your phone and tap Save trip.	Planifiez un trajet sur votre téléphone et touchez Enregistrer le trajet.	Plane eine Fahrt auf dem Handy und tippe auf Fahrt speichern.	Planifica un viaje en el teléfono y toca Guardar viaje.	Planlegg en tur på telefonen og trykk Lagre tur.
+Where the car was	Là où était la voiture	Wo das Auto stand	Donde estaba el coche	Der bilen sto
+Start from the car's position now	Partir de la position actuelle de la voiture	Vom jetzigen Standort des Autos starten	Salir desde la posición actual del coche	Start fra der bilen står nå
+Start from my position now	Partir de ma position actuelle	Von meinem jetzigen Standort starten	Salir desde mi posición actual	Start fra der jeg er nå
+Couldn't open the saved trip	Impossible d'ouvrir le trajet enregistré	Die gespeicherte Fahrt ließ sich nicht öffnen	No se pudo abrir el viaje guardado	Kunne ikke åpne den lagrede turen
+Exactly as planned now	Exactement comme prévu maintenant	Genau wie jetzt geplant	Exactamente como está planificado	Akkurat som planlagt nå
+Opens at once with this route, these stops, times and battery %.	S'ouvre aussitôt avec cet itinéraire, ces arrêts, ces heures et ces % de batterie.	Öffnet sofort mit dieser Route, diesen Stopps, Zeiten und Akku-%.	Se abre al instante con esta ruta, estas paradas, horas y % de batería.	Åpnes med en gang med denne ruten, stoppene, tidene og batteriprosenten.
+Plan again when opened	Replanifier à l'ouverture	Beim Öffnen neu planen	Planificar de nuevo al abrir	Planlegg på nytt når den åpnes
+Keeps the places. Opening it plans again from the car's position and battery % at that time.	Garde les lieux. À l'ouverture, le trajet est replanifié depuis la position et la batterie de la voiture à ce moment-là.	Behält die Orte. Beim Öffnen wird ab Standort und Akkustand des Autos zu dem Zeitpunkt neu geplant.	Guarda los lugares. Al abrirlo se planifica de nuevo desde la posición y la batería del coche en ese momento.	Tar vare på stedene. Når den åpnes, planlegges turen på nytt fra der bilen står og batteriprosenten da.
+Use the car's battery % now	Utiliser la batterie actuelle de la voiture	Akkustand des Autos jetzt verwenden	Usar la batería actual del coche	Bruk bilens batteriprosent nå
+left	restants	übrig	restantes	igjen
+≈ {0} · arrive {1}	≈ {0} · arrivée {1}	≈ {0} · Ankunft {1}	≈ {0} · llegada {1}	≈ {0} · fremme {1}
+Expected at the next stop	Prévu au prochain arrêt	Erwartet am nächsten Stopp	Previsto en la próxima parada	Ventet ved neste stopp
+Expected at the end	Prévu à l'arrivée	Erwartet am Ziel	Previsto al final	Ventet ved målet
+Battery now {0}	Batterie actuelle {0}	Akku jetzt {0}	Batería ahora {0}	Batteri nå {0}
+Straight to the destination	Directement à destination	Direkt zum Ziel	Directo al destino	Rett til målet
+Getting the car's status…	Récupération de l'état de la voiture…	Status des Autos wird geholt…	Obteniendo el estado del coche…	Henter bilens status…

@@ -80,7 +80,9 @@ class Planner(
     /** When the trip starts; null = now. A time that has passed counts as now. */
     var departAt by mutableStateOf<Long?>(null)
         private set
-    fun departMillis(): Long = departAt?.takeIf { it > System.currentTimeMillis() } ?: System.currentTimeMillis()
+    /** The departure time of a saved trip that is being shown as it was planned. */
+    private var savedDepart: Long? = null
+    fun departMillis(): Long = savedDepart ?: departAt?.takeIf { it > System.currentTimeMillis() } ?: System.currentTimeMillis()
 
     /** A car ferry on the route with the wait for it: when it leaves (if the timetable is known) and minutes to wait. */
     class FerryInfo(val ferry: Ferry, val waitMin: Int, val departMs: Long?)
@@ -88,7 +90,7 @@ class Planner(
         private set
 
     /** One of the routes found: the road, and its plan once that is worked out (null until then). */
-    class AltRoute(val route: RouteData, val plan: Plan?, val raw: List<RawCharger>?)
+    class AltRoute(val route: RouteData, val plan: Plan?, val raw: List<RawCharger>?, val full: Boolean = true)
     var alts by mutableStateOf<List<AltRoute>>(emptyList())
         private set
     var altIndex by mutableStateOf(0)
@@ -122,6 +124,11 @@ class Planner(
     /** The charger lookup, started as soon as a long route is known so it runs while the first plan is worked out. */
     private var prefetch: kotlinx.coroutines.Deferred<Result<List<RawCharger>>>? = null
     private var prefetchFor: RouteData? = null
+    private var prefetchFull = true
+    /** True when the chargers loaded for this route cover all of it, false when only the stretches where a stop could be needed. */
+    private var corridorFull = true
+    private var condJob: kotlinx.coroutines.Deferred<Unit>? = null
+    private var condFor: RouteData? = null
     private var priceCountry = ""
     private val prices by lazy {
         Prices(try { app.assets.open("charge_prices.json").bufferedReader().use { it.readText() } } catch (_: Exception) { "{}" })
@@ -195,6 +202,7 @@ class Planner(
     fun go() {
         val b = to ?: return
         planJob?.cancel()
+        savedDepart = null
         planJob = scope.launch {
             error = null
             val a = origin()
@@ -204,14 +212,23 @@ class Planner(
                 val via = vias.filterNotNull().take(3)
                 val stay = vias.indices.filter { vias[it] != null }.take(3).map { stays.getOrElse(it) { 0 } }
                 val round = roundTrip && Geo.km(a.lat, a.lon, b.lat, b.lon) > 0.3
-                val rs = if (round) PlanApi.routes(a, a, via + b) else PlanApi.routes(a, b, via)
+                // A round trip with no stops on the way is the one-way route there and the same road back: half the work.
+                val rs = if (round && via.isEmpty()) PlanApi.routes(a, b, emptyList()).map { it.roundTrip() }
+                    else if (round) PlanApi.routes(a, a, via + b) else PlanApi.routes(a, b, via)
                 val r = rs[0]
                 altJob?.cancel(); alts = rs.map { AltRoute(it, null, null) }; altIndex = 0; ferryInfo = emptyList(); userPicked = false; autoPicked = false
                 edits = emptyList(); excluded = emptySet(); chargers = emptyList(); corridorFor = null; corridorRaw = emptyList(); viaRawKey = ""; viaRaw = emptyList()
                 route = r; planFrom = a; planRound = round
                 if (round) { planTo = a; planVias = via + b; planStays = stay + destStay } else { planTo = b; planVias = via; planStays = stay }
-                prefetch?.cancel(); prefetch = null; prefetchFor = null
-                if (r.totalKm > 120) { prefetchFor = r; prefetch = scope.async(Dispatchers.IO) { runCatching { PlanApi.chargers(r, nobilKey()) } } }
+                prefetch?.cancel(); prefetch = null; prefetchFor = null; condJob?.cancel()
+                if (r.totalKm > 120) {
+                    val (o0, m0) = context()
+                    val zones = needZones(r, o0, m0)
+                    prefetchFor = r; prefetchFull = zones == null
+                    prefetch = scope.async(Dispatchers.IO) { runCatching { PlanApi.chargers(r, nobilKey(), zones) } }
+                }
+                // Hills and weather are fetched at the same time as the chargers, not one after the other.
+                condFor = r; condJob = scope.async { ensureConditions(r) }
                 priceCountry = if (a.country.isNotBlank() && a.country.equals(b.country, ignoreCase = true)) a.country else ""
                 remember(b); from?.let { remember(it) }; via.forEach { remember(it) }
                 compute()
@@ -228,6 +245,7 @@ class Planner(
     /** Plans again after a change to the numbers or the stops (no new route). */
     fun recompute() {
         if (route == null) return
+        savedDepart = null
         planJob?.cancel()
         planJob = scope.launch {
             error = null
@@ -292,7 +310,9 @@ class Planner(
             while (si < byIdx.size && byIdx[si].charger.idx <= i) { added += byIdx[si].leavePct - byIdx[si].arrivePct; si++ }
             soc[i] = (o.startPct - (energy[i] - energy[0]) / o.batteryKwh * 100 + added).coerceIn(0.0, 100.0)
         }
-        return p.copy(totalMin = p.totalMin + stays.sum() - overlap + extra, socAt = soc, usedKwh = energy.last() - energy[0]) to infos
+        // A round trip's total is the driving, charging and ferries: the stay at the far end is left out.
+        val farStay = if (planRound) stays.lastOrNull() ?: 0 else 0
+        return p.copy(totalMin = p.totalMin + stays.sum() - farStay - overlap + extra, socAt = soc, usedKwh = energy.last() - energy[0]) to infos
     }
 
     /** The stops the via places call for: a charger within 1 km of a via stop with a stay is used for that stay, and any charger that close is preferred. */
@@ -305,6 +325,48 @@ class Planner(
             // Only preferred when a stop is needed anyway: a stay never forces charging (the tip under the stop offers it).
         }
         return implicit to prefer
+    }
+
+    /**
+     * The stretches of [r] (point ranges) where a charging stop could be needed. Where the battery is surely above
+     * about half, no charger is looked up. Null = look at the whole route.
+     */
+    private fun needZones(r: RouteData, o: Options, m: Consumption.Model): List<IntRange>? {
+        val last = r.size - 1
+        if (last < 3 || o.targetPct <= 55) return null
+        val perPct = o.batteryKwh / 100.0
+        val hi = r.energy(m.factor * 1.3)   // uses more: the battery is down to half sooner
+        val lo = r.energy(m.factor * 0.8)   // uses less: the car gets furthest before it must stop
+        fun reach(e: DoubleArray, from: Int, soc: Double, limit: Double): Int {
+            var i = from
+            while (i < last && soc - (e[i] - e[from]) / perPct >= limit) i++
+            return i
+        }
+        val raw = ArrayList<IntRange>()
+        var a = 0; var b = 0; var sa = o.startPct; var sb = o.startPct
+        var n = 0
+        while (n++ < 12) {
+            val na = if (sa < 50.0) a else reach(hi, a, sa, 50.0)
+            if (na >= last) break
+            val nb = reach(lo, maxOf(b, na), sb, o.minPct + 2.0)
+            raw += na..nb
+            if (nb >= last) break
+            a = na; b = nb
+            sa = minOf(o.targetPct.toDouble(), 60.0); sb = o.targetPct.toDouble()
+        }
+        if (raw.isEmpty()) return emptyList()   // the battery stays high all the way
+        // Some room on each side, then join stretches that touch.
+        val padKm = 15.0
+        val padded = raw.map { z ->
+            var f = z.first; while (f > 0 && r.km[z.first] - r.km[f] < padKm) f--
+            var t = z.last; while (t < last && r.km[t] - r.km[z.last] < padKm) t++
+            f..t
+        }.sortedBy { it.first }
+        val out = ArrayList<IntRange>()
+        for (z in padded) {
+            if (out.isNotEmpty() && z.first <= out.last().last) out[out.size - 1] = out.last().first..maxOf(out.last().last, z.last) else out += z
+        }
+        return if (out.size == 1 && out[0].first <= 0 && out[0].last >= last) null else out
     }
 
     /** Hills, wind and temperature along the route, for the hour of departure (looked up once per route and hour; a failed lookup is left out). */
@@ -329,12 +391,14 @@ class Planner(
     private suspend fun compute() {
         val r = route ?: return
         val (o, m) = context()
+        if (condFor === r) condJob?.let { runCatching { it.await() } }
         var res = solveHere(r, o, m)
         var changed = false
         if (!res.first.ok && corridorFor !== r) {
             // The car can't make it in one go: look up the fast chargers along the way (once per route).
             busy = "Finding chargers along the route…"
-            corridorRaw = if (prefetchFor === r && prefetch != null) prefetch!!.await().getOrThrow() else PlanApi.chargers(r, nobilKey())
+            if (prefetchFor === r && prefetch != null) { corridorRaw = prefetch!!.await().getOrThrow(); corridorFull = prefetchFull }
+            else { val z = needZones(r, o, m); corridorRaw = PlanApi.chargers(r, nobilKey(), z); corridorFull = z == null }
             corridorFor = r; changed = true
         }
         // Chargers right by every stop on the way (best effort): fewer separate stops, and a place to charge during a stay.
@@ -349,8 +413,15 @@ class Planner(
             chargers = withContext(Dispatchers.Default) { place(corridorRaw + viaRaw, r) }
             res = solveHere(r, o, m)
         }
+        // Not enough with the chargers on the likely stretches: look at the whole route.
+        if (!res.first.ok && corridorFor === r && !corridorFull) {
+            busy = "Finding more chargers…"
+            corridorRaw = PlanApi.chargers(r, nobilKey()); corridorFull = true
+            chargers = withContext(Dispatchers.Default) { place(corridorRaw + viaRaw, r) }
+            res = solveHere(r, o, m)
+        }
         plan = res.first; ferryInfo = res.second
-        alts = alts.mapIndexed { i, a -> if (i == altIndex) AltRoute(a.route, res.first, if (corridorFor === r) corridorRaw else null) else a }
+        alts = alts.mapIndexed { i, a -> if (i == altIndex) AltRoute(a.route, res.first, if (corridorFor === r) corridorRaw else null, corridorFull) else a }
     }
 
     /** Works out the other routes in the background, so they can be compared with the chosen one. */
@@ -358,23 +429,127 @@ class Planner(
         altJob?.cancel()
         if (alts.size < 2) return
         altJob = scope.launch {
+            // The chargers for every route are asked for at once; the plans are worked out one by one.
+            val (o0, m0) = context()
+            val fetches = alts.mapIndexed { i, a ->
+                if (i == altIndex || a.plan != null || a.raw != null) null
+                else { val z = needZones(a.route, o0, m0); z to scope.async(Dispatchers.IO) { kotlinx.coroutines.withTimeoutOrNull(25_000L) { PlanApi.chargers(a.route, nobilKey(), z) } } }
+            }
             for (i in alts.indices) {
                 val a = alts[i]
                 if (i == altIndex || a.plan != null) continue
                 try {
                     val (o, m) = context()
-                    val raw = a.raw ?: kotlinx.coroutines.withTimeoutOrNull(25_000L) { PlanApi.chargers(a.route, nobilKey()) }
-                    val ch = withContext(Dispatchers.Default) { place(raw.orEmpty(), a.route) }
-                    val res = solve(a.route, o, m, ch, emptyList(), emptySet(), emptySet(), planVias, planStays)
-                    alts = alts.mapIndexed { k, x -> if (k == i) AltRoute(a.route, res.first, raw) else x }
+                    var full = a.raw == null || a.full
+                    var raw = a.raw ?: fetches[i]?.let { (z, d) -> full = z == null; d.await() }
+                    var ch = withContext(Dispatchers.Default) { place(raw.orEmpty(), a.route) }
+                    var res = solve(a.route, o, m, ch, emptyList(), emptySet(), emptySet(), planVias, planStays)
+                    if (!res.first.ok && !full) {
+                        raw = kotlinx.coroutines.withTimeoutOrNull(25_000L) { PlanApi.chargers(a.route, nobilKey()) }; full = true
+                        ch = withContext(Dispatchers.Default) { place(raw.orEmpty(), a.route) }
+                        res = solve(a.route, o, m, ch, emptyList(), emptySet(), emptySet(), planVias, planStays)
+                    }
+                    val fRaw = raw; val fFull = full
+                    alts = alts.mapIndexed { k, x -> if (k == i) AltRoute(a.route, res.first, fRaw, fFull) else x }
                 } catch (e: CancellationException) { throw e } catch (e: Exception) { }
             }
             pickFewestStops()
         }
     }
 
+    /** Trips saved from the planner (also shown in Android Auto). */
+    var savedTrips by mutableStateOf(SavedRoutes.all(app))
+        private set
+    init { scope.launch { SavedRoutes.changes.collect { savedTrips = SavedRoutes.all(app) } } }
+
+    private fun pj(p: Place) = JSONObject().put("n", p.name).put("d", p.detail).put("la", p.lat).put("lo", p.lon).put("c", p.country)
+    private fun pf(o: JSONObject) = Place(o.optString("n"), o.optString("d"), o.getDouble("la"), o.getDouble("lo"), o.optString("c"))
+
+    /**
+     * Saves the plan that is showing. With [asPlanned] the whole plan is kept and opens exactly as it is now;
+     * otherwise only the places, and it is planned again from the car's position and charge when opened.
+     */
+    fun saveTrip(asPlanned: Boolean = true): Boolean {
+        val r = route ?: return false; val p = plan ?: return false
+        if (!p.ok) return false
+        val dest = if (planRound) planVias.lastOrNull() else planTo
+        fun nm(pl: Place?) = pl?.let { if (it.detail.isEmpty() && (it.name == "Car's position" || it.name == "My position")) no.lionflow.app.ui.l10n.L10n.tr(it.name) else it.name } ?: ""
+        val name = if (planRound) nm(dest) + " ⇄" else nm(planFrom) + " → " + nm(dest)
+        val setup = JSONObject().put("round", planRound).put("destStay", destStay)
+            .put("vias", JSONArray().apply { (if (planRound) planVias.dropLast(1) else planVias).forEach { put(pj(it)) } })
+            .put("stays", JSONArray().apply { (if (planRound) planStays.dropLast(1) else planStays).forEach { put(it) } })
+        from?.let { setup.put("from", pj(it)) }
+        dest?.let { setup.put("to", pj(it)) }
+        // The plan in full, so it opens exactly as it is now, without asking any server.
+        if (asPlanned) setup.put("full", JSONObject()
+            .put("route", PlanStore.route(r)).put("plan", PlanStore.plan(p))
+            .put("planFrom", planFrom?.let { pj(it) }).put("planTo", planTo?.let { pj(it) })
+            .put("planVias", JSONArray().apply { planVias.forEach { put(pj(it)) } })
+            .put("planStays", JSONArray().apply { planStays.forEach { put(it) } })
+            .put("depart", departMillis()).put("startPct", startPct ?: -1).put("minPct", minPct).put("targetPct", targetPct)
+            .put("ferries", JSONArray().apply { ferryInfo.forEach { put(JSONObject().put("i", it.ferry.idx).put("w", it.waitMin).put("d", it.departMs ?: -1L)) } }))
+        SavedRoutes.add(app, SavedRoutes.build(name, r, r.energy(model.factor), p, batteryKwh(), setup))
+        savedTrips = SavedRoutes.all(app)
+        return true
+    }
+
+    /** Start from where the car is now (or this phone, without the car's position). Plans again when a plan is showing. */
+    fun startAtCar() { from = null; if (route != null) go() }
+
+    fun deleteTrip(id: Long) { SavedRoutes.delete(app, id); savedTrips = SavedRoutes.all(app) }
+
+    /** Shows a saved trip exactly as it was planned: same route, stops, start and times. Nothing is looked up again. */
+    fun openTrip(t: SavedRoutes.Saved) {
+        val su = t.setup ?: return
+        val full = su.optJSONObject("full")
+        val dest = su.optJSONObject("to") ?: return
+        if (full == null) {   // saved to be planned again: from where the car is now (unless another start was chosen), with its charge now
+            from = su.optJSONObject("from")?.let { pf(it) }; to = pf(dest)
+            startPct = null; departAt = null; savedDepart = null
+            val vs = su.optJSONArray("vias"); val ss = su.optJSONArray("stays")
+            vias = if (vs == null) emptyList() else (0 until vs.length()).map { pf(vs.getJSONObject(it)) }
+            stays = vias.indices.map { ss?.optInt(it) ?: 0 }
+            roundTrip = su.optBoolean("round"); destStay = su.optInt("destStay", 30)
+            go(); return
+        }
+        try {
+            planJob?.cancel(); altJob?.cancel(); prefetch?.cancel(); prefetch = null; prefetchFor = null; condJob?.cancel()
+            val r = PlanStore.route(full.getJSONObject("route"))
+            val pl = PlanStore.plan(full.getJSONObject("plan"))
+            val pVias = full.getJSONArray("planVias").let { a -> (0 until a.length()).map { pf(a.getJSONObject(it)) } }
+            val pStays = full.getJSONArray("planStays").let { a -> (0 until a.length()).map { a.getInt(it) } }
+            val round = su.optBoolean("round")
+            val start = full.optJSONObject("planFrom")?.let { pf(it) }
+            // Where the trip started, as a fixed place (the car's position then, if it started there).
+            from = start?.let { if (it.detail.isEmpty() && (it.name == "Car's position" || it.name == "My position")) it.copy(name = "Where the car was") else it }
+            to = pf(dest)
+            vias = if (round) pVias.dropLast(1) else pVias
+            stays = if (round) pStays.dropLast(1) else pStays
+            roundTrip = round; destStay = su.optInt("destStay", 30)
+            startPct = full.optInt("startPct", -1).takeIf { it >= 0 }
+            minPct = full.optInt("minPct", minPct); targetPct = full.optInt("targetPct", targetPct)
+            savedDepart = full.optLong("depart").takeIf { it > 0 }
+            val fi = full.optJSONArray("ferries")
+            ferryInfo = if (fi == null) emptyList() else (0 until fi.length()).mapNotNull { i -> fi.getJSONObject(i).let { o ->
+                r.ferries.firstOrNull { it.idx == o.getInt("i") }?.let { f -> FerryInfo(f, o.getInt("w"), o.getLong("d").takeIf { it > 0 }) } } }
+            edits = emptyList(); excluded = emptySet()
+            route = r; plan = pl
+            planFrom = start ?: from; planTo = full.optJSONObject("planTo")?.let { pf(it) }; planRound = round; planVias = pVias; planStays = pStays
+            chargers = pl.stops.flatMap { listOf(it.charger) + it.alternatives }.distinctBy { it.id }
+            corridorFor = r; corridorRaw = emptyList(); corridorFull = false
+            viaRawKey = planVias.joinToString("|") { "${it.lat},${it.lon}" }; viaRaw = emptyList()
+            alts = listOf(AltRoute(r, pl, null)); altIndex = 0; userPicked = true; autoPicked = true
+            error = null; busy = null; editing = false
+        } catch (e: Exception) {
+            error = "Couldn't open the saved trip"
+        }
+    }
+
+    /** Minutes spent at the far end of a round trip (not part of the trip's total time). */
+    val farStay: Int get() = if (planRound) planStays.lastOrNull() ?: 0 else 0
+
     /** The other routes' plans are out of date after a change to the numbers. */
-    private fun staleAlts() { alts = alts.mapIndexed { i, a -> if (i == altIndex) a else AltRoute(a.route, null, a.raw) } }
+    private fun staleAlts() { alts = alts.mapIndexed { i, a -> if (i == altIndex) a else AltRoute(a.route, null, a.raw, a.full) } }
 
     /** Right after planning, moves to the route that needs the fewest charging stops (then the quickest). */
     private fun pickFewestStops() {
@@ -409,7 +584,7 @@ class Planner(
         val a = alts[i]
         planJob?.cancel(); altJob?.cancel()
         altIndex = i; route = a.route; edits = emptyList(); excluded = emptySet()
-        corridorRaw = a.raw ?: emptyList(); corridorFor = if (a.raw != null) a.route else null
+        corridorRaw = a.raw ?: emptyList(); corridorFor = if (a.raw != null) a.route else null; corridorFull = a.full
         viaRawKey = ""; viaRaw = emptyList(); ferryInfo = emptyList()
         prefetch?.cancel(); prefetch = null; prefetchFor = null
         chargers = place(corridorRaw, a.route)
@@ -424,6 +599,7 @@ class Planner(
     /** Moves the start time to the next or the previous quarter of an hour (back to "now" at the earliest). */
     /** Leave at a set time (null = now). A time in the past means now. */
     fun setDepart(ms: Long?) {
+        savedDepart = null
         departAt = ms?.takeIf { it > System.currentTimeMillis() + 60_000L }
         staleAlts(); recompute()
     }
@@ -433,15 +609,29 @@ class Planner(
         val base = departAt?.takeIf { it > now } ?: now
         val q = 15 * 60_000L
         val t = if (dir > 0) (base / q + 1) * q else ((base - 1) / q) * q
+        savedDepart = null
         departAt = if (t <= now + 60_000L) null else t
         staleAlts(); recompute()
     }
 
+    private fun cellKey(cy: Long, cx: Long) = cy * 4_000_000L + cx
+
+    /** Route points by small grid cell (0.03 by 0.06 degrees), so a charger only looks at the points near it. */
+    private fun pointGrid(r: RouteData): HashMap<Long, ArrayList<Int>> {
+        val g = HashMap<Long, ArrayList<Int>>()
+        for (i in 0 until r.size) g.getOrPut(cellKey(Math.floor(r.lat[i] / 0.03).toLong(), Math.floor(r.lon[i] / 0.06).toLong())) { ArrayList() }.add(i)
+        return g
+    }
+
     /** Each time the route comes within 2.5 km of a point: the closest point of that pass and how far off. */
-    private fun passes(r: RouteData, lat: Double, lon: Double): List<Pair<Int, Double>> {
+    private fun passes(r: RouteData, grid: HashMap<Long, ArrayList<Int>>, lat: Double, lon: Double): List<Pair<Int, Double>> {
+        val cy = Math.floor(lat / 0.03).toLong(); val cx = Math.floor(lon / 0.06).toLong()
+        val near = ArrayList<Int>()
+        for (a in -1L..1L) for (b in -1L..1L) grid[cellKey(cy + a, cx + b)]?.let { near.addAll(it) }
+        near.sort()
         val out = ArrayList<Pair<Int, Double>>()
         var best = -1; var bestD = Double.MAX_VALUE; var lastNear = -1.0
-        for (i in 0 until r.size) {
+        for (i in near) {
             if (kotlin.math.abs(r.lat[i] - lat) > 0.03 || kotlin.math.abs(r.lon[i] - lon) > 0.06) continue
             val d = Geo.km(lat, lon, r.lat[i], r.lon[i])
             if (d > 2.5) continue
@@ -456,10 +646,19 @@ class Planner(
     /** Puts chargers on the route, drops doubles and far-off ones, and looks up prices. */
     private fun place(raw: List<RawCharger>, r: RouteData): List<PlanCharger> {
         val out = ArrayList<PlanCharger>()
+        val grid = pointGrid(r)
+        val seen = HashMap<Long, ArrayList<RawCharger>>()   // accepted chargers by cell, to drop doubles within 150 m
         for (c in raw.sortedByDescending { it.kw * 100 + it.points }) {
-            if (out.any { Geo.km(it.lat, it.lon, c.lat, c.lon) < 0.15 }) continue
-            val passes = passes(r, c.lat, c.lon)
+            val cy = Math.floor(c.lat / 0.01).toLong(); val cx = Math.floor(c.lon / 0.02).toLong()
+            var dup = false
+            loop@ for (a in -1L..1L) for (b in -1L..1L) {
+                val l = seen[cellKey(cy + a, cx + b)] ?: continue
+                for (o in l) if (Geo.km(o.lat, o.lon, c.lat, c.lon) < 0.15) { dup = true; break@loop }
+            }
+            if (dup) continue
+            val passes = passes(r, grid, c.lat, c.lon)
             if (passes.isEmpty()) continue
+            seen.getOrPut(cellKey(cy, cx)) { ArrayList() }.add(c)
             val price = prices.find(priceCountry, c.name + " " + c.operator, c.chargeTag)
             // A route that passes the same charger twice (a round trip on the same road) can use it both ways.
             passes.forEachIndexed { n, (idx, off) ->
@@ -549,6 +748,22 @@ class Planner(
     fun changeDestStay(minutes: Int) {
         destStay = minutes.coerceIn(0, 720)
         if (route != null && planRound && planStays.isNotEmpty()) { planStays = planStays.dropLast(1) + destStay; recompute() }
+    }
+
+    /**
+     * Moves a stop to another place in the order. Positions count the stops on the way and then the destination,
+     * so a stop can become the destination and the other way round. A plan that is showing is worked out again.
+     */
+    fun moveStop(fromPos: Int, toPos: Int) {
+        val d = to ?: return
+        val list = (vias.mapIndexed { i, v -> v to stays.getOrElse(i) { 0 } } + (d to 0)).toMutableList()
+        if (fromPos !in list.indices || toPos !in list.indices || fromPos == toPos) return
+        list.add(toPos, list.removeAt(fromPos))
+        val last = list.removeAt(list.size - 1)
+        if (last.first == null) return   // an empty stop can't be the destination
+        to = last.first
+        vias = list.map { it.first }; stays = list.map { it.second }
+        if (route != null) go()
     }
 
     fun swapEnds() {

@@ -83,6 +83,7 @@ object PlanApi {
         val rs = osrmRoutes(a, b, via).toMutableList()
         val r0 = rs[0]
         if (rs.size >= 3 || r0.totalKm < 15 || r0.size < 10) return rs
+        if (Geo.km(a.lat, a.lon, b.lat, b.lon) < 1.0) return rs   // a round trip: the detours would only be spurs at the far end
         val viaKm = via.map { r0.km[Geo.project(r0, it.lat, it.lon).first] }
         val found = kotlinx.coroutines.coroutineScope {
             detourPoints(r0).map { (la, lo, km) ->
@@ -298,7 +299,13 @@ object PlanApi {
     }
 
     /** Fast chargers (with a CCS plug) near the route: ready-made map tiles first, the live search if those are not available. */
-    suspend fun chargers(r: RouteData, nobilKey: String = ""): List<RawCharger> {
+    suspend fun chargers(r: RouteData, nobilKey: String = "", zones: List<IntRange>? = null): List<RawCharger> {
+        // Only the stretches where a stop could be needed: each is looked up on its own, all at once.
+        if (zones != null) {
+            return kotlinx.coroutines.coroutineScope {
+                zones.map { z -> async { chargers(r.slice(z.first, z.last), nobilKey) } }.awaitAll().flatten().distinctBy { it.id }
+            }
+        }
         // Nordic routes with a NOBIL key: NOBIL is quick and says how many charge points are free right now.
         if (nobilKey.isNotBlank() && nordic(r)) {
             try {
