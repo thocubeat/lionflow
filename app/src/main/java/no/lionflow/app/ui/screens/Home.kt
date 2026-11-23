@@ -270,12 +270,12 @@ private fun UpdateCard(vm: AppViewModel, ui: UiState) {
 private fun BatteryCard(vm: AppViewModel, ui: UiState, s: AppSettings) {
     val c = LocalLf.current
     val st = ui.status
-    LfCard(onClick = { vm.setTab(Tab.Charging) }, radius = 28.dp, padding = androidx.compose.foundation.layout.PaddingValues(22.dp)) {
+    LfCard(onClick = if (st?.isMildHybrid == true) null else ({ vm.setTab(Tab.Charging) }), radius = 28.dp, padding = androidx.compose.foundation.layout.PaddingValues(22.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text(if (st?.energyType == "Fuel") "Fuel" else "Battery", style = Type.body, color = c.muted)
+                Text(if (st?.usesFuelGauge == true) "Fuel" else "Battery", style = Type.body, color = c.muted)
                 Text(buildAnnotatedString {
-                    append(st?.batteryPct?.let { "${it.toInt()}" } ?: "—")
+                    append(st?.displayLevelPct?.let { "${it.toInt()}" } ?: "—")
                     withStyle(SpanStyle(fontSize = 30.sp)) { append(" %") }
                 }, style = Type.big.copy(fontSize = 64.sp, fontWeight = FontWeight.Bold), color = c.text)
             }
@@ -283,7 +283,7 @@ private fun BatteryCard(vm: AppViewModel, ui: UiState, s: AppSettings) {
                 Modifier.clip(RoundedCornerShape(20.dp)).background(c.accent).padding(horizontal = 18.dp, vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                val parts = fmtDistance(st?.rangeKm, s).split(" ")
+                val parts = fmtDistance(st?.displayRangeKm, s).split(" ")
                 Text(buildAnnotatedString {
                     withStyle(SpanStyle(fontSize = 22.sp)) { append("≈") }
                     append(parts.firstOrNull() ?: "—")
@@ -293,8 +293,8 @@ private fun BatteryCard(vm: AppViewModel, ui: UiState, s: AppSettings) {
             }
         }
         Spacer(Modifier.height(6.dp))
-        ProgressBar(((st?.batteryPct ?: 0.0) / 100.0).toFloat(), c.meter)
-        Row(Modifier.fillMaxWidth().padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        ProgressBar(((st?.displayLevelPct ?: 0.0) / 100.0).toFloat(), c.meter)
+        if (st?.isMildHybrid != true) Row(Modifier.fillMaxWidth().padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             LfIcon(if (st?.isCharging == true) LfIcons.Bolt else LfIcons.Plug, if (st?.isCharging == true) c.accentInk else c.text2, 20.dp)
             Text(chargingLine(st), style = Type.body, color = c.text2, modifier = Modifier.weight(1f))
         }
@@ -575,22 +575,22 @@ private fun HomeMain(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolea
     }
 
     // Battery (on wide screens the charging card in the right column already shows it)
-    if (!wide) LfCard(onClick = { vm.setTab(Tab.Charging) }, padding = androidx.compose.foundation.layout.PaddingValues(20.dp)) {
+    if (!wide || st?.isMildHybrid == true) LfCard(onClick = if (st?.isMildHybrid == true) null else ({ vm.setTab(Tab.Charging) }), padding = androidx.compose.foundation.layout.PaddingValues(20.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
             Column(Modifier.weight(1f)) {
-                Text(if (ui.status?.energyType == "Fuel") "Fuel" else "Battery", style = Type.small, color = c.muted)
+                Text(if (st?.usesFuelGauge == true) "Fuel" else "Battery", style = Type.small, color = c.muted)
                 Text(buildAnnotatedString {
-                    append(st?.batteryPct?.let { "${it.toInt()}" } ?: "—")
+                    append(st?.displayLevelPct?.let { "${it.toInt()}" } ?: "—")
                     withStyle(SpanStyle(color = c.muted, fontSize = 26.sp)) { append(" %") }
                 }, style = Type.big, color = c.text)
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text("≈ ${fmtDistance(st?.rangeKm, s)}", style = Type.display.copy(fontSize = 24.sp), color = c.text)
+                Text("≈ ${fmtDistance(st?.displayRangeKm, s)}", style = Type.display.copy(fontSize = 24.sp), color = c.text)
                 Text(if (ui.status?.rangeEstimated == true) "range (est.)" else "range", style = Type.small, color = c.muted)
             }
         }
-        ProgressBar(((st?.batteryPct ?: 0.0) / 100.0).toFloat(), c.meter)
-        Row(Modifier.fillMaxWidth()) {
+        ProgressBar(((st?.displayLevelPct ?: 0.0) / 100.0).toFloat(), c.meter)
+        if (st?.isMildHybrid != true) Row(Modifier.fillMaxWidth()) {
             Text(chargingLine(st), style = Type.small, color = c.muted, modifier = Modifier.weight(1f))
             st?.chargingMode?.takeIf { st.isCharging }?.let { Text(if (it == "Quick") "Fast charging" else "AC charging", style = Type.small, color = c.muted) }
         }

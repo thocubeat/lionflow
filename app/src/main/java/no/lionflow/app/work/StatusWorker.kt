@@ -14,7 +14,6 @@ import androidx.work.WorkerParameters
 import no.lionflow.app.LionFlowApp
 import no.lionflow.app.MainActivity
 import no.lionflow.app.R
-import no.lionflow.app.model.VehicleStatus
 import org.json.JSONObject
 
 /**
@@ -30,7 +29,7 @@ class StatusWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
         if (!app.api.isSignedIn) return Result.success()
         val vehicle = app.api.cachedVehicle() ?: return Result.success()
         return try {
-            val st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(vehicle), null))
+            val st = no.lionflow.app.model.ChargePower.record(app.api.parseStatus(vehicle, app.api.status(vehicle)))
             no.lionflow.app.widget.WidgetData.save(applicationContext, st)
             // While charging, check again in ~10 minutes so the charging log gets a good start/end.
             // LionFlow's own charge limit.

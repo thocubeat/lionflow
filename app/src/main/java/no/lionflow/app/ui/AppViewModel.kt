@@ -280,8 +280,29 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun vehicleName(v: no.lionflow.app.api.Vehicle): String =
         if (v.vin == _ui.value.vehicle?.vin) settings.value.carName else settings.nameFor(v.vin) ?: (no.lionflow.app.model.Brands.current.display + " …" + v.vin.takeLast(4))
 
-    fun vehicleKind(v: no.lionflow.app.api.Vehicle): String = when (v.motorization.lowercase()) {
-        "electric" -> "Electric"; "hybrid" -> "Plug-in hybrid"; "thermal" -> "Petrol / diesel"; else -> v.motorization.ifBlank { "Car" }
+    fun vehicleKind(v: Vehicle): String = when {
+        api.isMildHybrid(v) -> "48 V mild hybrid"
+        v.motorization.equals("electric", ignoreCase = true) -> "Electric"
+        v.motorization.equals("hybrid", ignoreCase = true) -> "Hybrid"
+        v.motorization.equals("thermal", ignoreCase = true) -> "Petrol / diesel"
+        else -> v.motorization.ifBlank { "Car" }
+    }
+
+    fun setMildHybrid(enabled: Boolean) {
+        val current = _ui.value
+        val vehicle = current.vehicle ?: return
+        val previous = current.status ?: return
+        settings.setMildHybridOverride(vehicle.vin, enabled)
+        val status = no.lionflow.app.model.ChargePower.record(
+            api.parseStatus(vehicle, previous.raw).copy(
+                kmToService = previous.kmToService,
+                daysToService = previous.daysToService,
+                preconditioningOn = previous.preconditioningOn,
+                locked = previous.locked,
+            ),
+        )
+        no.lionflow.app.widget.WidgetData.save(getApplication(), status)
+        _ui.update { it.copy(status = status) }
     }
 
     /** Reload the car list (e.g. after adding a car in MyPeugeot). */
@@ -530,7 +551,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                     })
                 }
                 val maint = try { api.maintenance(v) } catch (e: no.lionflow.app.api.ApiException) { if (missing) null else throw e }
-                val st = applyHolds(no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(raw, maint)))
+                val st = applyHolds(no.lionflow.app.model.ChargePower.record(api.parseStatus(v, raw, maint)))
                 if (settings.value.smartMode.isNotEmpty() && !programsPending()) try { no.lionflow.app.work.SmartSchedule.syncFromCar(app(), st.programs) } catch (_: Exception) {}
                 val now = System.currentTimeMillis()
                 settings.lastRefresh = now

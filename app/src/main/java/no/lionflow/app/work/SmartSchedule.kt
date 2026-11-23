@@ -112,7 +112,7 @@ object SmartSchedule {
         val due = desired.mapNotNull { p -> nextOccurrence(p, now)?.takeIf { it - now <= 65 * 60_000L && (s.smartPlugged || evaluated.optLong(p.slot.toString()) != it) }?.let { p to it } }
         if (due.isEmpty()) return null
         val vehicle = app.api.cachedVehicle() ?: return null
-        val st = VehicleStatus.parse(app.api.status(vehicle), null)
+        val st = app.api.parseStatus(vehicle, app.api.status(vehicle))
         val lat = st.lat ?: return null; val lon = st.lon ?: return null
         val weather = WeatherApi.forecast(lat, lon)
         val off = switchedOff(app).toMutableSet()

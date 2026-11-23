@@ -43,10 +43,14 @@ data class VehicleStatus(
     val rangeEstimated: Boolean = false,
 
     val chargeType: String? = null,
-    val energyType: String = "Electric", // Electric | Fuel | Hybrid
+    val energyType: String = "Electric", // Electric | Fuel | Hybrid | MildHybrid
     val fuelPct: Double? = null,
     val fuelRangeKm: Double? = null,     // Partial = car's daily charge limit on, Full = charge to 100 % // car sent no/0 range; LionFlow estimated it
 ) {
+    val isMildHybrid: Boolean get() = energyType == "MildHybrid"
+    val usesFuelGauge: Boolean get() = energyType == "Fuel" || isMildHybrid
+    val displayLevelPct: Double? get() = if (isMildHybrid) fuelPct else batteryPct
+    val displayRangeKm: Double? get() = if (isMildHybrid) fuelRangeKm else rangeKm
     val isCharging: Boolean get() = chargingStatus == "InProgress"
 
     /** The program block the remote-preconditioning command expects. */
@@ -80,9 +84,10 @@ data class VehicleStatus(
             return level
         }
 
-        fun parse(j: JSONObject, maintenance: JSONObject?): VehicleStatus {
+        fun parse(j: JSONObject, maintenance: JSONObject?, mildHybrid: Boolean = false): VehicleStatus {
             val energies = j.optJSONArray("energies")?.objects().orEmpty()
-            val electric = energies.firstOrNull { it.optString("type") == "Electric" }
+            // A non-plug-in car has no rechargeable-battery readings in LionFlow.
+            val electric = energies.firstOrNull { it.optString("type") == "Electric" && !mildHybrid }
             val fuel = energies.firstOrNull { it.optString("type") == "Fuel" }
             val charging = electric?.obj("extension", "electric", "charging")
             val health = electric?.obj("extension", "electric", "battery", "health")
@@ -109,9 +114,22 @@ data class VehicleStatus(
                 raw = j,
                 // Petrol/diesel cars: the fuel tank stands in for the battery. A plug-in hybrid never shows the
                 // tank as its battery: some (older DS7 / 3008 Hybrid4) leave out the battery level when it is empty.
-                batteryPct = if (electric != null) hybridLevel(electric, fuel, charging) else fuel?.num("level"),
-                rangeKm = if (electric != null) electric.num("autonomy") ?: (if (fuel != null && electric.num("level") == null) 0.0 else null) else fuel?.num("autonomy"),
-                energyType = when { electric != null && fuel != null -> "Hybrid"; electric == null && fuel != null -> "Fuel"; else -> "Electric" },
+                batteryPct = when {
+                    mildHybrid -> null
+                    electric != null -> hybridLevel(electric, fuel, charging)
+                    else -> fuel?.num("level")
+                },
+                rangeKm = when {
+                    mildHybrid -> null
+                    electric != null -> electric.num("autonomy") ?: (if (fuel != null && electric.num("level") == null) 0.0 else null)
+                    else -> fuel?.num("autonomy")
+                },
+                energyType = when {
+                    mildHybrid -> "MildHybrid"
+                    electric != null && fuel != null -> "Hybrid"
+                    electric == null && fuel != null -> "Fuel"
+                    else -> "Electric"
+                },
                 fuelPct = fuel?.num("level"),
                 fuelRangeKm = fuel?.num("autonomy"),
                 plugged = charging?.optBoolean("plugged") ?: false,

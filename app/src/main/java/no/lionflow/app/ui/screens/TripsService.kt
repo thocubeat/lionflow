@@ -81,6 +81,7 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
     val days = if (period == "week") 7 else 30
     val since = System.currentTimeMillis() - days * 86_400_000L
     val list = ui.trips.filter { (it.startMillis ?: 0L) >= since }
+    val mildHybrid = ui.status?.isMildHybrid == true
     val km = list.sumOf { it.distanceKm }
     val kwh = list.mapNotNull { it.kwh }.sum()
     val avg = if (km > 0 && kwh > 0) kwh / km * 100 else null
@@ -98,8 +99,8 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
         LfCard {
             Row(Modifier.fillMaxWidth()) {
                 Stat(Modifier.weight(1f), fmtDistance(km, s).substringBefore(" "), if (s.distanceUnit == "mi") "mi driven" else "km driven")
-                if (showFuel) Stat(Modifier.weight(1f), String.format(Locale.US, "%.1f", avgL), "l/100 km")
-                if (!showFuel || (avg != null && no.lionflow.app.ui.Caps.battery(ui.status))) Stat(Modifier.weight(1f), avg?.let { String.format(Locale.US, "%.1f", it) } ?: "—", "kWh/100 km")
+                if (showFuel || mildHybrid) Stat(Modifier.weight(1f), avgL?.let { String.format(Locale.US, "%.1f", it) } ?: "—", "l/100 km")
+                if (!mildHybrid && (!showFuel || (avg != null && no.lionflow.app.ui.Caps.battery(ui.status)))) Stat(Modifier.weight(1f), avg?.let { String.format(Locale.US, "%.1f", it) } ?: "—", "kWh/100 km")
                 Stat(Modifier.weight(1f), "${list.size}", "trips")
             }
             // bars per day (week) or per week (month)
@@ -124,6 +125,9 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
             }
         }
         if (ui.status?.energyType == "Hybrid" && list.isNotEmpty()) HybridStats(vm, list, ui.trips, s)
+        if (mildHybrid && list.isNotEmpty()) {
+            Text("Electric distance unavailable", style = Type.small, color = c.muted)
+        }
         TagStats(vm, ui, s, list)
         if (ui.tripsLoading) Row(verticalAlignment = Alignment.CenterVertically) { Busy(); Text("  Loading trips…", style = Type.small, color = c.muted) }
         if (list.isEmpty() && !ui.tripsLoading) {
@@ -148,12 +152,14 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
                         TripTagSlot(vm, s, t)
                         Column(horizontalAlignment = Alignment.End) {
                             Text(fmtDistance(t.distanceKm, s), style = Type.label.copy(fontSize = 17.sp), color = c.text)
-                            t.avgKwhPer100?.let { Text(String.format(Locale.US, "%.1f kWh/100", it), style = Type.tiny, color = c.muted) }
-                            // Battery used on the trip, in % and kWh.
-                            val used = t.kwh?.takeIf { it > 0 } ?: t.avgKwhPer100?.let { it * t.distanceKm / 100 }
-                            val battery = ui.status?.let { no.lionflow.app.model.ChargePower.usableKwh(it) }
-                            if (used != null && battery != null && battery > 0) androidx.compose.material3.Text(
-                                String.format(Locale.US, "−%.0f %% · %.1f kWh", used / battery * 100, used), style = Type.tiny, color = c.muted)
+                            if (!mildHybrid) {
+                                t.avgKwhPer100?.let { Text(String.format(Locale.US, "%.1f kWh/100", it), style = Type.tiny, color = c.muted) }
+                                // Battery used on the trip, in % and kWh.
+                                val used = t.kwh?.takeIf { it > 0 } ?: t.avgKwhPer100?.let { it * t.distanceKm / 100 }
+                                val battery = ui.status?.let { no.lionflow.app.model.ChargePower.usableKwh(it) }
+                                if (used != null && battery != null && battery > 0) androidx.compose.material3.Text(
+                                    String.format(Locale.US, "−%.0f %% · %.1f kWh", used / battery * 100, used), style = Type.tiny, color = c.muted)
+                            }
                             t.avgLPer100?.let { Text(String.format(Locale.US, "%.1f l/100", it), style = Type.tiny, color = c.muted) }
                         }
                     }
@@ -180,13 +186,13 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
             }
         }
         if (!s.routeTracking) Text("Tip: turn on Route tracking in Settings to see your drives on a map.", style = Type.tiny, color = c.muted)
-        if (openTrip != null || openRoute != null) TripDetail(vm, openTrip, openRoute, s) { openTrip = null; openRoute = null }
+        if (openTrip != null || openRoute != null) TripDetail(vm, openTrip, openRoute, s, mildHybrid) { openTrip = null; openRoute = null }
     }
 }
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
-private fun TripDetail(vm: AppViewModel, trip: no.lionflow.app.model.Trip?, route: no.lionflow.app.route.Route?, s: AppSettings, onDismiss: () -> Unit) {
+private fun TripDetail(vm: AppViewModel, trip: no.lionflow.app.model.Trip?, route: no.lionflow.app.route.Route?, s: AppSettings, mildHybrid: Boolean, onDismiss: () -> Unit) {
     val c = LocalLf.current
     val pts = remember(route) { route?.let { no.lionflow.app.route.Routes.points(it.file) }.orEmpty() }
     val day = SimpleDateFormat("EEE d MMM yyyy", no.lionflow.app.ui.l10n.L10n.locale)
@@ -249,12 +255,12 @@ private fun TripDetail(vm: AppViewModel, trip: no.lionflow.app.model.Trip?, rout
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 tile(Modifier.weight(1f), "Average speed", speed?.let { if (s.distanceUnit == "mi") "${Math.round(it * 0.621371)} mph" else "${Math.round(it)} km/h" } ?: "—")
                 when {
-                    trip?.avgKwhPer100 != null -> tile(Modifier.weight(1f), "Consumption", String.format(Locale.US, "%.1f kWh/100", trip.avgKwhPer100))
+                    !mildHybrid && trip?.avgKwhPer100 != null -> tile(Modifier.weight(1f), "Consumption", String.format(Locale.US, "%.1f kWh/100", trip.avgKwhPer100))
                     trip?.avgLPer100 != null -> tile(Modifier.weight(1f), "Fuel", String.format(Locale.US, "%.1f l/100", trip.avgLPer100))
                     else -> tile(Modifier.weight(1f), "Consumption", "—")
                 }
             }
-            val energy = trip?.kwh?.takeIf { it > 0 }?.let { String.format(Locale.US, "%.1f kWh", it) }
+            val energy = trip?.kwh?.takeIf { !mildHybrid && it > 0 }?.let { String.format(Locale.US, "%.1f kWh", it) }
             val fuel = trip?.liters?.let { String.format(Locale.US, "%.1f l", it) }
             if (energy != null || fuel != null) Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (energy != null) tile(Modifier.weight(1f), "Energy used", energy)
@@ -321,7 +327,7 @@ fun ServiceScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) 
                 }
                 Text(if (st?.openDoors.isNullOrEmpty()) "All closed" else "${st?.openDoors?.size} open", style = Type.label, color = c.text)
             }
-            LfCard(Modifier.weight(1f), radius = 20.dp, padding = PaddingValues(14.dp)) {
+            if (st?.isMildHybrid != true) LfCard(Modifier.weight(1f), radius = 20.dp, padding = PaddingValues(14.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     LfIcon(LfIcons.Check, c.accentInk, 14.dp); Text("Battery health", style = Type.small, color = c.muted)
                 }

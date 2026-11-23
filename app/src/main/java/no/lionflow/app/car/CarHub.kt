@@ -113,7 +113,7 @@ object CarHub {
                 if (v == null) diag = "no vehicle found on the account"
                 if (v != null) {
                     diag = "vehicle ok, getting status…"
-                    val st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(v), null))
+                    val st = no.lionflow.app.model.ChargePower.record(app.api.parseStatus(v, app.api.status(v)))
                     _status.value = st
                     diag = "status ok"
                     lastRefresh = System.currentTimeMillis()
@@ -272,7 +272,7 @@ object CarHub {
     fun batteryLine(ctx: Context): String {
         val st = _status.value ?: return if (app(ctx).api.isSignedIn) "Getting car status…" else "Sign in on your phone"
         val s = app(ctx).settings.value
-        return "${st.batteryPct?.toInt() ?: "—"} %  ·  ${fmtDistance(st.rangeKm, s)}"
+        return "${st.displayLevelPct?.toInt() ?: "—"} %  ·  ${fmtDistance(st.displayRangeKm, s)}"
     }
 
     fun chargingLine(st: VehicleStatus): String = when {
@@ -285,7 +285,8 @@ object CarHub {
     fun detailLine(ctx: Context): String {
         val st = _status.value ?: return "LionFlow"
         val s = app(ctx).settings.value
-        val parts = mutableListOf(chargingLine(st))
+        val parts = mutableListOf<String>()
+        if (!st.isMildHybrid) parts += chargingLine(st)
         st.outsideTempC?.let { parts += "${fmtTemp(it, s)} outside" }
         if (st.preconditioningOn) parts += "pre-heating"
         return parts.joinToString(" · ")

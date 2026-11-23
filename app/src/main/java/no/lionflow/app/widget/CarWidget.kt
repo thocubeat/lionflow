@@ -36,13 +36,13 @@ object WidgetData {
     fun save(ctx: Context, st: VehicleStatus) {
         val now = System.currentTimeMillis()
         val j = JSONObject()
-            .put("battery", st.batteryPct ?: -1.0)
-            .put("range", st.rangeKm ?: -1.0)
+            .put("battery", st.displayLevelPct ?: -1.0)
+            .put("range", st.displayRangeKm ?: -1.0)
             .put("charging", st.isCharging)
             .put("plugged", st.plugged)
             .put("remaining", no.lionflow.app.model.ChargePower.timeLeft(st)?.first ?: -1)
             .put("remainingTo", no.lionflow.app.model.ChargePower.timeLeft(st)?.second ?: -1)
-            .put("fuel", st.energyType == "Fuel")
+            .put("fuel", st.usesFuelGauge)
             .put("kw", no.lionflow.app.model.ChargePower.label(st) ?: "")
             .put("outside", st.outsideTempC ?: -999.0)
             .put("precond", st.preconditioningOn)
@@ -268,7 +268,7 @@ class WidgetRefreshWorker(ctx: Context, params: WorkerParameters) : CoroutineWor
             }
             try {
                 // Show what the servers already know straight away; only wake the car if that data is old.
-                var st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(vehicle), null))
+                var st = no.lionflow.app.model.ChargePower.record(app.api.parseStatus(vehicle, app.api.status(vehicle)))
                 explainer.cancel()
                 WidgetData.save(ctx, st)
                 val old = st.updatedAtMillis?.let { System.currentTimeMillis() - it > 5 * 60_000 } ?: true
@@ -276,7 +276,7 @@ class WidgetRefreshWorker(ctx: Context, params: WorkerParameters) : CoroutineWor
                     WidgetData.setRefresh(ctx, true, "Waking the car…")
                     try { no.lionflow.app.work.Waker.wake(app) } catch (_: Exception) { }
                     try {
-                        st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(vehicle), null))
+                        st = no.lionflow.app.model.ChargePower.record(app.api.parseStatus(vehicle, app.api.status(vehicle)))
                     } catch (_: Exception) { }
                     WidgetData.save(ctx, st)
                 }

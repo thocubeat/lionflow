@@ -123,6 +123,12 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
             Divider()
             Text("Reload cars from MyPeugeot", style = Type.small.copy(fontWeight = FontWeight.SemiBold), color = c.accentInk,
                 modifier = Modifier.fillMaxWidth().clickable { vm.reloadVehicles() }.padding(horizontal = 16.dp, vertical = 12.dp))
+            if (!vm.isDemo && ui.vehicle?.reportsMildHybrid == false && no.lionflow.app.ui.Caps.fuel(ui.status)) {
+                Divider()
+                ToggleRow("48 V mild hybrid", "For cars that cannot be plugged in", ui.status?.isMildHybrid == true, showDivider = false) {
+                    vm.setMildHybrid(it)
+                }
+            }
         }
 
         SectionTitle("Units")
@@ -135,17 +141,23 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
                 set { it.copy(timeFormat = v) }
                 no.lionflow.app.ui.l10n.TimeFmt.setPreference(ctx, v)
             }
-            Divider()
-            LinkRow("Battery size", if (s.batteryKwh > 0) "${s.batteryKwh.toInt()} kWh usable · used to work out charging kW" else "Automatic (from the car) · used to work out charging kW and energy", LfIcons.Bolt, last = true) { editBattery = true }
+            if (ui.status?.isMildHybrid != true) {
+                Divider()
+                LinkRow("Battery size", if (s.batteryKwh > 0) "${s.batteryKwh.toInt()} kWh usable · used to work out charging kW" else "Automatic (from the car) · used to work out charging kW and energy", LfIcons.Bolt, last = true) { editBattery = true }
+            }
         }
 
         SectionTitle("Notifications")
         GroupCard {
-            ToggleRow("Charging complete", "When charging finishes", s.notifyChargeDone) { v -> set { it.copy(notifyChargeDone = v) } }
-            ToggleRow("Charging stopped", "If charging is interrupted", s.notifyChargeStopped) { v -> set { it.copy(notifyChargeStopped = v) } }
+            if (ui.status?.isMildHybrid != true) {
+                ToggleRow("Charging complete", "When charging finishes", s.notifyChargeDone) { v -> set { it.copy(notifyChargeDone = v) } }
+                ToggleRow("Charging stopped", "If charging is interrupted", s.notifyChargeStopped) { v -> set { it.copy(notifyChargeStopped = v) } }
+            }
             ToggleRow("Pre-heating finished", "When pre-heating has run", s.notifyPreheat) { v -> set { it.copy(notifyPreheat = v) } }
             ToggleRow("Car left unlocked", "After about 10 minutes parked and unlocked", s.notifyUnlocked) { v -> set { it.copy(notifyUnlocked = v) } }
-            ToggleRow("Low battery", "Below 20 %", s.notifyLowBattery) { v -> set { it.copy(notifyLowBattery = v) } }
+            if (ui.status?.isMildHybrid != true) {
+                ToggleRow("Low battery", "Below 20 %", s.notifyLowBattery) { v -> set { it.copy(notifyLowBattery = v) } }
+            }
             ToggleRow("Service reminders", "Before the next service is due", s.notifyService, showDivider = false) { v -> set { it.copy(notifyService = v) } }
         }
         Text("Checked in the background about every 30 minutes.", style = Type.tiny, color = c.muted, modifier = Modifier.padding(start = 4.dp))

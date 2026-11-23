@@ -13,7 +13,6 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
 import no.lionflow.app.LionFlowApp
 import no.lionflow.app.R
-import no.lionflow.app.model.VehicleStatus
 import no.lionflow.app.ui.l10n.tr
 import java.util.concurrent.TimeUnit
 
@@ -45,7 +44,7 @@ object Waker {
     suspend fun wakeAndRefresh(app: LionFlowApp) {
         val vehicle = app.api.cachedVehicle() ?: return
         wake(app)
-        val st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(vehicle), null))
+        val st = no.lionflow.app.model.ChargePower.record(app.api.parseStatus(vehicle, app.api.status(vehicle)))
         no.lionflow.app.widget.WidgetData.save(app, st)
         app.remote.disconnect()
     }

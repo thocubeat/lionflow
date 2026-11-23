@@ -98,6 +98,7 @@ object ChargePower {
     }
 
     fun record(raw: VehicleStatus): VehicleStatus {
+        if (raw.isMildHybrid) return applyPendingPrograms(raw)
         val st = applyPendingPrograms(fixRange(fixLevel(raw)))
         try { ChargeLog.observe(st) } catch (_: Exception) { }
         val p = prefs ?: return st

@@ -226,6 +226,11 @@ class SettingsStore(context: Context) {
         get() = p.getString("limitState", "") ?: ""
         set(v) { p.edit().putString("limitState", v).apply() }
 
+    fun mildHybridOverride(vin: String): Boolean = p.getBoolean("mildHybrid_$vin", false)
+    fun setMildHybridOverride(vin: String, enabled: Boolean) {
+        p.edit().putBoolean("mildHybrid_$vin", enabled).apply()
+    }
+
     fun nameFor(vin: String): String? = p.getString("carName_$vin", null)
     fun setNameFor(vin: String, name: String) = p.edit().putString("carName_$vin", name).apply()
 

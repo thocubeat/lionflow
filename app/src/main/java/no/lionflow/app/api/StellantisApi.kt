@@ -1,6 +1,7 @@
 package no.lionflow.app.api
 
 import android.content.Context
+import no.lionflow.app.model.VehicleStatus
 import android.util.Base64
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -67,6 +68,9 @@ data class Vehicle(
     val pictureUrl: String?,
     val maintenanceHref: String?,
 ) {
+    val reportsMildHybrid: Boolean
+        get() = motorization.filter(Char::isLetterOrDigit).lowercase() in setOf("mhev", "mildhybrid", "mildhybridelectricvehicle")
+
     fun toJson(): JSONObject = JSONObject().apply {
         put("id", id); put("vin", vin); put("motorization", motorization); put("brand", brand)
         put("picture", pictureUrl ?: ""); put("maintenance", maintenanceHref ?: "")
@@ -214,6 +218,11 @@ class StellantisApi(private val ctx: Context, private val secure: SecureStore, p
     fun pick(list: List<Vehicle>): Vehicle? = list.firstOrNull { it.vin == selectedVin } ?: list.firstOrNull()
     fun cachedVehicle(): Vehicle? = pick(cachedVehicles())
     suspend fun currentVehicle(): Vehicle? = cachedVehicle() ?: pick(vehicles())
+
+    fun isMildHybrid(v: Vehicle): Boolean = v.reportsMildHybrid || settings.mildHybridOverride(v.vin)
+
+    fun parseStatus(v: Vehicle, raw: JSONObject, maintenance: JSONObject? = null): VehicleStatus =
+        VehicleStatus.parse(raw, maintenance, mildHybrid = isMildHybrid(v))
 
     suspend fun status(v: Vehicle): JSONObject = authed { token ->
         val url = "$API/connectedcar/v4/user/vehicles/${v.id}/status?${clientQuery()}"

@@ -58,16 +58,16 @@ class WearService : WearableListenerService() {
         if (!app.api.isSignedIn) return JSONObject().put("error", tr("Open LionFlow to sign in"))
         return try {
             val v = app.api.currentVehicle() ?: return JSONObject().put("error", tr("No car on this account"))
-            val st = ChargePower.record(VehicleStatus.parse(app.api.status(v), null))
+            val st = ChargePower.record(app.api.parseStatus(v, app.api.status(v)))
             no.lionflow.app.widget.WidgetData.save(applicationContext, st)
             val s = app.settings.value
             val (today, yesterday) = try { distances(v) } catch (_: Exception) { null to null }
             JSONObject()
                 .put("name", s.carName)
                 .put("cars", no.lionflow.app.model.Garage.entries(app).size)
-                .put("battery", st.batteryPct?.let { "${it.toInt()} %" } ?: "—")
-                .put("range", "≈ " + fmtDistance(st.rangeKm, s) + if (st.rangeEstimated) " " + tr("(est.)").trim() else "")
-                .put("fuel", st.energyType == "Fuel")
+                .put("battery", st.displayLevelPct?.let { "${it.toInt()} %" } ?: "—")
+                .put("range", "≈ " + fmtDistance(st.displayRangeKm, s) + if (st.rangeEstimated) " " + tr("(est.)").trim() else "")
+                .put("fuel", st.usesFuelGauge)
                 .put("locked", st.locked ?: JSONObject.NULL)
                 .put("status", tr(when {
                     st.isCharging -> "Charging" + (ChargePower.label(st)?.let { " at $it" } ?: "")
@@ -133,7 +133,7 @@ class WearService : WearableListenerService() {
                     "lock" -> app.remote.lock(true, t)
                     "lights" -> app.remote.lights(t)
                     else -> {
-                        val st = try { app.api.currentVehicle()?.let { VehicleStatus.parse(app.api.status(it), null) } } catch (_: Exception) { null }
+                        val st = try { app.api.currentVehicle()?.let { app.api.parseStatus(it, app.api.status(it)) } } catch (_: Exception) { null }
                         app.remote.preconditioning(true, st?.programsJson() ?: JSONObject(), t)
                     }
                 }
