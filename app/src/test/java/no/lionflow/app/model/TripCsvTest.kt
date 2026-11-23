@@ -36,9 +36,25 @@ class TripCsvTest {
         assertFalse(trip.fuelUnitsEstimated)
     }
 
-    @Test fun explicitlyFuelAverageDoesNotBecomeElectricalEnergy() {
-        val row = TripImport.parse("start;distance;Average consumption (l/100 km)\n2026-10-06 10:30;12.5;5.2").single()
-        assertNull(TripImport.restore(row.json).kwh)
+    @Test fun explicitExternalFuelUnitsStaySeparateFromElectricalEnergy() {
+        val row = TripImport.parse(
+            """
+            start;distance;Fuel used (L);Average consumption (l/100 km)
+            2026-10-06 10:30;12,5;0,65;5,2
+            """.trimIndent()
+        ).single()
+        val trip = TripImport.restore(row.json)
+        assertNull(trip.kwh)
+        assertEquals(0.65, trip.liters)
+        assertEquals(5.2, trip.avgLPer100)
+        assertFalse(trip.fuelUnitsEstimated)
+    }
+
+    @Test fun doesNotInferUnitsFromAnUnqualifiedAverage() {
+        val row = TripImport.parse("start;distance;Average consumption\n2026-10-06 10:30;12.5;5.2").single()
+        val trip = TripImport.restore(row.json)
+        assertNull(trip.kwh)
+        assertNull(trip.avgLPer100)
     }
 
     @Test fun existingApiFuelHeuristicIsMarkedAsEstimated() {

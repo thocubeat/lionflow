@@ -75,8 +75,11 @@ object TripImport {
         val iEnd = find("end", "fin", "arrivee", "arrivée", "ende", "llegada", "arrivo", "slutt", not = listOf("km", "mileage", "kilom", "odom", "lieu", "adresse", "address", "posit", "place", "lat", "lon"))
         val iKm = find("distance", "km", "kilom", "afstand", "strecke", "lengde")
         val iDur = find("duree", "durée", "duration", "dauer", "duracion", "durata", "varighet", "tid", "time")
-        val iKwh = find("kwh", "energ", "electri", not = listOf("/100", "100 km", "100km", "moy", "avg", "average"))
+        val iKwh = find("kwh", not = listOf("/100", "/ 100", "100 km", "100km", "moy", "avg", "average"))
         val iAvg = cols.indexOfFirst { "kwh" in it && ("100" in it || "avg" in it || "average" in it) }
+        val fuelRate = Regex("\\b(?:l|litr(?:e|o|i|es|os|as)?|liter[s]?)\\s*/\\s*100\\s*km\\b")
+        val iFuelAvg = cols.indexOfFirst { fuelRate.containsMatchIn(it) }
+        val iLiters = cols.indexOfFirst { !fuelRate.containsMatchIn(it) && ("litr" in it || "liter" in it || it.endsWith("(l)") || it.endsWith("[l]")) }
         if (iStart < 0 || iKm < 0) return emptyList()
         val out = ArrayList<Row>()
         for (line in lines.drop(1)) {
@@ -86,7 +89,10 @@ object TripImport {
             val dur = c.getOrNull(iDur)?.let { minutes(it) }
             val end = c.getOrNull(iEnd)?.let { date(it) } ?: dur?.let { start + (it * 60_000).toLong() } ?: start
             val kwh = num(c.getOrNull(iKwh)) ?: num(c.getOrNull(iAvg))?.let { it * km / 100 } ?: 0.0
-            out += Row(store("csv-$start-${(km * 10).toLong()}", start, end, km, kwh), null)
+            val trip = store("csv-$start-${(km * 10).toLong()}", start, end, km, kwh)
+            num(c.getOrNull(iLiters))?.takeIf { it.isFinite() && it >= 0 }?.let { trip.put("liters", it) }
+            num(c.getOrNull(iFuelAvg))?.takeIf { it.isFinite() && it >= 0 }?.let { trip.put("avgL", it) }
+            out += Row(trip, null)
         }
         return out
     }

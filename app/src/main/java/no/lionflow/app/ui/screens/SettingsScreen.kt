@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +44,7 @@ import no.lionflow.app.ui.LocalPlatform
 import no.lionflow.app.ui.ScreenColumn
 import no.lionflow.app.ui.Tab
 import no.lionflow.app.ui.UiState
+import kotlinx.coroutines.launch
 import no.lionflow.app.ui.components.Divider
 import no.lionflow.app.ui.components.GroupCard
 import no.lionflow.app.ui.components.LfIcon
@@ -59,6 +61,8 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
     val c = LocalLf.current
     val platform = LocalPlatform.current
     val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var exporting by remember { mutableStateOf(false) }
     var editName by remember { mutableStateOf(false) }
     var editNobil by remember { mutableStateOf(false) }
     var editBattery by remember { mutableStateOf(false) }
@@ -164,9 +168,17 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
 
         SectionTitle("Driving data")
         GroupCard {
-            LinkRow("Export driving data", "Trips as a CSV file", LfIcons.Download) {
-                if (ui.trips.isEmpty()) vm.loadTrips()
-                platform.share(vm.exportTripsCsv(), "text/csv")
+            LinkRow("Export driving data", if (exporting) "Loading trips…" else "Trips as a CSV file", LfIcons.Download) {
+                if (!exporting) {
+                    exporting = true
+                    scope.launch {
+                        try {
+                            platform.share(vm.exportTripsCsv(), "text/csv")
+                        } finally {
+                            exporting = false
+                        }
+                    }
+                }
             }
             LinkRow("Import driving data", "From LionFlow, or the official app's CSV or .myp export", LfIcons.Upload) {
                 importer.launch(arrayOf("text/*", "text/csv", "application/csv", "*/*"))

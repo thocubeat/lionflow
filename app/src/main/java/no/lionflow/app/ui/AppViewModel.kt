@@ -15,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -979,7 +980,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun exportTripsCsv(): File {
+    suspend fun exportTripsCsv(): File {
+        if (_ui.value.trips.isEmpty()) {
+            if (!_ui.value.tripsLoading) loadTrips()
+            ui.first { !it.tripsLoading }
+        }
         val dir = File(getApplication<Application>().cacheDir, "exports").apply { mkdirs() }
         val f = File(dir, "lionflow-trips.csv")
         f.writeText(TripExport.csv(_ui.value.trips) { tags.tagOf(it.id)?.name })
