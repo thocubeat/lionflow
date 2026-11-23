@@ -205,19 +205,7 @@ object CarHub {
         scope.launch {
             try {
                 val v = app.api.currentVehicle() ?: return@launch
-                val since = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
-                    .apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
-                    .format(java.util.Date(System.currentTimeMillis() - 30 * 86_400_000L))
-                val all = mutableListOf<Trip>()
-                var page: String? = null
-                var guard = 0
-                do {
-                    val j = app.api.trips(v, since, page)
-                    j.optJSONObject("_embedded")?.optJSONArray("trips")?.objects()?.forEach { all += Trip.parse(it) }
-                    page = j.optJSONObject("_links")?.optJSONObject("next")?.optString("href")
-                        ?.substringAfter("pageToken=", "")?.substringBefore("&")?.ifEmpty { null }
-                    guard++
-                } while (page != null && guard < 50)
+                val all = app.api.allTrips(v, System.currentTimeMillis() - 30 * 86_400_000L).trips.map { Trip.parse(it) }
                 _trips.value = all.distinctBy { it.id }.sortedByDescending { it.startMillis ?: 0L }
             } catch (e: Exception) {
                 tripsLoadedAt = 0L

@@ -77,6 +77,7 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
     var period by remember { mutableStateOf("week") }
     var openTrip by remember { mutableStateOf<no.lionflow.app.model.Trip?>(null) }
     var openRoute by remember { mutableStateOf<no.lionflow.app.route.Route?>(null) }
+    var showAll by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { if (ui.trips.isEmpty() && !ui.tripsLoading) vm.loadTrips() }
     val days = if (period == "week") 7 else 30
     val since = System.currentTimeMillis() - days * 86_400_000L
@@ -126,17 +127,16 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
         if (ui.status?.energyType == "Hybrid" && list.isNotEmpty()) HybridStats(vm, list, ui.trips, s)
         TagStats(vm, ui, s, list)
         if (ui.tripsLoading) Row(verticalAlignment = Alignment.CenterVertically) { Busy(); Text("  Loading trips…", style = Type.small, color = c.muted) }
-        if (list.isEmpty() && !ui.tripsLoading) {
-            Text("No trips in this period.", style = Type.small, color = c.muted)
-            // Peugeot's server answered "no trips found" (some cars, e.g. newer E-5008, don't share trips with other apps).
-            if (vm.tripsNone && ui.trips.isEmpty()) Text(
-                "Peugeot doesn't give trips for this car to other apps, even when the official app shows them. You can import them: in the official app export your trips as CSV (or the full .myp file), then use Settings → Import driving data here.",
-                style = Type.tiny, color = c.muted)
-        }
+        if (list.isEmpty() && !ui.tripsLoading) Text("No trips in this period.", style = Type.small, color = c.muted)
+        // Peugeot's server answered "no trips found" (some cars, e.g. newer E-5008, don't share trips with other apps).
+        // Then only routes recorded on this phone and imported trips are shown, so say why trips by others are missing.
+        if (vm.tripsNone && !ui.tripsLoading) Text(
+            "Peugeot doesn't give trips for this car to other apps, even when the official app shows them. Trips by other drivers are therefore missing. You can import them: in the official app export your trips as CSV (or the full .myp file), then use Settings → Import driving data here.",
+            style = Type.tiny, color = c.muted)
         if (list.isNotEmpty()) {
             LfCard(padding = PaddingValues(0.dp)) {
                 val fmt = SimpleDateFormat(no.lionflow.app.ui.l10n.TimeFmt.pattern("EEE d MMM · HH:mm"), no.lionflow.app.ui.l10n.L10n.locale)
-                list.take(50).forEachIndexed { i, t ->
+                (if (showAll) list else list.take(50)).forEachIndexed { i, t ->
                     if (i > 0) Divider()
                     val route = no.lionflow.app.route.Routes.forTrip(ui.routes, t.startMillis, t.endMillis)
                     Row(Modifier.fillMaxWidth().clickable { openTrip = t; openRoute = route }.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -158,12 +158,18 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
                         }
                     }
                 }
+                if (list.size > 50) {
+                    Divider()
+                    Text(if (showAll) "Show fewer" else "Show all ${list.size}", style = Type.small.copy(fontWeight = FontWeight.SemiBold), color = c.accentInk,
+                        modifier = Modifier.fillMaxWidth().clickable { showAll = !showAll }.padding(horizontal = 16.dp, vertical = 12.dp))
+                }
             }
         }
         // Routes recorded on the phone that don't match a trip from Peugeot
         val unmatched = ui.routes.filter { r -> r.startMillis >= since && ui.trips.none { t -> no.lionflow.app.route.Routes.forTrip(listOf(r), t.startMillis, t.endMillis) != null } }
         if (unmatched.isNotEmpty()) {
             Text("Recorded routes", style = Type.label, color = c.text)
+            Text("Recorded by this phone, so only drives with this phone in the car.", style = Type.tiny, color = c.muted)
             LfCard(padding = PaddingValues(0.dp)) {
                 val fmt = SimpleDateFormat(no.lionflow.app.ui.l10n.TimeFmt.pattern("EEE d MMM · HH:mm"), no.lionflow.app.ui.l10n.L10n.locale)
                 unmatched.take(30).forEachIndexed { i, r ->

@@ -949,24 +949,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             _ui.update { it.copy(tripsLoading = true) }
             try {
-                val since = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", no.lionflow.app.ui.l10n.L10n.locale)
-                    .apply { timeZone = TimeZone.getTimeZone("UTC") }
-                    .format(Date(System.currentTimeMillis() - days * 86_400_000L))
-                val all = mutableListOf<Trip>()
-                var page: String? = null
-                var guard = 0
-                do {
-                    // "404 / 40400 No trip was found" just means the car has no trips in this period (some cars say so on every call).
-                    val j = try { api.trips(v, since, page) } catch (e: no.lionflow.app.api.ApiException) {
-                        if (e.code == 404) { if (guard == 0) tripsNone = true; remote.addLog("trips: ${e.message}"); break } else throw e
-                    }
-                    if (guard == 0) tripsNone = false
-                    j.optJSONObject("_embedded")?.optJSONArray("trips")?.objects()?.forEach { all += Trip.parse(it) }
-                    val next = j.optJSONObject("_links")?.optJSONObject("next")?.optString("href")
-                    page = next?.substringAfter("pageToken=", "")?.substringBefore("&")?.ifEmpty { null }
-                    guard++
-                } while (page != null && guard < 50)
-                remote.addLog("trips: ${all.size} from the last $days days")
+                val r = api.allTrips(v, System.currentTimeMillis() - days * 86_400_000L)
+                tripsNone = r.none
+                remote.addLog(r.note)
+                val all = r.trips.map { Trip.parse(it) }
                 val imported = loadImportedTrips()
                 val merged = (all + imported).distinctBy { it.id }.sortedByDescending { it.startMillis ?: 0L }
                 _ui.update { it.copy(trips = merged, tripsLoading = false) }

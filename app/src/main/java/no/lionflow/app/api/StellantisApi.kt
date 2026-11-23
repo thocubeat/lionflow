@@ -239,12 +239,61 @@ class StellantisApi(private val ctx: Context, private val secure: SecureStore, p
         return null
     }
 
-    /** One page of trips since the given ISO timestamp. */
-    suspend fun trips(v: Vehicle, sinceIso: String?, pageToken: String? = null): JSONObject = authed { token ->
-        var url = "$API/connectedcar/v4/user/vehicles/${v.id}/trips?${clientQuery()}&distance=0.1-&pageSize=60"
-        if (sinceIso != null) url += "&timestamps=$sinceIso/"
+    /** One page of trips since the given ISO timestamp (and up to [untilIso] when given). */
+    suspend fun trips(v: Vehicle, sinceIso: String?, pageToken: String? = null, untilIso: String? = null): JSONObject = authed { token ->
+        var url = "$API/connectedcar/v4/user/vehicles/${v.id}/trips?${clientQuery()}&distance=0.1-&pageSize=$TRIP_PAGE"
+        if (sinceIso != null) url += "&timestamps=$sinceIso/" + (untilIso ?: "")
         if (pageToken != null) url += "&pageToken=$pageToken"
         Http.json(carHeaders(Request.Builder().url(url), token).get().build()) as? JSONObject ?: JSONObject()
+    }
+
+    /** The trips the car has shared since [sinceMillis], and whether the server said "no trips" on the first call. */
+    class TripsResult(val trips: List<JSONObject>, val none: Boolean, val note: String)
+
+    /**
+     * Every trip since [sinceMillis], whoever drove. Follows the server's pages. A family car easily does more than one
+     * page of trips a month, and when a full page comes back without a link to the next one, the rest is fetched by
+     * time from the trips already received (newer ones if the page was oldest first, older ones if newest first),
+     * so no driver's trips are left out.
+     */
+    suspend fun allTrips(v: Vehicle, sinceMillis: Long): TripsResult {
+        val fmt = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US).apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
+        fun iso(ms: Long) = fmt.format(java.util.Date(ms))
+        val out = LinkedHashMap<String, JSONObject>()
+        var from = sinceMillis
+        var until: Long? = null
+        var page: String? = null
+        var calls = 0
+        var none = false
+        var total: Int? = null
+        var byTime = 0
+        while (calls < 60) {
+            // "404 / 40400 No trip was found" just means no trips in this period (some cars say so on every call).
+            val j = try { trips(v, iso(from), page, until?.let(::iso)) } catch (e: ApiException) {
+                if (e.code == 404) { if (calls == 0) none = true; break } else throw e
+            }
+            calls++
+            if (total == null && j.has("total")) total = j.optInt("total")
+            val batch = j.optJSONObject("_embedded")?.optJSONArray("trips")?.objects().orEmpty()
+            var added = 0
+            for (t in batch) {
+                val id = t.optString("id").ifEmpty { t.optString("startedAt") + t.optString("distance") }
+                if (out.put(id, t) == null) added++
+            }
+            page = j.optJSONObject("_links")?.optJSONObject("next")?.optString("href")
+                ?.substringAfter("pageToken=", "")?.substringBefore("&")?.ifEmpty { null }
+            if (page != null) continue
+            if (batch.size < TRIP_PAGE || added == 0) break
+            // A full page and no next link: carry on by time.
+            val starts = batch.mapNotNull { no.lionflow.app.model.VehicleStatus.parseIso(it.optString("startedAt").ifEmpty { it.optString("createdAt") }) }
+            if (starts.size < 2) break
+            if (starts.first() <= starts.last()) from = starts.max() + 1000 else until = starts.min() - 1000
+            if (until != null && until <= from) break
+            byTime++
+        }
+        val note = "trips: ${out.size} since ${iso(sinceMillis).take(10)}" +
+            (total?.let { " (server says $it)" } ?: "") + (if (byTime > 0) ", $byTime extra by time" else "") + (if (none) ", server: no trips" else "")
+        return TripsResult(out.values.toList(), none, note)
     }
 
     // ---------------- remote control setup ----------------
@@ -273,6 +322,7 @@ class StellantisApi(private val ctx: Context, private val secure: SecureStore, p
 
     companion object {
         const val API = "https://api.groupe-psa.com"
+        const val TRIP_PAGE = 60
         const val K_ACCESS = "oauth_access"
         const val K_REFRESH = "oauth_refresh"
         const val K_EXPIRES = "oauth_expires"
