@@ -8,6 +8,7 @@ import no.lionflow.app.data.SecureStore
 import no.lionflow.app.data.SettingsStore
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
+import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
@@ -243,13 +244,7 @@ class StellantisApi(private val ctx: Context, private val secure: SecureStore, p
     /** One page of trips since the given ISO timestamp. */
     suspend fun trips(v: Vehicle, sinceIso: String?, pageToken: String? = null): JSONObject = authed { token ->
         val url = "$API/connectedcar/v4/user/vehicles/${v.id}/trips?${clientQuery()}"
-            .toHttpUrl().newBuilder()
-            .addQueryParameter("distance", "0.1-")
-            .addQueryParameter("pageSize", "60")
-            .apply {
-                if (sinceIso != null) addQueryParameter("timestamps", "$sinceIso/")
-                if (pageToken != null) addQueryParameter("pageToken", pageToken)
-            }.build()
+            .toHttpUrl().withTripFilters(sinceIso, pageToken)
         Http.json(carHeaders(Request.Builder().url(url), token).get().build()) as? JSONObject
             ?: throw ApiException(0, "Invalid trips response")
     }
@@ -288,3 +283,11 @@ class StellantisApi(private val ctx: Context, private val secure: SecureStore, p
         const val K_SELECTED = "selected_vin"
     }
 }
+
+internal fun HttpUrl.withTripFilters(sinceIso: String?, pageToken: String?): HttpUrl = newBuilder()
+    .addQueryParameter("distance", "0.1-")
+    .addQueryParameter("pageSize", "60")
+    .apply {
+        if (sinceIso != null) addQueryParameter("timestamps", "$sinceIso/")
+        if (pageToken != null) addQueryParameter("pageToken", pageToken)
+    }.build()

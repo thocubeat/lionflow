@@ -79,7 +79,7 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
     var openRoute by remember { mutableStateOf<no.lionflow.app.route.Route?>(null) }
     LaunchedEffect(Unit) { if (ui.trips.isEmpty() && !ui.tripsLoading) vm.loadTrips() }
     val days = if (period == "week") 7 else 30
-    val now = if (ui.now > 0L) ui.now else System.currentTimeMillis()
+    val now = ui.now
     val since = TripHistory.cutoff(now, days)
     val list = TripHistory.inPeriod(ui.trips, now, days)
     var visibleTrips by remember(period) { mutableStateOf(50) }
@@ -129,9 +129,9 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
         if (ui.tripsLoading) Row(verticalAlignment = Alignment.CenterVertically) { Busy(); Text("  Loading trips…", style = Type.small, color = c.muted) }
         if (list.isEmpty() && !ui.tripsLoading) {
             Text("No trips in this period.", style = Type.small, color = c.muted)
-            // Peugeot's server answered "no trips found" (some cars, e.g. newer E-5008, don't share trips with other apps).
+            // The server returned 404 on the first page of the requested period.
             if (vm.tripsNone && ui.trips.isEmpty()) Text(
-                "Peugeot doesn't give trips for this car to other apps, even when the official app shows them. You can import them: in the official app export your trips as CSV (or the full .myp file), then use Settings → Import driving data here.",
+                "Peugeot returned no trips for this request. If the official app shows them, export a CSV or .myp file and use Settings → Import driving data.",
                 style = Type.tiny, color = c.muted)
         }
         if (list.isNotEmpty()) {

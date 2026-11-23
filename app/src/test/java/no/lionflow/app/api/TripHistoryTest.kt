@@ -1,6 +1,7 @@
 package no.lionflow.app.api
 
 import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import no.lionflow.app.model.Trip
 import no.lionflow.app.model.VehicleStatus
 import org.json.JSONObject
@@ -56,6 +57,18 @@ class TripHistoryTest {
         assertEquals(listOf("last", "duplicate"), result.trips.take(2).map { it.id })
         assertTrue(result.trips.drop(2).all { it.id.startsWith("anonymous-") })
         assertNotEquals(result.trips[2].id, result.trips[3].id)
+    }
+
+    @Test fun requestEncodesTheWholeCursorAndPreservesFilters() {
+        val cursor = "a+/=&%"
+        val request = "https://example.invalid/trips?client_id=synthetic".toHttpUrl()
+            .withTripFilters("2026-10-06T00:00:00Z", cursor)
+        assertEquals("synthetic", request.queryParameter("client_id"))
+        assertEquals("0.1-", request.queryParameter("distance"))
+        assertEquals("60", request.queryParameter("pageSize"))
+        assertEquals("2026-10-06T00:00:00Z/", request.queryParameter("timestamps"))
+        assertEquals(cursor, request.queryParameter("pageToken"))
+        assertTrue(request.toString().contains("pageToken=a%2B%2F%3D%26%25"))
     }
 
     @Test fun repeatedCursorAndPageLimitFailExplicitly() = runBlocking {
