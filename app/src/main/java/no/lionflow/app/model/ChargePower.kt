@@ -163,6 +163,7 @@ object ChargePower {
      * Then we use km-per-% learned from the last real reading, or a plain estimate (usable kWh at ~19 kWh/100 km).
      */
     private fun fixRange(st: VehicleStatus): VehicleStatus {
+        if (st.energyType == "Fuel") return st
         val p = prefs
         val pct = st.batteryPct ?: return st
         val range = st.rangeKm

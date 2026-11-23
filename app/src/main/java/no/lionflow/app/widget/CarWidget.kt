@@ -171,6 +171,7 @@ class CarWidget : AppWidgetProvider() {
                 v.setTextViewText(R.id.w_battery, tr("—"))
                 v.setTextViewText(R.id.w_range, tr("—"))
                 v.setProgressBar(R.id.w_bar, 100, 0, false)
+                v.setViewVisibility(R.id.w_charging, View.VISIBLE)
                 v.setTextViewText(R.id.w_charging, tr("No data yet"))
                 v.setViewVisibility(R.id.w_bolt, View.GONE)
                 v.setViewVisibility(R.id.w_plug, View.VISIBLE)
@@ -179,6 +180,7 @@ class CarWidget : AppWidgetProvider() {
             } else {
                 val battery = snap.optDouble("battery", -1.0)
                 val range = snap.optDouble("range", -1.0)
+                val fuelOnly = snap.optBoolean("fuel")
                 val charging = snap.optBoolean("charging")
                 val plugged = snap.optBoolean("plugged")
                 val remaining = snap.optInt("remaining", -1)
@@ -186,12 +188,13 @@ class CarWidget : AppWidgetProvider() {
                 val precond = snap.optBoolean("precond")
                 val rangeShown = if (s.distanceUnit == "mi") range * 0.621371 else range
 
-                v.setTextViewText(R.id.w_battery_label, tr(if (snap.optBoolean("fuel")) "Fuel" else "Battery"))
+                v.setTextViewText(R.id.w_battery_label, tr(if (fuelOnly) "Fuel" else "Battery"))
                 v.setTextViewText(R.id.w_battery, tr(if (battery >= 0) "${battery.toInt()}" else "—"))
                 v.setTextViewText(R.id.w_range, tr(if (range >= 0) "≈${Math.round(rangeShown)}" else "—"))
                 v.setProgressBar(R.id.w_bar, 100, battery.coerceIn(0.0, 100.0).toInt(), false)
                 v.setViewVisibility(R.id.w_bolt, if (charging) View.VISIBLE else View.GONE)
-                v.setViewVisibility(R.id.w_plug, if (charging) View.GONE else View.VISIBLE)
+                v.setViewVisibility(R.id.w_plug, if (charging || fuelOnly) View.GONE else View.VISIBLE)
+                v.setViewVisibility(R.id.w_charging, if (fuelOnly) View.GONE else View.VISIBLE)
                 v.setTextViewText(R.id.w_charging, tr(when {
                     charging && remaining > 0 -> "Charging${snap.optString("kw").takeIf { it.isNotBlank() }?.let { " $it" } ?: ""} · ${remaining / 60} h ${remaining % 60} min left${snap.optInt("remainingTo", -1).takeIf { it > 0 }?.let { " to $it %" } ?: ""}"
                     charging -> "Charging${snap.optString("kw").takeIf { it.isNotBlank() }?.let { " $it" } ?: ""}"
@@ -268,7 +271,7 @@ class WidgetRefreshWorker(ctx: Context, params: WorkerParameters) : CoroutineWor
             }
             try {
                 // Show what the servers already know straight away; only wake the car if that data is old.
-                var st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(vehicle), null))
+                var st = no.lionflow.app.model.ChargePower.record(app.api.readStatus(vehicle))
                 explainer.cancel()
                 WidgetData.save(ctx, st)
                 val old = st.updatedAtMillis?.let { System.currentTimeMillis() - it > 5 * 60_000 } ?: true
@@ -276,7 +279,7 @@ class WidgetRefreshWorker(ctx: Context, params: WorkerParameters) : CoroutineWor
                     WidgetData.setRefresh(ctx, true, "Waking the car…")
                     try { no.lionflow.app.work.Waker.wake(app) } catch (_: Exception) { }
                     try {
-                        st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(vehicle), null))
+                        st = no.lionflow.app.model.ChargePower.record(app.api.readStatus(vehicle))
                     } catch (_: Exception) { }
                     WidgetData.save(ctx, st)
                 }

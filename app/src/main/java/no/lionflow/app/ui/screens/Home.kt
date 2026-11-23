@@ -270,7 +270,7 @@ private fun UpdateCard(vm: AppViewModel, ui: UiState) {
 private fun BatteryCard(vm: AppViewModel, ui: UiState, s: AppSettings) {
     val c = LocalLf.current
     val st = ui.status
-    LfCard(onClick = { vm.setTab(Tab.Charging) }, radius = 28.dp, padding = androidx.compose.foundation.layout.PaddingValues(22.dp)) {
+    LfCard(onClick = if (no.lionflow.app.ui.Caps.battery(st)) ({ vm.setTab(Tab.Charging) }) else null, radius = 28.dp, padding = androidx.compose.foundation.layout.PaddingValues(22.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(if (st?.energyType == "Fuel") "Fuel" else "Battery", style = Type.body, color = c.muted)
@@ -294,7 +294,7 @@ private fun BatteryCard(vm: AppViewModel, ui: UiState, s: AppSettings) {
         }
         Spacer(Modifier.height(6.dp))
         ProgressBar(((st?.batteryPct ?: 0.0) / 100.0).toFloat(), c.meter)
-        Row(Modifier.fillMaxWidth().padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        if (no.lionflow.app.ui.Caps.battery(st)) Row(Modifier.fillMaxWidth().padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             LfIcon(if (st?.isCharging == true) LfIcons.Bolt else LfIcons.Plug, if (st?.isCharging == true) c.accentInk else c.text2, 20.dp)
             Text(chargingLine(st), style = Type.body, color = c.text2, modifier = Modifier.weight(1f))
         }
@@ -575,7 +575,7 @@ private fun HomeMain(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolea
     }
 
     // Battery (on wide screens the charging card in the right column already shows it)
-    if (!wide) LfCard(onClick = { vm.setTab(Tab.Charging) }, padding = androidx.compose.foundation.layout.PaddingValues(20.dp)) {
+    if (!wide || !no.lionflow.app.ui.Caps.battery(st)) LfCard(onClick = if (no.lionflow.app.ui.Caps.battery(st)) ({ vm.setTab(Tab.Charging) }) else null, padding = androidx.compose.foundation.layout.PaddingValues(20.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
             Column(Modifier.weight(1f)) {
                 Text(if (ui.status?.energyType == "Fuel") "Fuel" else "Battery", style = Type.small, color = c.muted)
@@ -590,7 +590,7 @@ private fun HomeMain(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolea
             }
         }
         ProgressBar(((st?.batteryPct ?: 0.0) / 100.0).toFloat(), c.meter)
-        Row(Modifier.fillMaxWidth()) {
+        if (no.lionflow.app.ui.Caps.battery(st)) Row(Modifier.fillMaxWidth()) {
             Text(chargingLine(st), style = Type.small, color = c.muted, modifier = Modifier.weight(1f))
             st?.chargingMode?.takeIf { st.isCharging }?.let { Text(if (it == "Quick") "Fast charging" else "AC charging", style = Type.small, color = c.muted) }
         }

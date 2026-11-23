@@ -57,8 +57,8 @@ fun ChargingScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean)
     val confirm = LocalConfirm.current
     ScreenColumn(wide) {
         if (st?.energyType == "Fuel") {
-            ScreenHeader("Petrol / diesel car", "Charging")
-            LfCard { Text("This car has no battery to charge. Fuel level and range are on the Home screen.", style = Type.body, color = c.text2) }
+            ScreenHeader(ui.vehicle?.let(vm::vehicleKind) ?: s.carName, "Charging")
+            LfCard { Text("Charging controls are unavailable. Fuel level and range are on the Home screen.", style = Type.body, color = c.text2) }
             return@ScreenColumn
         }
         ScreenHeader(s.carName, "Charging")

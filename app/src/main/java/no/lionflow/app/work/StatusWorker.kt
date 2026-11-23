@@ -14,7 +14,6 @@ import androidx.work.WorkerParameters
 import no.lionflow.app.LionFlowApp
 import no.lionflow.app.MainActivity
 import no.lionflow.app.R
-import no.lionflow.app.model.VehicleStatus
 import org.json.JSONObject
 
 /**
@@ -30,20 +29,20 @@ class StatusWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
         if (!app.api.isSignedIn) return Result.success()
         val vehicle = app.api.cachedVehicle() ?: return Result.success()
         return try {
-            val st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(vehicle), null))
+            val st = no.lionflow.app.model.ChargePower.record(app.api.readStatus(vehicle))
             no.lionflow.app.widget.WidgetData.save(applicationContext, st)
             // While charging, check again in ~10 minutes so the charging log gets a good start/end.
             // LionFlow's own charge limit.
             // While pre-heating, a plugged-in car shows "charging" (the grid powers the heater): leave charging alone then.
             // Only one charging action per check, so commands don't run into each other.
-            if (!st.preconditioningOn) run {
+            if (st.energyType != "Fuel" && !st.preconditioningOn) run {
                 ChargeLimit.check(app, st)?.let { msg -> notify(7, "Charge limit", msg); return@run }
                 if (ChargeLimit.restoreWhenUnplugged(app, st)) return@run
                 ChargeLimit.force(app, st)?.let { msg -> if (msg.isNotBlank()) notify(7, "Charge limit", msg); return@run }
                 ChargeLimit.recheck(app, st)?.let { msg -> notify(7, "Charge limit", msg); return@run }
                 ChargeWindow.check(app, st)?.let { msg -> notify(8, "Charging times", msg) }
             }
-            ChargeWindow.schedule(app)
+            if (st.energyType != "Fuel") ChargeWindow.schedule(app)
             if (st.isCharging) {
                 val near = s.chargeLimitOn && (st.batteryPct ?: 0.0) >= s.chargeLimitPct - 6
                 androidx.work.WorkManager.getInstance(applicationContext).enqueueUniqueWork(
@@ -76,7 +75,7 @@ class StatusWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
             if (s.notifyUnlocked && unlockedSince > 0 && now - unlockedSince > 10 * 60_000 && !prev.optBoolean("unlockedNotified"))
                 notify(4, "Car left unlocked", "Your car has been parked unlocked for a while.")
 
-            val lowNow = (st.batteryPct ?: 100.0) < 20.0
+            val lowNow = st.energyType != "Fuel" && (st.batteryPct ?: 100.0) < 20.0
             if (s.notifyLowBattery && lowNow && !prev.optBoolean("low"))
                 notify(5, "Low battery", "Battery is at ${st.batteryPct?.toInt()} %.")
 

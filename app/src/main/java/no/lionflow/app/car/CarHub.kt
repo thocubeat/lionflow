@@ -113,7 +113,7 @@ object CarHub {
                 if (v == null) diag = "no vehicle found on the account"
                 if (v != null) {
                     diag = "vehicle ok, getting status…"
-                    val st = no.lionflow.app.model.ChargePower.record(VehicleStatus.parse(app.api.status(v), null))
+                    val st = no.lionflow.app.model.ChargePower.record(app.api.readStatus(v))
                     _status.value = st
                     diag = "status ok"
                     lastRefresh = System.currentTimeMillis()
@@ -205,7 +205,7 @@ object CarHub {
         scope.launch {
             try {
                 val v = app.api.currentVehicle() ?: return@launch
-                val all = app.api.allTrips(v, System.currentTimeMillis() - 30 * 86_400_000L).trips.map { Trip.parse(it) }
+                val all = app.api.parseTrips(v, app.api.allTrips(v, System.currentTimeMillis() - 30 * 86_400_000L).trips)
                 _trips.value = all.distinctBy { it.id }.sortedByDescending { it.startMillis ?: 0L }
             } catch (e: Exception) {
                 tripsLoadedAt = 0L
@@ -273,10 +273,11 @@ object CarHub {
     fun detailLine(ctx: Context): String {
         val st = _status.value ?: return "LionFlow"
         val s = app(ctx).settings.value
-        val parts = mutableListOf(chargingLine(st))
+        val parts = mutableListOf<String>()
+        if (st.energyType != "Fuel") parts += chargingLine(st)
         st.outsideTempC?.let { parts += "${fmtTemp(it, s)} outside" }
         if (st.preconditioningOn) parts += "pre-heating"
-        return parts.joinToString(" · ")
+        return parts.joinToString(" · ").ifBlank { "LionFlow" }
     }
 
     fun doorsLine(st: VehicleStatus) = when {

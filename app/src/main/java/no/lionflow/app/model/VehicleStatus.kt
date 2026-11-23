@@ -45,7 +45,8 @@ data class VehicleStatus(
     val chargeType: String? = null,
     val energyType: String = "Electric", // Electric | Fuel | Hybrid
     val fuelPct: Double? = null,
-    val fuelRangeKm: Double? = null,     // Partial = car's daily charge limit on, Full = charge to 100 % // car sent no/0 range; LionFlow estimated it
+    val fuelRangeKm: Double? = null,
+    val isMildHybrid: Boolean = false,
 ) {
     val isCharging: Boolean get() = chargingStatus == "InProgress"
 
@@ -80,9 +81,20 @@ data class VehicleStatus(
             return level
         }
 
-        fun parse(j: JSONObject, maintenance: JSONObject?): VehicleStatus {
+        fun parse(
+            j: JSONObject,
+            maintenance: JSONObject?,
+            mildHybrid: Boolean = false,
+            requireChargingEvidence: Boolean = false,
+        ): VehicleStatus {
             val energies = j.optJSONArray("energies")?.objects().orEmpty()
-            val electric = energies.firstOrNull { it.optString("type") == "Electric" }
+            val reportedElectric = energies.firstOrNull { it.optString("type") == "Electric" }
+            val reportedCharging = reportedElectric?.obj("extension", "electric", "charging")
+            // Generic hybrid metadata needs positive evidence of an external charge connection.
+            val externalCharging = reportedCharging?.optBoolean("plugged") == true ||
+                reportedCharging?.str("status") in setOf("InProgress", "Finished")
+            val fuelOnly = mildHybrid || (requireChargingEvidence && !externalCharging)
+            val electric = reportedElectric.takeUnless { fuelOnly }
             val fuel = energies.firstOrNull { it.optString("type") == "Fuel" }
             val charging = electric?.obj("extension", "electric", "charging")
             val health = electric?.obj("extension", "electric", "battery", "health")
@@ -111,7 +123,13 @@ data class VehicleStatus(
                 // tank as its battery: some (older DS7 / 3008 Hybrid4) leave out the battery level when it is empty.
                 batteryPct = if (electric != null) hybridLevel(electric, fuel, charging) else fuel?.num("level"),
                 rangeKm = if (electric != null) electric.num("autonomy") ?: (if (fuel != null && electric.num("level") == null) 0.0 else null) else fuel?.num("autonomy"),
-                energyType = when { electric != null && fuel != null -> "Hybrid"; electric == null && fuel != null -> "Fuel"; else -> "Electric" },
+                // Non-plug-in hybrids use the existing fuel-only display capabilities.
+                energyType = when {
+                    fuelOnly || (electric == null && fuel != null) -> "Fuel"
+                    electric != null && fuel != null -> "Hybrid"
+                    else -> "Electric"
+                },
+                isMildHybrid = mildHybrid,
                 fuelPct = fuel?.num("level"),
                 fuelRangeKm = fuel?.num("autonomy"),
                 plugged = charging?.optBoolean("plugged") ?: false,
@@ -187,8 +205,8 @@ data class Trip(
             return listOf(1.0, 0.1, 0.01, 0.001).map { raw * it }.firstOrNull { it in 2.0..30.0 }
         }
 
-        fun parse(t: JSONObject): Trip {
-            val electric = t.optJSONArray("energyConsumptions")?.objects()?.firstOrNull { it.optString("type") == "Electric" }
+        fun parse(t: JSONObject, mildHybrid: Boolean = false): Trip {
+            val electric = t.optJSONArray("energyConsumptions")?.objects()?.firstOrNull { !mildHybrid && it.optString("type") == "Electric" }
             val fuel = t.optJSONArray("energyConsumptions")?.objects()?.firstOrNull { it.optString("type") == "Fuel" }
             val km = t.num("distance") ?: 0.0
             val liters = litersOf(fuel?.num("consumption"), km)

@@ -363,7 +363,8 @@ class TripsScreen(ctx: CarContext) : Screen(ctx) {
         val weekAgo = System.currentTimeMillis() - 7 * 86_400_000L
         val week = trips.filter { (it.startMillis ?: 0L) >= weekAgo }
         val km = week.sumOf { it.distanceKm }
-        val kwh = week.mapNotNull { it.kwh }.sum()
+        val mildHybrid = CarHub.status.value?.isMildHybrid == true
+        val kwh = if (mildHybrid) 0.0 else week.mapNotNull { it.kwh }.sum()
         val avg = if (km > 1 && kwh > 0) kwh / km * 100 else null
         list.addItem(Row.Builder()
             .setTitle(tr("Last 7 days: ${fmtDistance(km, s)} · ${week.size} trips"))
@@ -378,7 +379,8 @@ class TripsScreen(ctx: CarContext) : Screen(ctx) {
             val whenTxt = start?.let { d -> (if (day.format(d) == today) "Today" else day.format(d)) + " " + time.format(d) } ?: "Trip"
             val bits = mutableListOf<String>()
             t.durationSec?.takeIf { it > 0 }?.let { sec -> val m = (sec / 60).toInt(); bits += if (m >= 60) "${m / 60} h ${m % 60} min" else "$m min" }
-            t.avgKwhPer100?.let { bits += consumption(it, s) }
+            if (mildHybrid) t.avgLPer100?.let { bits += String.format(java.util.Locale.US, "%.1f l/100 km", it) }
+            else t.avgKwhPer100?.let { bits += consumption(it, s) }
             t.avgSpeedKmh?.takeIf { it > 0 }?.let { v -> bits += if (s.distanceUnit == "mi") "${Math.round(v * 0.621371)} mph avg" else "${Math.round(v)} km/h avg" }
             list.addItem(Row.Builder().setTitle(tr("$whenTxt · ${fmtDistance(t.distanceKm, s)}"))
                 .addText(tr(bits.joinToString(" · ").ifBlank { "No details" })).build())

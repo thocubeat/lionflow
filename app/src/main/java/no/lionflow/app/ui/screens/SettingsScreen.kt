@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import no.lionflow.app.BuildConfig
+import no.lionflow.app.api.MildHybridDetection
 import no.lionflow.app.data.AppSettings
 import no.lionflow.app.ui.AppViewModel
 import no.lionflow.app.ui.LocalPlatform
@@ -57,6 +58,7 @@ import no.lionflow.app.ui.theme.Type
 @Composable
 fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
     val c = LocalLf.current
+    val showChargingSettings = no.lionflow.app.ui.Caps.battery(ui.status)
     val platform = LocalPlatform.current
     val ctx = LocalContext.current
     var editName by remember { mutableStateOf(false) }
@@ -118,14 +120,34 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
                     }
                 }
             }
+            if (!vm.isDemo) ui.vehicle?.let { vehicle ->
+                var override by remember(vehicle.vin) { mutableStateOf(vm.settings.mildHybridOverride(vehicle.vin)) }
+                val detection = vehicle.mildHybridDetection
+                val result = when (detection) {
+                    MildHybridDetection.VehicleMetadata -> "Automatic · Recognized from vehicle metadata"
+                    MildHybridDetection.ModelName -> "Automatic · Recognized from model name"
+                    MildHybridDetection.OtherPowertrain -> "Automatic · Different powertrain"
+                    MildHybridDetection.InsufficientMetadata -> "Automatic · Insufficient vehicle information"
+                }
+                Divider()
+                DropdownRow("48 V mild hybrid", result,
+                    listOf(0 to "Automatic", 1 to "On", 2 to "Off"),
+                    when (override) { null -> 0; true -> 1; false -> 2 },
+                ) { mode ->
+                    override = if (mode == 0) null else mode == 1
+                    vm.setMildHybridOverride(override)
+                }
+            }
             Divider()
             Text("Add another car or account", style = Type.small.copy(fontWeight = FontWeight.SemiBold), color = c.accentInk,
                 modifier = Modifier.fillMaxWidth().clickable { vm.addAccount() }.padding(horizontal = 16.dp, vertical = 12.dp))
             Text("Another brand (for example Citroën next to Peugeot) needs its own sign-in. Your other accounts stay signed in.", style = Type.tiny, color = c.muted,
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp))
             Divider()
-            Text("Reload cars from MyPeugeot", style = Type.small.copy(fontWeight = FontWeight.SemiBold), color = c.accentInk,
-                modifier = Modifier.fillMaxWidth().clickable { vm.reloadVehicles() }.padding(horizontal = 16.dp, vertical = 12.dp))
+            Text(if (ui.reloadingVehicles) "Reloading cars…" else "Reload cars from MyPeugeot",
+                style = Type.small.copy(fontWeight = FontWeight.SemiBold), color = c.accentInk,
+                modifier = Modifier.fillMaxWidth().clickable(enabled = !ui.reloadingVehicles) { vm.reloadVehicles() }
+                    .padding(horizontal = 16.dp, vertical = 12.dp))
         }
 
         SectionTitle("Units")
@@ -138,17 +160,23 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
                 set { it.copy(timeFormat = v) }
                 no.lionflow.app.ui.l10n.TimeFmt.setPreference(ctx, v)
             }
-            Divider()
-            LinkRow("Battery size", if (s.batteryKwh > 0) "${s.batteryKwh.toInt()} kWh usable · used to work out charging kW" else "Automatic (from the car) · used to work out charging kW and energy", LfIcons.Bolt, last = true) { editBattery = true }
+            if (showChargingSettings) {
+                Divider()
+                LinkRow("Battery size", if (s.batteryKwh > 0) "${s.batteryKwh.toInt()} kWh usable · used to work out charging kW" else "Automatic (from the car) · used to work out charging kW and energy", LfIcons.Bolt, last = true) { editBattery = true }
+            }
         }
 
         SectionTitle("Notifications")
         GroupCard {
-            ToggleRow("Charging complete", "When charging finishes", s.notifyChargeDone) { v -> set { it.copy(notifyChargeDone = v) } }
-            ToggleRow("Charging stopped", "If charging is interrupted", s.notifyChargeStopped) { v -> set { it.copy(notifyChargeStopped = v) } }
+            if (showChargingSettings) {
+                ToggleRow("Charging complete", "When charging finishes", s.notifyChargeDone) { v -> set { it.copy(notifyChargeDone = v) } }
+                ToggleRow("Charging stopped", "If charging is interrupted", s.notifyChargeStopped) { v -> set { it.copy(notifyChargeStopped = v) } }
+            }
             ToggleRow("Pre-heating finished", "When pre-heating has run", s.notifyPreheat) { v -> set { it.copy(notifyPreheat = v) } }
             ToggleRow("Car left unlocked", "After about 10 minutes parked and unlocked", s.notifyUnlocked) { v -> set { it.copy(notifyUnlocked = v) } }
-            ToggleRow("Low battery", "Below 20 %", s.notifyLowBattery) { v -> set { it.copy(notifyLowBattery = v) } }
+            if (showChargingSettings) {
+                ToggleRow("Low battery", "Below 20 %", s.notifyLowBattery) { v -> set { it.copy(notifyLowBattery = v) } }
+            }
             ToggleRow("Service reminders", "Before the next service is due", s.notifyService, showDivider = false) { v -> set { it.copy(notifyService = v) } }
         }
         Text("Checked in the background about every 30 minutes.", style = Type.tiny, color = c.muted, modifier = Modifier.padding(start = 4.dp))

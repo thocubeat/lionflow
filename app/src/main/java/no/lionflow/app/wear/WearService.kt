@@ -58,7 +58,7 @@ class WearService : WearableListenerService() {
         if (!app.api.isSignedIn) return JSONObject().put("error", tr("Open LionFlow to sign in"))
         return try {
             val v = app.api.currentVehicle() ?: return JSONObject().put("error", tr("No car on this account"))
-            val st = ChargePower.record(VehicleStatus.parse(app.api.status(v), null))
+            val st = ChargePower.record(app.api.readStatus(v))
             no.lionflow.app.widget.WidgetData.save(applicationContext, st)
             val s = app.settings.value
             val (today, yesterday) = try { distances(v) } catch (_: Exception) { null to null }
@@ -124,7 +124,7 @@ class WearService : WearableListenerService() {
                     "lock" -> app.remote.lock(true, t)
                     "lights" -> app.remote.lights(t)
                     else -> {
-                        val st = try { app.api.currentVehicle()?.let { VehicleStatus.parse(app.api.status(it), null) } } catch (_: Exception) { null }
+                        val st = try { app.api.currentVehicle()?.let { app.api.readStatus(it) } } catch (_: Exception) { null }
                         app.remote.preconditioning(true, st?.programsJson() ?: JSONObject(), t)
                     }
                 }
