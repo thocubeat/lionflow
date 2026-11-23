@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import no.lionflow.app.api.TripHistory
 import no.lionflow.app.data.AppSettings
 import no.lionflow.app.ui.AppViewModel
 import no.lionflow.app.ui.Busy
@@ -58,7 +59,6 @@ import no.lionflow.app.ui.fmtDistance
 import no.lionflow.app.ui.theme.LocalLf
 import no.lionflow.app.ui.theme.Type
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -79,8 +79,10 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
     var openRoute by remember { mutableStateOf<no.lionflow.app.route.Route?>(null) }
     LaunchedEffect(Unit) { if (ui.trips.isEmpty() && !ui.tripsLoading) vm.loadTrips() }
     val days = if (period == "week") 7 else 30
-    val since = System.currentTimeMillis() - days * 86_400_000L
-    val list = ui.trips.filter { (it.startMillis ?: 0L) >= since }
+    val now = if (ui.now > 0L) ui.now else System.currentTimeMillis()
+    val since = TripHistory.cutoff(now, days)
+    val list = TripHistory.inPeriod(ui.trips, now, days)
+    var visibleTrips by remember(period) { mutableStateOf(50) }
     val km = list.sumOf { it.distanceKm }
     val kwh = list.mapNotNull { it.kwh }.sum()
     val avg = if (km > 0 && kwh > 0) kwh / km * 100 else null
@@ -105,14 +107,13 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
             // bars per day (week) or per week (month)
             val buckets = if (period == "week") 7 else 5
             val bucketMs = if (period == "week") 86_400_000L else 7 * 86_400_000L
-            val start = startOfToday() - (buckets - 1) * bucketMs
             val sums = DoubleArray(buckets)
             for (t in list) {
-                val i = (((t.startMillis ?: 0L) - start) / bucketMs).toInt()
+                val i = (((t.startMillis ?: since) - since) / bucketMs).toInt().coerceAtMost(buckets - 1)
                 if (i in 0 until buckets) sums[i] += t.distanceKm
             }
             val max = (sums.maxOrNull() ?: 0.0).coerceAtLeast(1.0)
-            val labels = if (period == "week") (0 until 7).map { SimpleDateFormat("EEE", no.lionflow.app.ui.l10n.L10n.locale).format(Date(start + it * bucketMs)).take(2) }
+            val labels = if (period == "week") (0 until 7).map { SimpleDateFormat("EEE", no.lionflow.app.ui.l10n.L10n.locale).format(Date(since + (it + 1) * bucketMs)).take(2) }
             else (0 until 5).map { "W${it + 1}" }
             Row(Modifier.fillMaxWidth().height(96.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Bottom) {
                 for (i in 0 until buckets) {
@@ -136,7 +137,7 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
         if (list.isNotEmpty()) {
             LfCard(padding = PaddingValues(0.dp)) {
                 val fmt = SimpleDateFormat(no.lionflow.app.ui.l10n.TimeFmt.pattern("EEE d MMM · HH:mm"), no.lionflow.app.ui.l10n.L10n.locale)
-                list.take(50).forEachIndexed { i, t ->
+                list.take(visibleTrips).forEachIndexed { i, t ->
                     if (i > 0) Divider()
                     val route = no.lionflow.app.route.Routes.forTrip(ui.routes, t.startMillis, t.endMillis)
                     Row(Modifier.fillMaxWidth().clickable { openTrip = t; openRoute = route }.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -159,6 +160,9 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
                     }
                 }
             }
+        }
+        if (visibleTrips < list.size) {
+            SecondaryButton("Show more", Modifier.fillMaxWidth()) { visibleTrips += 50 }
         }
         // Routes recorded on the phone that don't match a trip from Peugeot
         val unmatched = ui.routes.filter { r -> r.startMillis >= since && ui.trips.none { t -> no.lionflow.app.route.Routes.forTrip(listOf(r), t.startMillis, t.endMillis) != null } }
@@ -272,10 +276,6 @@ private fun TripDetail(vm: AppViewModel, trip: no.lionflow.app.model.Trip?, rout
         }
     }
 }
-
-private fun startOfToday(): Long = Calendar.getInstance().apply {
-    set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-}.timeInMillis
 
 @Composable
 private fun Stat(modifier: Modifier, value: String, label: String) {

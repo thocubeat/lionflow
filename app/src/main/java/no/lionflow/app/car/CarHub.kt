@@ -1,6 +1,7 @@
 package no.lionflow.app.car
 
 import android.content.Context
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,6 +20,7 @@ import no.lionflow.app.api.NobilApi
 import no.lionflow.app.api.OsmChargers
 import no.lionflow.app.api.RemoteControl
 import no.lionflow.app.api.Tracker
+import no.lionflow.app.api.TripHistory
 import no.lionflow.app.api.chargerFromJson
 import no.lionflow.app.api.objects
 import no.lionflow.app.api.toJson
@@ -205,20 +207,11 @@ object CarHub {
         scope.launch {
             try {
                 val v = app.api.currentVehicle() ?: return@launch
-                val since = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
-                    .apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
-                    .format(java.util.Date(System.currentTimeMillis() - 30 * 86_400_000L))
-                val all = mutableListOf<Trip>()
-                var page: String? = null
-                var guard = 0
-                do {
-                    val j = app.api.trips(v, since, page)
-                    j.optJSONObject("_embedded")?.optJSONArray("trips")?.objects()?.forEach { all += Trip.parse(it) }
-                    page = j.optJSONObject("_links")?.optJSONObject("next")?.optString("href")
-                        ?.substringAfter("pageToken=", "")?.substringBefore("&")?.ifEmpty { null }
-                    guard++
-                } while (page != null && guard < 50)
-                _trips.value = all.distinctBy { it.id }.sortedByDescending { it.startMillis ?: 0L }
+                val since = TripHistory.cutoff(System.currentTimeMillis(), 30)
+                val history = TripHistory.load(since) { sinceIso, token -> app.api.trips(v, sinceIso, token) }
+                _trips.value = history.trips
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 tripsLoadedAt = 0L
                 if (_trips.value == null) _trips.value = emptyList()

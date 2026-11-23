@@ -6,9 +6,7 @@ import no.lionflow.app.api.objects
 import no.lionflow.app.api.str
 import org.json.JSONArray
 import org.json.JSONObject
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
+import java.time.OffsetDateTime
 
 data class Program(val slot: Int, val days: List<String>, val hour: Int, val minute: Int, val enabled: Boolean)
 
@@ -150,16 +148,13 @@ data class VehicleStatus(
             return h to mi
         }
 
+        private val basicOffset = Regex("([+-]\\d{2})(\\d{2})$")
+
         fun parseIso(s: String?): Long? {
             if (s.isNullOrBlank()) return null
-            val patterns = listOf("yyyy-MM-dd'T'HH:mm:ss'Z'", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm:ssXXX", "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-            for (p in patterns) {
-                try {
-                    val f = SimpleDateFormat(p, Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }
-                    return f.parse(s)?.time
-                } catch (_: Exception) {}
-            }
-            return null
+            return runCatching {
+                OffsetDateTime.parse(s.replace(basicOffset, "$1:$2")).toInstant().toEpochMilli()
+            }.getOrNull()
         }
     }
 }
@@ -193,8 +188,9 @@ data class Trip(
             val km = t.num("distance") ?: 0.0
             val liters = litersOf(fuel?.num("consumption"), km)
             return Trip(
-                id = t.optString("id"),
-                startMillis = VehicleStatus.parseIso(t.str("startedAt") ?: t.str("createdAt")),
+                id = t.str("id")?.trim().orEmpty(),
+                startMillis = VehicleStatus.parseIso(t.str("startedAt"))
+                    ?: VehicleStatus.parseIso(t.str("createdAt")),
                 endMillis = VehicleStatus.parseIso(t.str("stoppedAt")),
                 distanceKm = t.num("distance") ?: 0.0,
                 durationSec = t.num("duration"),

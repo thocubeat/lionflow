@@ -10,6 +10,7 @@ import android.location.LocationManager
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,7 @@ import no.lionflow.app.api.AuthExpiredException
 import no.lionflow.app.api.Charger
 import no.lionflow.app.api.CommandResult
 import no.lionflow.app.api.Tracker
+import no.lionflow.app.api.TripHistory
 import no.lionflow.app.api.NobilApi
 import no.lionflow.app.api.Vehicle
 import no.lionflow.app.api.Weather
@@ -37,7 +39,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.TimeZone
 
 enum class Phase { Loading, SignedOut, SetupRemote, Locked, Ready }
 enum class Tab { Home, Charging, Map, Climate, Service, Trips, Settings }
@@ -161,6 +162,14 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     /** Makes sure trips this far back are loaded (for statistics over a longer time). */
     fun ensureTrips(days: Int) { if (days > tripsDays && !_ui.value.tripsLoading) loadTrips(days) }
     private var tripsDays = 30
+    private var tripsJob: Job? = null
+
+    private fun resetTripLoad() {
+        tripsJob?.cancel()
+        tripsJob = null
+        tripsDays = 30
+        tripsNone = false
+    }
     val hasPin: Boolean get() = remote.hasPin
 
     init {
@@ -201,7 +210,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         no.lionflow.app.model.ChargeLog.setVin(v.vin)
         no.lionflow.app.model.ChargePower.setVin(v.vin)
         no.lionflow.app.widget.WidgetData.clear(getApplication())
-        _ui.update { it.copy(vehicle = v, status = null, photoPath = settings.photoFor(v.vin)) }
+        resetTripLoad()
+        _ui.update { it.copy(vehicle = v, status = null, trips = emptyList(), tripsLoading = false, photoPath = settings.photoFor(v.vin)) }
+        loadTrips()
         refresh()
     }
 
@@ -241,6 +252,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Re-read the active car from storage (after the widget, watch or car screen switched it). */
     private fun resyncFromStore() {
+        resetTripLoad()
         ticker?.cancel()
         _ui.value = UiState(photoPath = curPhoto(), serviceHistory = loadHistory())
         decideStartPhase()
@@ -258,6 +270,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     /** Start signing in to another account (maybe another brand). The current one stays signed in. */
     fun addAccount() {
         if (isDemo) return
+        resetTripLoad()
         val list = settings.accounts()
         val id = "a" + (list.mapNotNull { it.id.removePrefix("a").toIntOrNull() }.maxOrNull() ?: 1).plus(1)
         _ui.value.vehicle?.let { settings.setNameFor(it.vin, settings.value.carName) }
@@ -382,16 +395,18 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun showDemo() {
+        resetTripLoad()
         val d = no.lionflow.app.demo.Demo
         no.lionflow.app.model.ChargeLog.enterDemo(getApplication(), d.VIN, d.sessions(), d.places())
         val now = System.currentTimeMillis()
         java.io.File(getApplication<Application>().cacheDir, "demo_photo.jpg").delete()
-        _ui.update { it.copy(phase = Phase.Ready, photoPath = null, vehicle = d.vehicle, vehicles = listOf(d.vehicle), status = d.status(), trips = d.trips(), lastRefresh = now, now = now) }
+        _ui.update { it.copy(phase = Phase.Ready, photoPath = null, vehicle = d.vehicle, vehicles = listOf(d.vehicle), status = d.status(), trips = d.trips(), tripsLoading = false, lastRefresh = now, now = now) }
         startTicker()
         loadLocationAndWeather()
     }
 
     fun exitDemo() {
+        resetTripLoad()
         val app = getApplication<Application>()
         no.lionflow.app.demo.Demo.setOn(app, false)
         no.lionflow.app.model.ChargeLog.exitDemo()
@@ -405,6 +420,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     fun signOut() {
         if (isDemo) { exitDemo(); return }
+        resetTripLoad()
         remote.forget()
         api.signOut()
         settings.clearPersonal()
@@ -941,38 +957,31 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     var tripsNone by androidx.compose.runtime.mutableStateOf(false)
 
     fun loadTrips(daysAsked: Int = 30) {
-        val days = maxOf(daysAsked, tripsDays).coerceAtMost(1100)
-        tripsDays = days
         reloadRoutes()
         if (isDemo) { _ui.update { it.copy(trips = no.lionflow.app.demo.Demo.trips(), tripsLoading = false) }; return }
         val v = _ui.value.vehicle ?: return
-        viewModelScope.launch {
+        val days = maxOf(daysAsked, tripsDays).coerceAtMost(1100)
+        if (tripsJob?.isActive == true && days == tripsDays) return
+        tripsJob?.cancel()
+        tripsDays = days
+        val profile = api.profile
+        fun isCurrent() = api.profile == profile && _ui.value.vehicle?.id == v.id
+
+        tripsJob = viewModelScope.launch {
             _ui.update { it.copy(tripsLoading = true) }
             try {
-                val since = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", no.lionflow.app.ui.l10n.L10n.locale)
-                    .apply { timeZone = TimeZone.getTimeZone("UTC") }
-                    .format(Date(System.currentTimeMillis() - days * 86_400_000L))
-                val all = mutableListOf<Trip>()
-                var page: String? = null
-                var guard = 0
-                do {
-                    // "404 / 40400 No trip was found" just means the car has no trips in this period (some cars say so on every call).
-                    val j = try { api.trips(v, since, page) } catch (e: no.lionflow.app.api.ApiException) {
-                        if (e.code == 404) { if (guard == 0) tripsNone = true; remote.addLog("trips: ${e.message}"); break } else throw e
-                    }
-                    if (guard == 0) tripsNone = false
-                    j.optJSONObject("_embedded")?.optJSONArray("trips")?.objects()?.forEach { all += Trip.parse(it) }
-                    val next = j.optJSONObject("_links")?.optJSONObject("next")?.optString("href")
-                    page = next?.substringAfter("pageToken=", "")?.substringBefore("&")?.ifEmpty { null }
-                    guard++
-                } while (page != null && guard < 50)
-                remote.addLog("trips: ${all.size} from the last $days days")
-                val imported = loadImportedTrips()
-                val merged = (all + imported).distinctBy { it.id }.sortedByDescending { it.startMillis ?: 0L }
+                val since = TripHistory.cutoff(System.currentTimeMillis(), days)
+                val result = TripHistory.load(since) { sinceIso, token -> api.trips(v, sinceIso, token) }
+                if (!isCurrent()) return@launch
+                tripsNone = result.noTrips
+                val merged = (result.trips + loadImportedTrips()).distinctBy { it.id }.sortedByDescending { it.startMillis ?: 0L }
                 _ui.update { it.copy(trips = merged, tripsLoading = false) }
                 autoTagNow()
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                _ui.update { it.copy(tripsLoading = false, trips = loadImportedTrips()) }
+                if (!isCurrent()) return@launch
+                _ui.update { it.copy(tripsLoading = false, trips = it.trips.ifEmpty { loadImportedTrips() }) }
                 toast("Couldn't load trips — ${no.lionflow.app.api.Http.describe(e)}")
             }
         }

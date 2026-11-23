@@ -8,6 +8,7 @@ import no.lionflow.app.data.SecureStore
 import no.lionflow.app.data.SettingsStore
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
@@ -241,10 +242,16 @@ class StellantisApi(private val ctx: Context, private val secure: SecureStore, p
 
     /** One page of trips since the given ISO timestamp. */
     suspend fun trips(v: Vehicle, sinceIso: String?, pageToken: String? = null): JSONObject = authed { token ->
-        var url = "$API/connectedcar/v4/user/vehicles/${v.id}/trips?${clientQuery()}&distance=0.1-&pageSize=60"
-        if (sinceIso != null) url += "&timestamps=$sinceIso/"
-        if (pageToken != null) url += "&pageToken=$pageToken"
-        Http.json(carHeaders(Request.Builder().url(url), token).get().build()) as? JSONObject ?: JSONObject()
+        val url = "$API/connectedcar/v4/user/vehicles/${v.id}/trips?${clientQuery()}"
+            .toHttpUrl().newBuilder()
+            .addQueryParameter("distance", "0.1-")
+            .addQueryParameter("pageSize", "60")
+            .apply {
+                if (sinceIso != null) addQueryParameter("timestamps", "$sinceIso/")
+                if (pageToken != null) addQueryParameter("pageToken", pageToken)
+            }.build()
+        Http.json(carHeaders(Request.Builder().url(url), token).get().build()) as? JSONObject
+            ?: throw ApiException(0, "Invalid trips response")
     }
 
     // ---------------- remote control setup ----------------
