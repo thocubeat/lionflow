@@ -175,6 +175,7 @@ data class Trip(
     val avgSpeedKmh: Double?,
     val liters: Double? = null,
     val avgLPer100: Double? = null,
+    val fuelUnitsEstimated: Boolean = false,
 ) {
     companion object {
         /** Peugeot doesn't document fuel units; pick the scale that gives a sane l/100 km (2–30). */
@@ -192,6 +193,7 @@ data class Trip(
             val fuel = t.optJSONArray("energyConsumptions")?.objects()?.firstOrNull { it.optString("type") == "Fuel" }
             val km = t.num("distance") ?: 0.0
             val liters = litersOf(fuel?.num("consumption"), km)
+            val avgLPer100 = liters?.let { it / km * 100 } ?: per100Of(fuel?.num("avgConsumption"))
             return Trip(
                 id = t.optString("id"),
                 startMillis = VehicleStatus.parseIso(t.str("startedAt") ?: t.str("createdAt")),
@@ -205,7 +207,8 @@ data class Trip(
                     ?: t.optJSONObject("kinetic")?.num("avgSpeed")?.let { v -> if (km > 0) v else null },
                 liters = liters,
                 // Work it out from fuel used and distance; the car's own average comes in different units (some trips were km/l).
-                avgLPer100 = liters?.let { it / km * 100 } ?: per100Of(fuel?.num("avgConsumption")),
+                avgLPer100 = avgLPer100,
+                fuelUnitsEstimated = liters != null || avgLPer100 != null,
             )
         }
     }

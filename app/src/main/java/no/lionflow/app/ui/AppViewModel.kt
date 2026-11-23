@@ -30,13 +30,14 @@ import no.lionflow.app.api.WeatherApi
 import no.lionflow.app.api.objects
 import no.lionflow.app.api.toJson
 import no.lionflow.app.model.Trip
+import no.lionflow.app.model.TripExport
+import no.lionflow.app.model.TripImport
 import no.lionflow.app.model.VehicleStatus
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 import java.util.TimeZone
 
 enum class Phase { Loading, SignedOut, SetupRemote, Locked, Ready }
@@ -981,40 +982,38 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun exportTripsCsv(): File {
         val dir = File(getApplication<Application>().cacheDir, "exports").apply { mkdirs() }
         val f = File(dir, "lionflow-trips.csv")
-        val iso = SimpleDateFormat("yyyy-MM-dd HH:mm", no.lionflow.app.ui.l10n.L10n.locale)
-        val sb = StringBuilder("id,start,end,distance_km,duration_min,energy_kwh,avg_kwh_per_100km,avg_speed_kmh,tag\n")
-        for (t in _ui.value.trips) {
-            sb.append(listOf(
-                t.id,
-                t.startMillis?.let { iso.format(Date(it)) } ?: "",
-                t.endMillis?.let { iso.format(Date(it)) } ?: "",
-                String.format(Locale.US, "%.1f", t.distanceKm),
-                t.durationSec?.let { String.format(Locale.US, "%.0f", it / 60) } ?: "",
-                t.kwh?.let { String.format(Locale.US, "%.2f", it) } ?: "",
-                t.avgKwhPer100?.let { String.format(Locale.US, "%.1f", it) } ?: "",
-                t.avgSpeedKmh?.let { String.format(Locale.US, "%.0f", it) } ?: "",
-                tags.tagOf(t.id)?.name?.replace(Regex("[,\\r\\n\"]"), " ").orEmpty(),
-            ).joinToString(",")).append('\n')
-        }
-        f.writeText(sb.toString())
+        f.writeText(TripExport.csv(_ui.value.trips) { tags.tagOf(it.id)?.name })
         return f
     }
 
     /** Imports trips from a CSV or .myp file (LionFlow's own, or the official app's export). */
     fun importTripsCsv(text: String) {
-        val rows = try { no.lionflow.app.model.TripImport.parse(text) } catch (e: Exception) { emptyList() }
+        val rows = try { TripImport.parse(text) } catch (e: Exception) { emptyList() }
         if (rows.isEmpty()) {
             toast(no.lionflow.app.ui.l10n.L10n.tr("Couldn't read any trips from that file. Send it to me on GitHub and I'll add support for it."))
             return
         }
         val arr = JSONArray(settings.importedTripsJson)
-        val have = (0 until arr.length()).mapNotNull { arr.optJSONObject(it)?.optString("id") }.toHashSet()
+        val have = arr.objects().associateBy { it.optString("id") }.toMutableMap()
+        val enriched = mutableMapOf<String, Trip>()
         var count = 0
         val tagged = HashMap<String, String>()
         for (r in rows) {
             val id = r.json.optString("id")
-            if (id in have) continue
-            have += id; arr.put(r.json); count++
+            val existing = have[id]
+            if (existing != null) {
+                if (!existing.has("liters") && !existing.has("avgL") && (r.json.has("liters") || r.json.has("avgL"))) {
+                    for (key in listOf("liters", "avgL", "fuelUnitsEstimated")) {
+                        r.json.opt(key)?.let { existing.put(key, it) }
+                    }
+                    enriched[id] = TripImport.restore(existing)
+                    count++
+                }
+                continue
+            }
+            have[id] = r.json
+            arr.put(r.json)
+            count++
             r.tag?.let { tagged[id] = it }
         }
         settings.importedTripsJson = arr.toString()
@@ -1022,22 +1021,18 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             tagged[t.id]?.let { name -> tags.set(t, (tags.byName(name) ?: tags.create(name, tags.data.tags.size % no.lionflow.app.model.TripTags.COLORS)).id) }
         }
         toast("Imported $count trips")
-        _ui.update { s -> s.copy(trips = (s.trips + loadImportedTrips()).distinctBy { it.id }.sortedByDescending { it.startMillis ?: 0L }) }
+        _ui.update { s ->
+            val trips = s.trips.map { trip ->
+                val imported = enriched[trip.id]
+                if (imported == null || trip.liters != null || trip.avgLPer100 != null) trip
+                else trip.copy(liters = imported.liters, avgLPer100 = imported.avgLPer100, fuelUnitsEstimated = imported.fuelUnitsEstimated)
+            }
+            s.copy(trips = (trips + loadImportedTrips()).distinctBy { it.id }.sortedByDescending { it.startMillis ?: 0L })
+        }
     }
 
     private fun loadImportedTrips(): List<Trip> = try {
-        JSONArray(settings.importedTripsJson).objects().map { o ->
-            Trip(
-                id = o.optString("id"),
-                startMillis = o.optLong("start").takeIf { it > 0 },
-                endMillis = o.optLong("end").takeIf { it > 0 },
-                distanceKm = o.optDouble("km", 0.0),
-                durationSec = o.optDouble("min", 0.0) * 60,
-                kwh = o.optDouble("kwh", 0.0).takeIf { it > 0 },
-                avgKwhPer100 = o.optDouble("avg", 0.0).takeIf { it > 0 },
-                avgSpeedKmh = o.optDouble("speed", 0.0).takeIf { it > 0 },
-            )
-        }
+        JSONArray(settings.importedTripsJson).objects().map(TripImport::restore)
     } catch (_: Exception) { emptyList() }
 
     // ---------------- service history & photo ----------------
