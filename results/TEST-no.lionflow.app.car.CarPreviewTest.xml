@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="no.lionflow.app.car.CarPreviewTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-11-24T21:54:50" hostname="runnervm0hi8g" time="7.03">
+  <properties/>
+  <testcase name="navigateRequests" classname="no.lionflow.app.car.CarPreviewTest" time="2.685"/>
+  <testcase name="pictures" classname="no.lionflow.app.car.CarPreviewTest" time="4.345"/>
+  <system-out><![CDATA[car pictures in /home/runner/work/lionflow/lionflow/app/build/car-previews: 34
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

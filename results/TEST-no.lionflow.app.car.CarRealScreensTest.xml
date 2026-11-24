@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="no.lionflow.app.car.CarRealScreensTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-24T21:54:57" hostname="runnervm0hi8g" time="1.981">
+  <properties/>
+  <testcase name="throughTheRealScreens" classname="no.lionflow.app.car.CarRealScreensTest" time="1.981"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
