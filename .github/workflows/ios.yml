@@ -74,3 +74,32 @@ jobs:
         with:
           name: LionFlow-ipa
           path: iOS/LionFlow.ipa
+
+      # Pictures of the app in demo mode, so every change can be looked at without a Mac. They go to the branch
+      # "ios-previews" (not part of the app).
+      - name: Build for the simulator
+        run: |
+          set -o pipefail
+          xcodebuild -project LionFlow.xcodeproj -scheme LionFlow -configuration Debug -sdk iphonesimulator \
+            -derivedDataPath build-sim CODE_SIGNING_ALLOWED=NO build 2>&1 | tee sim.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" sim.log
+
+      - name: Take pictures in the simulator
+        run: ../.github/scripts/ios-screenshots.sh "$PWD/build-sim/Build/Products/Debug-iphonesimulator/LionFlow.app" "$PWD/shots"
+
+      - name: Publish the pictures
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ -d shots ] && [ -n "$(ls shots 2>/dev/null)" ] || { echo "no pictures"; exit 0; }
+          work="$RUNNER_TEMP/previews"
+          rm -rf "$work" && mkdir -p "$work" && cp shots/*.png "$work/"
+          echo "Pictures of commit ${GITHUB_SHA} (${GITHUB_REF_NAME}), made by the iOS workflow." > "$work/README.md"
+          cd "$work"
+          git init -q -b ios-previews
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Pictures of ${GITHUB_SHA}"
+          git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ios-previews

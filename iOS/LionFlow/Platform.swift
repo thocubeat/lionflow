@@ -233,18 +233,25 @@ final class AppHolder: ObservableObject {
         applyLaunchArguments()
     }
 
-    /// For the screenshots made when the app is built: "-demo electric|hybrid|fuel" opens the sample car,
-    /// "-tab Charging" a tab, "-theme light" the light colours, "-lang nb" a language. Never touches a signed-in account.
+    /// For the pictures taken when the app is built: "-demo electric|hybrid|fuel" opens the sample car, "-brand opel"
+    /// picks its brand, "-tab Charging" a tab, "-theme light" the light colours, "-lang nb" a language, "-clean"
+    /// hides the demo banner, "-signedout" shows the first screen. Only ever starts or leaves demo mode: a
+    /// signed-in account is never touched.
     private func applyLaunchArguments() {
         let args = ProcessInfo.processInfo.arguments
         func value(_ name: String) -> String? {
             guard let i = args.firstIndex(of: name), i + 1 < args.count else { return nil }
             return args[i + 1]
         }
+        if args.contains("-signedout") {
+            if model.isDemo { model.exitDemo() }
+            return
+        }
         guard let kind = value("-demo") else { return }
         if let theme = value("-theme") { model.update { $0.theme = theme } }
         if let lang = value("-lang") { model.update { $0.language = lang } }
-        if !model.isDemo && model.ui.phase == .signedOut { model.startDemo(kind, value("-brand")) }
+        if model.isDemo { model.exitDemo() }
+        if model.ui.phase == .signedOut { model.startDemo(kind, value("-brand")) }
         guard model.isDemo else { return }
         model.hideDemoBanner = args.contains("-clean")
         if let tab = value("-tab").flatMap({ AppTab(rawValue: $0) }) { model.setTab(tab) }

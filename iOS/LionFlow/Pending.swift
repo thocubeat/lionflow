@@ -13,7 +13,6 @@ private struct ComingSoon: View {
     }
 }
 
-struct ChargingView: View { let wide: Bool; var body: some View { ComingSoon(title: "Charging") } }
 struct ClimateView: View { let wide: Bool; var body: some View { ComingSoon(title: "Climate") } }
 struct TripsView: View { let wide: Bool; var body: some View { ComingSoon(title: "Trips") } }
 struct ServiceView: View { let wide: Bool; var body: some View { ComingSoon(title: "Service") } }

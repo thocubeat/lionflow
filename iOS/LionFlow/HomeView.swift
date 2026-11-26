@@ -157,7 +157,7 @@ struct HomeView: View {
 }
 
 /** "Driving", "Parked at Home", "Parked at <charger or address>", or just "Parked" while the place is being looked up. */
-private func parkedLabel(_ model: AppModel, _ st: VehicleStatus) -> String {
+@MainActor private func parkedLabel(_ model: AppModel, _ st: VehicleStatus) -> String {
     if st.moving { return "Driving" }
     guard let place = model.parkedAt else { return "Parked" }
     return "Parked at " + (place.hasPrefix("@") ? String(place.dropFirst()) : place)
