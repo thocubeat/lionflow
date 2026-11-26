@@ -43,6 +43,8 @@ struct LfCard<Content: View>: View {
     @Environment(\.lf) private var c
     var radius: CGFloat = 24
     var padding: CGFloat = 18
+    /** Fill the height it is given (for cards standing side by side). */
+    var stretch = false
     var onTap: (() -> Void)? = nil
     @ViewBuilder var content: () -> Content
 
@@ -50,7 +52,7 @@ struct LfCard<Content: View>: View {
         let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
         let card = VStack(alignment: .leading, spacing: 12) { content() }
             .padding(padding)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, maxHeight: stretch ? .infinity : nil, alignment: .topLeading)
             .background(shape.fill(c.card))
             .overlay(shape.strokeBorder(c.line, lineWidth: 1))
             .softShadow(c)
@@ -446,25 +448,51 @@ struct Busy: View {
     }
 }
 
-/// The frame every tab's content sits in: it scrolls, keeps to a readable width on big screens, and can be pulled
-/// down to read the car again.
+/// A page that scrolls, and that can be pulled down to read the car again. Written by hand so it works the same on
+/// every iPhone and iPad the app supports (the system's own pull-to-refresh came to scrolling pages with iOS 16).
+struct LfScroll<Content: View>: View {
+    var onRefresh: (() -> Void)? = nil
+    @ViewBuilder var content: () -> Content
+    @State private var armed = true
+
+    var body: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            content()
+                .frame(maxWidth: .infinity)
+                .background(GeometryReader { g in
+                    Color.clear.preference(key: PullOffset.self, value: g.frame(in: .named("lf-scroll")).minY)
+                })
+        }
+        .coordinateSpace(name: "lf-scroll")
+        .onPreferenceChange(PullOffset.self) { y in
+            guard let onRefresh = onRefresh else { return }
+            if y > 76 && armed {
+                armed = false
+                onRefresh()
+            } else if y < 8 {
+                armed = true
+            }
+        }
+    }
+}
+
+private struct PullOffset: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
+}
+
+/** The frame every tab's content sits in: it scrolls and keeps to a readable width on big screens. */
 struct ScreenColumn<Content: View>: View {
     var wide = false
     var maxWidth: CGFloat = 720
-    var onRefresh: (() async -> Void)? = nil
+    var onRefresh: (() -> Void)? = nil
     @ViewBuilder var content: () -> Content
 
     var body: some View {
-        let column = ScrollView(.vertical, showsIndicators: false) {
+        LfScroll(onRefresh: onRefresh) {
             VStack(alignment: .leading, spacing: 14) { content() }
                 .padding(20)
                 .frame(maxWidth: wide ? maxWidth : .infinity)
-                .frame(maxWidth: .infinity)
-        }
-        if let onRefresh = onRefresh {
-            column.refreshable { await onRefresh() }
-        } else {
-            column
         }
     }
 }

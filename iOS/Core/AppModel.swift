@@ -765,7 +765,8 @@ final class AppModel: ObservableObject {
             await self.remote.warmUp()
             // If the car looks asleep, start waking it now so the first command is quick.
             let st = self.ui.status
-            let stale = st?.updatedAtMillis.map { nowMillis() - $0 > 5 * 60_000 } ?? true
+            var stale = true
+            if let at = st?.updatedAtMillis { stale = nowMillis() - at > 5 * 60_000 }
             if self.settings.value.wakeOnOpen && stale && st?.moving != true {
                 _ = await self.remote.preWake(minIntervalMs: 10 * 60_000, onAwake: { @Sendable in self.refreshIn(4_000) })
             }
