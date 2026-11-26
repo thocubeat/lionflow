@@ -77,7 +77,7 @@ data class AppSettings(
 /** Plain (non-secret) preferences, exposed as a StateFlow so the UI updates instantly. */
 class SettingsStore internal constructor(private val p: SharedPreferences) {
     constructor(context: Context) : this(context.getSharedPreferences("lf_settings", Context.MODE_PRIVATE))
-    private val _state = MutableStateFlow(load().also { no.lionflow.app.model.Brands.current = no.lionflow.app.model.Brand.of(it.brand) })
+    private val _state = MutableStateFlow(withBrandName(load()).also { no.lionflow.app.model.Brands.current = no.lionflow.app.model.Brand.of(it.brand) })
     val state: StateFlow<AppSettings> = _state.asStateFlow()
     val value: AppSettings get() = _state.value
 
@@ -147,7 +147,7 @@ class SettingsStore internal constructor(private val p: SharedPreferences) {
     }
 
     fun update(block: (AppSettings) -> AppSettings) {
-        val s = block(_state.value)
+        val s = withBrandName(block(_state.value))
         p.edit()
             .putString("theme", s.theme)
             .putString("dist", s.distanceUnit)
@@ -267,7 +267,19 @@ class SettingsStore internal constructor(private val p: SharedPreferences) {
         get() = p.getString("limitState", "") ?: ""
         set(v) { p.edit().putString("limitState", v).apply() }
 
-    fun nameFor(vin: String): String? = p.getString("carName_$vin", null)
+    fun nameFor(vin: String): String? = p.getString("carName_$vin", null)?.let { brandName(it, no.lionflow.app.model.Brands.current) }
+
+    /**
+     * The name a car gets before anyone names it is "My Peugeot" (the app started as a Peugeot app). On a Citroën,
+     * DS, Opel or Vauxhall account that untouched name becomes "My Vauxhall" and so on; a name typed by the user stays.
+     */
+    private fun withBrandName(s: AppSettings): AppSettings {
+        val name = brandName(s.carName, no.lionflow.app.model.Brand.of(s.brand))
+        return if (name == s.carName) s else s.copy(carName = name)
+    }
+
+    private fun brandName(name: String, brand: no.lionflow.app.model.Brand): String =
+        if (name == "My Peugeot" && brand != no.lionflow.app.model.Brand.PEUGEOT) "My " + brand.display else name
     fun setNameFor(vin: String, name: String) = p.edit().putString("carName_$vin", name).apply()
 
     var notifySnapshot: String

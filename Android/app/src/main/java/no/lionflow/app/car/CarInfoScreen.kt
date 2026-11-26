@@ -16,6 +16,7 @@ import no.lionflow.app.car.ui.Kit
 import no.lionflow.app.car.ui.Tone
 import no.lionflow.app.model.VehicleStatus
 import no.lionflow.app.ui.fmtDistance
+import no.lionflow.app.ui.fmtSpeed
 import no.lionflow.app.ui.fmtTemp
 import no.lionflow.app.ui.l10n.tr
 import org.json.JSONObject
@@ -81,7 +82,7 @@ internal class CarInfoScreen(ctx: CarContext, ui: CarUi) : DrawnScreen(ctx, ui) 
             add("Charging", tr(when { st.isCharging -> "Charging"; st.chargingStatus == "Finished" -> "Charging complete"; st.plugged -> "Plugged in"; else -> "Not plugged in" }),
                 if (st.isCharging || st.plugged) Tone.GOOD else Tone.TEXT)
             if (st.isCharging) {
-                add("Charge speed", st.chargingRateKmh?.let { "${it.roundToInt()} km/h" })
+                add("Charge speed", st.chargingRateKmh?.let { fmtDistance(it, s) + "/h" })
                 add("Full in", st.remainingMinutes?.let { carDuration(it.toDouble()) })
                 add("Charging mode", st.chargingMode?.let { tr(it) })
             }
@@ -96,7 +97,7 @@ internal class CarInfoScreen(ctx: CarContext, ui: CarUi) : DrawnScreen(ctx, ui) 
         val v12 = num(raw, "battery", "voltage")
         if (v12 != null) { if (v12 > 30) add("12 V battery", "${v12.roundToInt()} %", Tone.TEXT, v12) else add("12 V battery", "${one(v12)} V") }
         val speed = num(raw, "kinetic", "speed")
-        add("Speed", if (st.moving || (speed ?: 0.0) > 0.5) "${(speed ?: 0.0).roundToInt()} km/h" else tr("Parked"))
+        add("Speed", if (st.moving || (speed ?: 0.0) > 0.5) fmtSpeed(speed ?: 0.0, s) else tr("Parked"))
         add("Ignition", st.ignition?.let { tr(it) })
         add("Privacy mode", str(raw, "privacy", "state")?.let { tr(it) })
         return out

@@ -361,6 +361,10 @@ fun fmtDistance(km: Double?, s: AppSettings): String {
     else String.format(java.util.Locale.US, "%,d km", Math.round(km))
 }
 
+/** A speed in the unit chosen for distances: "80 km/h" or "50 mph". */
+fun fmtSpeed(kmh: Double, s: AppSettings): String =
+    if (s.distanceUnit == "mi") "${Math.round(kmh * 0.621371)} mph" else "${Math.round(kmh)} km/h"
+
 fun fmtTemp(c: Double?, s: AppSettings, unit: Boolean = true): String {
     if (c == null || c.isNaN()) return "—"
     return if (s.tempUnit == "f") "${Math.round(c * 9 / 5 + 32)}°${if (unit) "F" else ""}" else "${Math.round(c)}°${if (unit) "C" else ""}"

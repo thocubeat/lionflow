@@ -61,6 +61,11 @@ func fmtDistance(_ km: Double?, _ s: AppSettings) -> String {
     return s.distanceUnit == "mi" ? Fmt.grouped((km * 0.621371).roundToLong) + " mi" : Fmt.grouped(km.roundToLong) + " km"
 }
 
+/** A speed in the unit chosen for distances: "80 km/h" or "50 mph". */
+func fmtSpeed(_ kmh: Double, _ s: AppSettings) -> String {
+    s.distanceUnit == "mi" ? "\((kmh * 0.621371).roundToLong) mph" : "\(kmh.roundToLong) km/h"
+}
+
 func fmtTemp(_ c: Double?, _ s: AppSettings, unit: Bool = true) -> String {
     guard let c = c, !c.isNaN else { return "—" }
     return s.tempUnit == "f" ? "\((c * 9 / 5 + 32).roundToLong)°\(unit ? "F" : "")" : "\(c.roundToLong)°\(unit ? "C" : "")"

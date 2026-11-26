@@ -154,6 +154,7 @@ struct SettingsView: View {
                 model.toastText("Couldn't read that file")
             }
         }
+        .onAppear { updates.checkIfDue(soon: true) }
     }
 
     @ViewBuilder private func sheetContent(_ which: SettingsSheet) -> some View {

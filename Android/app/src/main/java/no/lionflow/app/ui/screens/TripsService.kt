@@ -55,6 +55,7 @@ import no.lionflow.app.ui.components.ScreenHeader
 import no.lionflow.app.ui.components.Segmented
 import no.lionflow.app.ui.components.SecondaryButton
 import no.lionflow.app.ui.fmtDistance
+import no.lionflow.app.ui.fmtSpeed
 import no.lionflow.app.ui.theme.LocalLf
 import no.lionflow.app.ui.theme.Type
 import java.text.SimpleDateFormat
@@ -147,7 +148,7 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
                         Box(Modifier.size(40.dp).clip(RoundedCornerShape(14.dp)).background(c.raisedBlue), contentAlignment = Alignment.Center) { LfIcon(if (route != null) LfIcons.Map else LfIcons.Route, c.blueInk, 20.dp) }
                         Column(Modifier.weight(1f)) {
                             Text(t.startMillis?.let { fmt.format(Date(it)) } ?: "Trip", style = Type.label, color = c.text)
-                            Text(listOfNotNull(t.durationSec?.let { "${(it / 60).toInt()} min" }, t.avgSpeedKmh?.let { "${it.toInt()} km/h avg" }).joinToString(" · "), style = Type.small, color = c.muted)
+                            Text(listOfNotNull(t.durationSec?.let { "${(it / 60).toInt()} min" }, t.avgSpeedKmh?.let { "${fmtSpeed(it, s)} avg" }).joinToString(" · "), style = Type.small, color = c.muted)
                         }
                         TripTagSlot(vm, s, t)
                         Column(horizontalAlignment = Alignment.End) {

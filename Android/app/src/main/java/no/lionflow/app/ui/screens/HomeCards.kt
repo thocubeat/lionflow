@@ -58,6 +58,7 @@ import no.lionflow.app.ui.components.PrimaryButton
 import no.lionflow.app.ui.components.SecondaryButton
 import no.lionflow.app.ui.components.Toggle
 import no.lionflow.app.ui.fmtDistance
+import no.lionflow.app.ui.fmtSpeed
 import no.lionflow.app.ui.fmtTemp
 import no.lionflow.app.ui.l10n.L10n
 import no.lionflow.app.ui.l10n.Text
@@ -273,7 +274,7 @@ private fun plainRows(st: VehicleStatus, s: AppSettings): List<Pair<String, List
         "Doors" to no.lionflow.app.car.CarHub.doorsLine(st),
         "Alarm" to st.alarmOn?.let { onOff(it) },
         "Ignition" to st.ignition?.let { tr(it) },
-        "Speed" to (if (st.moving || (speed ?: 0.0) > 0.5) "${(speed ?: 0.0).roundToInt()} km/h" else tr("Parked")),
+        "Speed" to (if (st.moving || (speed ?: 0.0) > 0.5) fmtSpeed(speed ?: 0.0, s) else tr("Parked")),
         "Outside" to st.outsideTempC?.let { fmtTemp(it, s) },
         "Pre-heating" to (if (Caps.climate(st)) onOff(st.preconditioningOn) else null),
         "Fog lights" to (if (st.raw.optJSONObject("lightingSystem")?.has("fog") == true) onOff(st.fogLightsOn.isNotEmpty()) else null),

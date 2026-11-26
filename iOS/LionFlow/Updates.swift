@@ -22,8 +22,8 @@ final class AppUpdates: ObservableObject {
     private let defaults = UserDefaults.standard
     private static let checkedKey = "iosUpdateChecked"
     private static let dismissedKey = "iosUpdateDismissed"
-    /** The source is read at most this often by itself (and whenever asked in Settings). */
-    private static let every: TimeInterval = 6 * 3600
+    /** The source is read at most this often by itself (and each time Settings opens). */
+    private static let every: TimeInterval = 3600
 
     init(bundle: Bundle = .main) {
         version = (bundle.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0"
@@ -62,10 +62,10 @@ final class AppUpdates: ObservableObject {
         signedUntil.map { TimeFmt.format(Int64($0.timeIntervalSince1970 * 1000), "EEE d MMM HH:mm") }
     }
 
-    /** Reads the source when the app opens or comes back, at most every few hours. */
-    func checkIfDue() {
+    /** Reads the source when the app opens or comes back, at most once an hour (`soon`: at most every 5 minutes). */
+    func checkIfDue(soon: Bool = false) {
         let last = defaults.double(forKey: Self.checkedKey)
-        if Date().timeIntervalSince1970 - last >= Self.every || latest == nil && last == 0 {
+        if Date().timeIntervalSince1970 - last >= (soon ? 300 : Self.every) || latest == nil {
             Task { await check() }
         }
     }

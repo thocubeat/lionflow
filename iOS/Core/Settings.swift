@@ -118,7 +118,7 @@ final class SettingsStore {
     init(_ defaults: UserDefaults = .standard) {
         p = defaults
         let saved = defaults.string(forKey: "settings").flatMap { try? JSONObject($0) }
-        state = saved.map { AppSettings($0) } ?? AppSettings()
+        state = Self.withBrandName(saved.map { AppSettings($0) } ?? AppSettings())
         Brands.current = Brand.of(state.brand)
     }
 
@@ -128,6 +128,7 @@ final class SettingsStore {
         lock.lock()
         var s = state
         change(&s)
+        s = Self.withBrandName(s)
         state = s
         lock.unlock()
         p.set(s.toJSON().toString(), forKey: "settings")
@@ -178,7 +179,20 @@ final class SettingsStore {
         p.set(enabled.map { $0 ? "true" : "false" }, forKey: "mildHybridOverride_" + vin)
     }
 
-    func nameFor(_ vin: String) -> String? { p.string(forKey: "carName_" + vin) }
+    func nameFor(_ vin: String) -> String? { p.string(forKey: "carName_" + vin).map { Self.brandName($0, Brands.current) } }
+
+    /// The name a car gets before anyone names it is "My Peugeot" (the app started as a Peugeot app). On a Citroën,
+    /// DS, Opel or Vauxhall account that untouched name becomes "My Vauxhall" and so on; a name typed by the user
+    /// stays. The same as in the Android app.
+    static func withBrandName(_ s: AppSettings) -> AppSettings {
+        var out = s
+        out.carName = brandName(s.carName, Brand.of(s.brand))
+        return out
+    }
+
+    static func brandName(_ name: String, _ brand: Brand) -> String {
+        name == "My Peugeot" && brand != .peugeot ? "My " + brand.display : name
+    }
     func setNameFor(_ vin: String, _ name: String) { p.set(name, forKey: "carName_" + vin) }
 
     /** Last status snapshot used by the background notifier to detect changes. */

@@ -199,7 +199,7 @@ private struct TripRow: View {
     var body: some View {
         var bits: [String] = []
         if let d = trip.durationSec { bits.append("\(whole(d / 60)) min") }
-        if let v = trip.avgSpeedKmh { bits.append("\(whole(v)) km/h avg") }
+        if let v = trip.avgSpeedKmh { bits.append("\(fmtSpeed(v, model.prefs)) avg") }
         return HStack(spacing: 10) {
             HStack(spacing: 10) {
                 LfIcon(LfIcons.route, c.blueInk, 20).frame(width: 40, height: 40).background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(c.raisedBlue))

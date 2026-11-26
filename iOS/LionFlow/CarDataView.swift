@@ -116,7 +116,7 @@ private func plainRows(_ st: VehicleStatus, _ s: AppSettings) -> [RowSection] {
         ("Doors", doorsLine(st)),
         ("Alarm", st.alarmOn.map { onOff($0) }),
         ("Ignition", st.ignition.map { tr($0) }),
-        ("Speed", (st.moving || (speed ?? 0) > 0.5) ? "\(whole(speed ?? 0)) km/h" : tr("Parked")),
+        ("Speed", (st.moving || (speed ?? 0) > 0.5) ? fmtSpeed(speed ?? 0, s) : tr("Parked")),
         ("Outside", st.outsideTempC.map { fmtTemp($0, s) }),
         ("Pre-heating", Caps.climate(st) ? onOff(st.preconditioningOn) : nil),
         ("Fog lights", fog),
