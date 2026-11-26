@@ -122,7 +122,7 @@ struct SettingsView: View {
     @State private var importing = false
 
     var body: some View {
-        ScreenColumn(wide: wide) {
+        ScreenColumn(wide: wide, refreshing: model.ui.refreshing, onRefresh: { model.refresh() }) {
             if !wide { BackLink(label: "Home") { model.setTab(.home) } }
             T("Settings").font(LfType.title).foregroundColor(c.text)
             look

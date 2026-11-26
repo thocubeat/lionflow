@@ -88,7 +88,7 @@ struct TripsView: View {
         let ui = model.ui
         let s = model.prefs
         let sum = TripsSummary(ui, period)
-        ScreenColumn(wide: wide, onRefresh: { model.refresh() }) {
+        ScreenColumn(wide: wide, refreshing: model.ui.refreshing, onRefresh: { model.refresh() }) {
             if !wide { BackLink(label: "Home") { model.setTab(.home) } }
             ScreenHeader(kicker: period == "week" ? "Last 7 days" : "Last 30 days", title: "Trips") {
                 Segmented(options: [("week", "Week"), ("month", "Month")], selected: period) { period = $0 }

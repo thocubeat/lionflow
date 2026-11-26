@@ -1,8 +1,10 @@
-# Runs the iPhone and iPad app on the oldest system the simulator can still get, and takes the same pictures as the
-# main iOS workflow. The app is built for iOS 15 and newer (an iPhone 6s from 2015 runs iOS 15), but Apple no longer
-# offers iOS 15 for the simulator: asked for in November 2026, Xcode 26.6 and Xcode 16.4 both answered "not available
-# for download". iOS 16.0 is the oldest there is, so that is what this runs on (as an iPhone 8 and an iPad from 2017).
-# The pictures go to the branch "ios-previews-old-ios16-macos-26".
+# Runs the iPhone and iPad app on the oldest system the simulator can still get: takes the same pictures as the main
+# iOS workflow, and then walks through the app on the old iPhone the way the main workflow does on a new one (tabs,
+# sheets, commands, pulling a page down). The app is built for iOS 15 and newer (an iPhone 6s from 2015 runs iOS 15),
+# but Apple no longer offers iOS 15 for the simulator: asked for in November 2026, Xcode 26.6 and Xcode 16.4 both
+# answered "not available for download". iOS 16.0 is the oldest there is, so that is what this runs on (as an
+# iPhone 8 and an iPad from 2017). The pictures go to the branch "ios-previews-old-ios16-macos-26", with result.txt
+# saying how the walk-through went.
 # The old system has to be downloaded first (several GB), so this runs by hand, or when this file changes.
 name: iOS on old systems
 
@@ -29,19 +31,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build for the simulator
+      - name: Build the app and the walk-through for the simulator
         run: |
           xcodebuild -version
           which xcodegen || brew install xcodegen
           xcodegen generate
           set -o pipefail
-          xcodebuild -project LionFlow.xcodeproj -scheme LionFlow -configuration Debug -destination 'generic/platform=iOS Simulator' \
+          xcodebuild build-for-testing -project LionFlow.xcodeproj -scheme LionFlowTour -configuration Debug -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build-sim CODE_SIGNING_ALLOWED=NO ARCHS=arm64 ONLY_ACTIVE_ARCH=NO \
-            build 2>&1 | tee sim.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
-          grep -q "BUILD SUCCEEDED" sim.log || { grep -E "error" sim.log | sort -u | head -80; exit 1; }
+            2>&1 | tee sim.log | grep -E "error:|\*\* TEST BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "TEST BUILD SUCCEEDED" sim.log || { grep -E "error" sim.log | sort -u | head -80; exit 1; }
           # The watch app inside is for another kind of simulator: it stays out of this.
           rm -rf build-sim/Build/Products/Debug-iphonesimulator/LionFlow.app/Watch
-          ditto -c -k --keepParent build-sim/Build/Products/Debug-iphonesimulator/LionFlow.app LionFlow-simulator.zip
+          ls build-sim/Build/Products build-sim/Build/Products/Debug-iphonesimulator
+          ditto -c -k --keepParent build-sim/Build/Products LionFlow-simulator.zip
 
       - uses: actions/upload-artifact@v4
         with:
@@ -59,7 +62,7 @@ jobs:
           - machine: macos-26
             versions: "15.0 15.5 16.0 16.1 16.2 16.4"
     runs-on: ${{ matrix.machine }}
-    timeout-minutes: 75
+    timeout-minutes: 110
     steps:
       - uses: actions/checkout@v4
 
@@ -70,7 +73,8 @@ jobs:
       - name: What this machine has
         run: |
           xcodebuild -version
-          unzip -q LionFlow-simulator.zip && ls -d LionFlow.app
+          unzip -q LionFlow-simulator.zip && ls -d Products/Debug-iphonesimulator/LionFlow.app Products/*.xctestrun
+          df -h / | tail -n 1
           echo "--- systems installed for the simulator"
           xcrun simctl list runtimes
           echo "--- old devices it knows"
@@ -81,10 +85,11 @@ jobs:
           for version in ${{ matrix.versions }}; do
             if xcrun simctl list runtimes | grep -q "iOS $version"; then echo "iOS $version is already here"; echo "OLD_IOS=$version" >> "$GITHUB_ENV"; break; fi
             echo "asking for iOS $version"
-            perl -e 'alarm shift; exec @ARGV' 2400 xcodebuild -downloadPlatform iOS -buildVersion "$version" 2>&1 | grep -v -E "^Downloading .*%|^Installing .*%" | tail -n 4
+            perl -e 'alarm shift; exec @ARGV' 2400 xcodebuild -downloadPlatform iOS -buildVersion "$version" 2>&1 | tr '\r' '\n' | grep -v -E "^(Downloading|Installing) .*%" | tail -n 4
             if xcrun simctl list runtimes | grep -q "iOS $version"; then echo "got iOS $version"; echo "OLD_IOS=$version" >> "$GITHUB_ENV"; break; fi
           done
           xcrun simctl list runtimes
+          df -h / | tail -n 1
 
       - name: Make an old iPhone and an old iPad
         run: |
@@ -106,19 +111,54 @@ jobs:
           SKIP_WATCH: "1"
         run: |
           [ -n "${PHONE_UDID:-}${PAD_UDID:-}" ] || { echo "no old device to run on"; exit 1; }
-          .github/scripts/ios-screenshots.sh "$PWD/LionFlow.app" "$PWD/shots"
+          .github/scripts/ios-screenshots.sh "$PWD/Products/Debug-iphonesimulator/LionFlow.app" "$PWD/shots"
           # A crash would leave a report behind: there should be none.
           ls ~/Library/Logs/DiagnosticReports/ 2>/dev/null | grep -i lionflow || echo "no crash reports"
+
+      # The walk-through the main workflow does on a new iPhone, here on the old one: every tab from top to bottom,
+      # commands to the sample car, the sheets and editors, the strip behind the clock, and pulling a page down.
+      - name: Walk through the app on the old iPhone
+        if: ${{ !cancelled() }}
+        run: |
+          [ -n "${PHONE_UDID:-}" ] || { echo "no old iPhone to walk through the app on"; exit 1; }
+          run="$(ls "$PWD"/Products/*.xctestrun | head -n 1)"
+          # One simulator at a time: two make the machine too slow for a test that waits for things to appear.
+          xcrun simctl shutdown all > /dev/null 2>&1 || true
+          xcrun simctl boot "$PHONE_UDID" > /dev/null 2>&1 || true
+          perl -e 'alarm shift; exec @ARGV' 600 xcrun simctl bootstatus "$PHONE_UDID" > /dev/null 2>&1 || echo "the simulator took long to start"
+          xcrun simctl status_bar "$PHONE_UDID" override --time "9:41" --batteryState charged --batteryLevel 100 || true
+          mkdir -p tour
+          set +e
+          TEST_RUNNER_TOUR_OUT="$PWD/tour" perl -e 'alarm shift; exec @ARGV' 2700 xcodebuild test-without-building -xctestrun "$run" \
+            -destination "platform=iOS Simulator,id=$PHONE_UDID" -destination-timeout 180 \
+            -test-timeouts-enabled YES -default-test-execution-time-allowance 900 -maximum-test-execution-time-allowance 900 \
+            -only-testing:LionFlowTour/TourTests/test01EveryTabOfTheElectricCar -only-testing:LionFlowTour/TourTests/test03CommandsChangeTheSampleCar \
+            -only-testing:LionFlowTour/TourTests/test04SheetsAndEditorsOpen -only-testing:LionFlowTour/TourTests/test08NothingShowsThroughTheClock \
+            -only-testing:LionFlowTour/TourTests/test09PullingHomeDownReadsTheCarAgain -only-testing:LionFlowTour/TourTests/test10PullingAnotherTabDownReadsTheCarAgain \
+            -only-testing:LionFlowTour/TourTests/test11EachWayOfFollowingAPage > tour.log 2>&1
+          status=$?
+          grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST|LionFlow tour: " tour.log | cut -c1-500 | head -150
+          if ! grep -q "Executed [0-9]* tests" tour.log; then grep -E -B 2 -A 30 "error" tour.log | head -120; tail -n 40 tour.log; fi
+          ls tour | wc -l
+          ls ~/Library/Logs/DiagnosticReports/ 2>/dev/null | grep -i lionflow || echo "no crash reports"
+          exit $status
 
       - name: Publish the pictures
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          [ -d shots ] && [ -n "$(ls shots 2>/dev/null)" ] || { echo "no pictures"; exit 0; }
+          mkdir -p shots tour
+          [ -n "$(ls shots tour 2>/dev/null)" ] || { echo "no pictures"; exit 0; }
           branch="ios-previews-old-ios${OLD_IOS%%.*}-${{ matrix.machine }}"
           work="$RUNNER_TEMP/previews"
-          rm -rf "$work" && mkdir -p "$work" && cp shots/*.png "$work/"
+          rm -rf "$work" && mkdir -p "$work"
+          for f in tour/*.png; do [ -f "$f" ] && sips -Z 1400 "$f" > /dev/null 2>&1; done
+          cp shots/*.png tour/*.png "$work/" 2>/dev/null || true
+          if [ -f tour.log ]; then
+            grep -E "Test Case .*(passed|failed)|: error: |Executed [0-9]+ tests" tour.log | cut -c1-500 > "$work/result.txt" || true
+            cat tour/notes.txt >> "$work/result.txt" 2>/dev/null || true
+          fi
           echo "Pictures of commit ${GITHUB_SHA} (${GITHUB_REF_NAME}) on iOS ${OLD_IOS:-?} ($(xcodebuild -version | head -n 1) on ${{ matrix.machine }}), made by the workflow \"iOS on old systems\"." > "$work/README.md"
           cd "$work"
           git init -q -b "$branch"

@@ -463,14 +463,20 @@ struct Busy: View {
 
 /// A page that scrolls, and that can be pulled down to read the car again. Written by hand so it works the same on
 /// every iPhone and iPad the app supports (the system's own pull-to-refresh came to scrolling pages with iOS 16).
+///
+/// How far the page has moved is asked of the scrolling page itself (`ScrollWatcher`). Where that page can't be found,
+/// it is worked out from where SwiftUI has laid the content out instead.
 struct LfScroll<Content: View>: View {
+    /** The car is being read: the small circle at the top keeps spinning. */
+    var refreshing = false
     var onRefresh: (() -> Void)? = nil
     /** Told when the page has been scrolled further up than `passAt` points, and when it is back again. */
     var passAt: CGFloat = 0
     var onPassed: ((Bool) -> Void)? = nil
+    /** How far below the top of the page the circle belongs: the height of the clock where the page goes behind it. */
+    var topInset: CGFloat = 0
     @ViewBuilder var content: () -> Content
-    @State private var armed = true
-    @State private var passed = false
+    @State private var track = ScrollTrack()
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -479,22 +485,151 @@ struct LfScroll<Content: View>: View {
                 .background(GeometryReader { g in
                     Color.clear.preference(key: PullOffset.self, value: g.frame(in: .named("lf-scroll")).minY)
                 })
+                .background(
+                    ScrollWatcher(onFound: { track.pageFound = true }, onMoved: { moved($0, byHand: $1, from: .page) })
+                        .frame(width: 0, height: 0)
+                        .accessibilityHidden(true),
+                    alignment: .top)
         }
         .coordinateSpace(name: "lf-scroll")
-        .onPreferenceChange(PullOffset.self) { y in
-            if let onPassed = onPassed {
-                let now = -y > passAt
-                if now != passed {
-                    passed = now
-                    onPassed(now)
-                }
+        .onPreferenceChange(PullOffset.self) { y in moved(-y, byHand: true, from: .layout) }
+        .overlay(
+            Group { if onRefresh != nil { PullCircle(track: track, refreshing: refreshing, topInset: topInset) } },
+            alignment: .top)
+    }
+
+    /// `scrolled` is above zero when the page has been pushed up, and below zero while it is pulled down. Only a pull
+    /// made by hand counts as one: a page that is still settling into place when it opens is not being pulled.
+    private func moved(_ scrolled: CGFloat, byHand: Bool, from source: ScrollTrack.Source) {
+        if let only = ScrollTrack.only {
+            if only != source { return }
+        } else if source == .layout && track.pageFound {
+            return
+        }
+        if let onPassed = onPassed {
+            let now = scrolled > passAt
+            if now != track.passed {
+                track.passed = now
+                DispatchQueue.main.async { onPassed(now) }
             }
-            guard let onRefresh = onRefresh else { return }
-            if y > 76 && armed {
-                armed = false
-                onRefresh()
-            } else if y < 8 {
-                armed = true
+        }
+        guard let onRefresh = onRefresh else { return }
+        let pull = byHand ? max(0, -scrolled) : 0
+        if pull != track.pull { DispatchQueue.main.async { track.pull = pull } }
+        if pull > ScrollTrack.pullToRefresh && track.armed {
+            track.armed = false
+            DispatchQueue.main.async { onRefresh() }
+        } else if pull < 8 {
+            track.armed = true
+        }
+    }
+}
+
+/** What a scrolling page remembers between two reports of how far it has moved. */
+final class ScrollTrack: ObservableObject {
+    enum Source: String { case page, layout }
+
+    /** Pulled this far down, the car is read again. */
+    static let pullToRefresh: CGFloat = 76
+    /// For the walk-through that is run when the app is built: "-scroll-watch page" or "-scroll-watch layout" makes
+    /// the app listen to that one way only, so each of them is known to work on its own.
+    static let only: Source? = {
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-scroll-watch"), i + 1 < args.count else { return nil }
+        return Source(rawValue: args[i + 1])
+    }()
+
+    /** How far the page is pulled down right now. */
+    @Published var pull: CGFloat = 0
+    var armed = true
+    var passed = false
+    var pageFound = false
+}
+
+/// The small circle that comes down from the top while the page is pulled, as in the Android app: its ring closes as
+/// the pull gets long enough, and it spins for as long as the car is being read.
+private struct PullCircle: View {
+    @ObservedObject var track: ScrollTrack
+    let refreshing: Bool
+    let topInset: CGFloat
+    @Environment(\.lf) private var c
+
+    var body: some View {
+        let progress = Double(min(1, track.pull / ScrollTrack.pullToRefresh))
+        ZStack {
+            Circle().fill(c.isDark ? c.raised : c.card)
+                .shadow(color: Color.black.opacity(c.isDark ? 0.5 : 0.18), radius: 5, x: 0, y: 2)
+            if refreshing {
+                Busy()
+            } else {
+                Circle().trim(from: 0, to: CGFloat(0.08 + 0.74 * progress))
+                    .stroke(c.accentInk, style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                    .rotationEffect(.degrees(-90 + 200 * progress))
+                    .padding(11)
+            }
+        }
+        .frame(width: 40, height: 40)
+        .offset(y: refreshing ? 12 : min(track.pull, 120) * 0.6 - 42)
+        // It comes out from under the top edge of the page (below the clock), so it is cut off there.
+        .frame(maxWidth: .infinity)
+        .frame(height: 120, alignment: .top)
+        .clipped()
+        .padding(.top, topInset)
+        .opacity(refreshing || track.pull > 6 ? 1 : 0)
+        .animation(.easeOut(duration: 0.2), value: refreshing)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}
+
+/// Sits in a scrolling page and tells how far the page has been scrolled: above zero when it is pushed up, below
+/// zero while it is pulled down. It listens to the page SwiftUI scrolls with, which says so on every system version.
+private struct ScrollWatcher: UIViewRepresentable {
+    let onFound: () -> Void
+    /** How far, and whether a finger is moving the page (or it is on its way back after being let go). */
+    let onMoved: (CGFloat, Bool) -> Void
+
+    func makeUIView(context: Context) -> Probe {
+        let probe = Probe()
+        probe.isUserInteractionEnabled = false
+        probe.isAccessibilityElement = false
+        probe.onFound = onFound
+        probe.onMoved = onMoved
+        return probe
+    }
+
+    func updateUIView(_ probe: Probe, context: Context) {
+        probe.onFound = onFound
+        probe.onMoved = onMoved
+    }
+
+    final class Probe: UIView {
+        var onFound: (() -> Void)?
+        var onMoved: ((CGFloat, Bool) -> Void)?
+        private weak var page: UIScrollView?
+        private var watching: NSKeyValueObservation?
+
+        override func didMoveToSuperview() {
+            super.didMoveToSuperview()
+            look()
+        }
+
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            look()
+        }
+
+        /// Finds the scrolling page this view sits in, and starts listening to it. Once found it is kept, also
+        /// while this view is taken out for a moment (it sits at the top of the page, which can be scrolled away).
+        private func look() {
+            var above = superview
+            while let view = above, !(view is UIScrollView) { above = view.superview }
+            guard let found = above as? UIScrollView else { return }
+            if found === page && watching != nil { return }
+            page = found
+            onFound?()
+            watching = found.observe(\.contentOffset, options: [.new]) { [weak self] page, _ in
+                self?.onMoved?(page.contentOffset.y + page.adjustedContentInset.top, page.isDragging || page.isDecelerating)
             }
         }
     }
@@ -509,11 +644,12 @@ private struct PullOffset: PreferenceKey {
 struct ScreenColumn<Content: View>: View {
     var wide = false
     var maxWidth: CGFloat = 720
+    var refreshing = false
     var onRefresh: (() -> Void)? = nil
     @ViewBuilder var content: () -> Content
 
     var body: some View {
-        LfScroll(onRefresh: onRefresh) {
+        LfScroll(refreshing: refreshing, onRefresh: onRefresh) {
             VStack(alignment: .leading, spacing: 14) { content() }
                 .padding(20)
                 .frame(maxWidth: wide ? maxWidth : .infinity)

@@ -184,7 +184,7 @@ jobs:
   # open or the app stops, and its pictures go to the branch "ios-previews-tour".
   tour:
     runs-on: macos-26
-    timeout-minutes: 50
+    timeout-minutes: 80
     defaults:
       run:
         working-directory: iOS
@@ -221,10 +221,13 @@ jobs:
           xcrun simctl status_bar "$TOUR_DEVICE" override --time "9:41" --batteryState charged --batteryLevel 100 || true
           mkdir -p tour
           set +e
-          TEST_RUNNER_TOUR_OUT="$PWD/tour" perl -e 'alarm shift; exec @ARGV' 1500 xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
-            -destination "platform=iOS Simulator,id=$TOUR_DEVICE" -destination-timeout 180 -derivedDataPath build-tour > tour.log 2>&1
+          # A test that hangs is stopped after a quarter of an hour, and the ones after it still run.
+          TEST_RUNNER_TOUR_OUT="$PWD/tour" perl -e 'alarm shift; exec @ARGV' 2400 xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
+            -destination "platform=iOS Simulator,id=$TOUR_DEVICE" -destination-timeout 180 -derivedDataPath build-tour \
+            -test-timeouts-enabled YES -default-test-execution-time-allowance 900 -maximum-test-execution-time-allowance 900 \
+            -skip-testing:LionFlowTour/TourTests/test12ThePullCircle > tour.log 2>&1
           status=$?
-          grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST" tour.log | cut -c1-500 | head -150
+          grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST|LionFlow tour: " tour.log | cut -c1-500 | head -150
           # When the test could not start at all, say why, and which simulators this walk-through can run on.
           if ! grep -q "Executed [0-9]* tests" tour.log; then
             grep -E -A 30 "error" tour.log | head -80
@@ -232,6 +235,19 @@ jobs:
           fi
           ls tour | wc -l
           exit $status
+
+      # A picture of the small circle that comes down while a page is pulled. It has to be taken while a finger is
+      # held down, which the test does from the side: good to have, but never a reason for this job to fail.
+      - name: A picture of the pull circle
+        if: ${{ !cancelled() && steps.tourbuild.outcome == 'success' }}
+        continue-on-error: true
+        run: |
+          TEST_RUNNER_TOUR_OUT="$PWD/tour" perl -e 'alarm shift; exec @ARGV' 420 xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
+            -destination "platform=iOS Simulator,id=$TOUR_DEVICE" -destination-timeout 180 -derivedDataPath build-tour \
+            -test-timeouts-enabled YES -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 240 \
+            -only-testing:LionFlowTour/TourTests/test12ThePullCircle > tour-circle.log 2>&1 || echo "no picture of the pull circle this time"
+          grep -E "Test Case .*(passed|failed)|error:|Executed [0-9]+ tests" tour-circle.log | cut -c1-300 | head -20
+          ls tour | grep -c "pull-circle" || true
 
       # The same pages and sheets on an iPad, where the screens are laid out differently.
       - name: Walk through the app on an iPad
@@ -246,12 +262,14 @@ jobs:
           xcrun simctl status_bar "$TOUR_PAD" override --time "9:41" --batteryState charged --batteryLevel 100 || true
           mkdir -p tour-pad
           set +e
-          TEST_RUNNER_TOUR_OUT="$PWD/tour-pad" perl -e 'alarm shift; exec @ARGV' 900 xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
+          TEST_RUNNER_TOUR_OUT="$PWD/tour-pad" perl -e 'alarm shift; exec @ARGV' 1500 xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
             -destination "platform=iOS Simulator,id=$TOUR_PAD" -destination-timeout 180 -derivedDataPath build-tour \
+            -test-timeouts-enabled YES -default-test-execution-time-allowance 900 -maximum-test-execution-time-allowance 900 \
             -only-testing:LionFlowTour/TourTests/test01EveryTabOfTheElectricCar -only-testing:LionFlowTour/TourTests/test03CommandsChangeTheSampleCar \
-            -only-testing:LionFlowTour/TourTests/test04SheetsAndEditorsOpen > tour-pad.log 2>&1
+            -only-testing:LionFlowTour/TourTests/test04SheetsAndEditorsOpen -only-testing:LionFlowTour/TourTests/test08NothingShowsThroughTheClock \
+            -only-testing:LionFlowTour/TourTests/test09PullingHomeDownReadsTheCarAgain > tour-pad.log 2>&1
           status=$?
-          grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST" tour-pad.log | cut -c1-500 | head -80
+          grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST|LionFlow tour: " tour-pad.log | cut -c1-500 | head -80
           for f in tour-pad/*.png; do [ -f "$f" ] && mv "$f" "tour/pad-$(basename "$f")"; done
           cat tour-pad.log >> tour.log
           exit $status
@@ -266,6 +284,8 @@ jobs:
           work="$RUNNER_TEMP/tour"
           rm -rf "$work" && mkdir -p "$work" && cp tour/*.png "$work/"
           grep -E "Test Case .*(passed|failed)|: error: |Executed [0-9]+ tests" tour.log | cut -c1-500 > "$work/result.txt" 2>/dev/null || true
+          # What the walk-through wrote down along the way (on the iPhone, then on the iPad).
+          cat tour/notes.txt tour-pad/notes.txt >> "$work/result.txt" 2>/dev/null || true
           echo "A walk through the app at commit ${GITHUB_SHA} (${GITHUB_REF_NAME}), made by the iOS workflow. result.txt says how it went." > "$work/README.md"
           cd "$work"
           git init -q -b ios-previews-tour

@@ -11,6 +11,7 @@ The Android app in [`../Android`](../Android), written again in Swift. How to in
 | `CoreTests/` | Tests for `Core/`. `Fixtures/*_expected.json` are the Android app's own answers. |
 | `LionFlow/` | The iPhone and iPad app: SwiftUI screens and what only a phone can do (Keychain, Face ID, the sign-in page, location, Apple Maps). |
 | `Watch/` | The Apple Watch app. It asks the phone app (`Core/WatchLink.swift` answers, `Core/WatchWire.swift` is the watch's side). |
+| `UITests/` | The walk through the whole app in the simulator (see below). Not part of the app. |
 | `oracle/` | The program that made the fixtures by running the Android app's own Kotlin code. |
 | `l10n-ios.tsv` | The few texts only this app has. All the others are the Android app's own file, `../Android/app/src/main/assets/l10n.tsv`. |
 
@@ -29,10 +30,21 @@ swift test               # the car logic on its own, on a Mac, without a simulat
 `LIONFLOW_MQTT_TEST=1 swift test` also sends remote-control commands through a real message server on this machine
 (`mosquitto -p 18830`).
 
-Every push runs [`.github/workflows/ios.yml`](../.github/workflows/ios.yml): the tests, a check that every icon exists
-on iOS 15, the build for iPhone, iPad and Apple Watch, and pictures of every screen in the simulators (demo mode),
-which land on the [`ios-previews`](https://github.com/thocubeat/lionflow/tree/ios-previews) branch. A build of `main`
-also puts `LionFlow.ipa` on the [download page](https://github.com/thocubeat/lionflow/releases/tag/ios-latest).
+Every push runs [`.github/workflows/ios.yml`](../.github/workflows/ios.yml), in two parts:
+
+- **build**: the tests, a check that the servers the app talks to meet iOS' rules for encrypted connections, a check
+  that every icon exists on iOS 15, the build for iPhone, iPad and Apple Watch, and pictures of the main screens and
+  of the watch app in the simulators (branch [`ios-previews`](https://github.com/thocubeat/lionflow/tree/ios-previews)).
+  A build of `main` also puts `LionFlow.ipa` on the
+  [download page](https://github.com/thocubeat/lionflow/releases/tag/ios-latest).
+- **tour**: `UITests/TourTests.swift` walks through the whole app in the iPhone and iPad simulators with the sample
+  car, tapping and scrolling: every tab from top to bottom, the sheets and editors, commands, the first screens. It
+  fails when something doesn't open or the app stops, and its pictures land on the branch
+  [`ios-previews-tour`](https://github.com/thocubeat/lionflow/tree/ios-previews-tour), with `result.txt` saying how
+  it went.
+
+[`.github/workflows/ios-old.yml`](../.github/workflows/ios-old.yml) (run by hand) takes the same pictures on the
+oldest iOS the simulator can still get, which is iOS 16: Apple no longer offers iOS 15 for it.
 
 ## Same answers as the Android app
 

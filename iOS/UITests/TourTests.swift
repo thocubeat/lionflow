@@ -1,3 +1,4 @@
+import UIKit
 import XCTest
 
 /// A walk through the whole app, the way a person would use it: every tab from top to bottom, the sheets and
@@ -66,10 +67,9 @@ final class TourTests: XCTestCase {
         Thread.sleep(forTimeInterval: 0.4)
     }
 
-    /// Scrolls until the button stands well inside the screen, and taps it. (A tap right at the top would land on
-    /// the clock instead, which sends the page back to its start.) False, and a failed test, when it never shows up.
-    @discardableResult
-    private func tap(_ text: String, scrolls: Int = 12) -> Bool {
+    /// Scrolls until the button stands well inside the screen. (A tap right at the top would land on the clock
+    /// instead, which sends the page back to its start.) Nil, and a failed test, when it never shows up.
+    private func reach(_ text: String, scrolls: Int = 12) -> XCUIElement? {
         let found = buttons(text).firstMatch
         _ = found.waitForExistence(timeout: 5)
         let screen = app.frame
@@ -92,8 +92,14 @@ final class TourTests: XCTestCase {
         guard found.exists && found.isHittable else {
             snap("MISSING-" + text.replacingOccurrences(of: " ", with: "-"))
             XCTFail("nothing to tap with the text \"\(text)\"")
-            return false
+            return nil
         }
+        return found
+    }
+
+    @discardableResult
+    private func tap(_ text: String, scrolls: Int = 12) -> Bool {
+        guard let found = reach(text, scrolls: scrolls) else { return false }
         found.tap()
         Thread.sleep(forTimeInterval: 1.2)
         alive("tapping \"\(text)\"")
@@ -128,6 +134,71 @@ final class TourTests: XCTestCase {
         lowest.tap()
         Thread.sleep(forTimeInterval: 1.0)
         alive("opening \(name) from the bar")
+    }
+
+    /** Something worth knowing that is not a failure: said in the log and kept next to the pictures. */
+    private func note(_ line: String) {
+        print("LionFlow tour: \(line)")
+        guard let folder = ProcessInfo.processInfo.environment["TOUR_OUT"], !folder.isEmpty else { return }
+        try? FileManager.default.createDirectory(atPath: folder, withIntermediateDirectories: true)
+        let file = URL(fileURLWithPath: folder).appendingPathComponent("notes.txt")
+        let before = (try? String(contentsOf: file, encoding: .utf8)) ?? ""
+        try? (before + line + "\n").write(to: file, atomically: true, encoding: .utf8)
+    }
+
+    /// Settings > "Auto-refresh when open". While it is on, the sample car is read again every few seconds, so
+    /// nothing on the screen can tell whether a pull did it.
+    private func autoRefresh(_ on: Bool) {
+        demo("Settings")
+        guard let toggle = reach("Auto-refresh when open", scrolls: 20) else { return }
+        if (toggle.value as? String) != (on ? "On" : "Off") {
+            toggle.tap()
+            Thread.sleep(forTimeInterval: 0.8)
+        }
+        XCTAssertEqual(toggle.value as? String, on ? "On" : "Off", "the switch \"Auto-refresh when open\" did not change")
+    }
+
+    /** Pulls the page a long way down and lets go. */
+    private func pullDown() {
+        let from = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.45))
+        let to = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.92))
+        from.press(forDuration: 0.05, thenDragTo: to, withVelocity: .slow, thenHoldForDuration: 0.3)
+        Thread.sleep(forTimeInterval: 1.0)
+        alive("pulling the page down")
+    }
+
+    /// The sample car's report is two minutes old whenever it has just been read, and the clock on Home keeps
+    /// counting from there. So "3 min ago" means it has not been read for a minute.
+    private func waitUntilTheReportIsOld() -> Bool {
+        let old = texts("Updated 3 min ago").firstMatch.waitForExistence(timeout: 110)
+        if !old { snap("MISSING-Updated-3-min-ago") }
+        return old
+    }
+
+    /// The strip at the very top of the screen, where the clock is, as plain numbers (red, green, blue and alpha
+    /// for every dot).
+    private func topStrip() -> [UInt8] {
+        guard let image = XCUIScreen.main.screenshot().image.cgImage, app.frame.width > 0 else { return [] }
+        let scale = CGFloat(image.width) / app.frame.width
+        let width = image.width, height = max(1, Int(20 * scale))
+        guard let top = image.cropping(to: CGRect(x: 0, y: 0, width: width, height: height)) else { return [] }
+        var dots = [UInt8](repeating: 0, count: width * height * 4)
+        dots.withUnsafeMutableBytes { raw in
+            guard let context = CGContext(data: raw.baseAddress, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+                                          space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return }
+            context.draw(top, in: CGRect(x: 0, y: 0, width: width, height: height))
+        }
+        return dots
+    }
+
+    /** How much of two strips is the same colour, from 0 to 1. */
+    private func alike(_ a: [UInt8], _ b: [UInt8]) -> Double {
+        guard !a.isEmpty, a.count == b.count else { return 0 }
+        var same = 0
+        for i in stride(from: 0, to: a.count, by: 4) {
+            if abs(Int(a[i]) - Int(b[i])) <= 5 && abs(Int(a[i + 1]) - Int(b[i + 1])) <= 5 && abs(Int(a[i + 2]) - Int(b[i + 2])) <= 5 { same += 1 }
+        }
+        return Double(same) / Double(a.count / 4)
     }
 
     // MARK: Every tab, top to bottom
@@ -302,4 +373,111 @@ final class TourTests: XCTestCase {
             see("Choose your car brand")
         }
     }
+
+    // MARK: The clock at the top stays readable
+
+    /// Whatever is scrolled up must not show through the clock. The strip at the top of a page that stands still
+    /// (the page's own colour, the clock and the battery) is the measure: every scrolled page has to look the same
+    /// there.
+    func test08NothingShowsThroughTheClock() {
+        for look in ["dark", "light"] {
+            demo("Charging", "-theme", look)
+            let still = topStrip()
+            XCTAssertFalse(still.isEmpty, "no picture of the top of the screen")
+            for tab in ["Home", "Charging", "Trips", "Settings"] {
+                demo(tab, "-theme", look)
+                for step in 1...3 {
+                    app.swipeUp(velocity: .slow)
+                    Thread.sleep(forTimeInterval: 0.9)
+                    let share = alike(still, topStrip())
+                    if share < 0.985 { snap("SHOWS-THROUGH-\(look)-\(tab)-\(step)") }
+                    XCTAssertGreaterThanOrEqual(share, 0.985, "\(tab) (\(look)), scrolled \(step) times: something shows through the clock")
+                }
+            }
+        }
+        demo("Home", "-theme", "dark")
+    }
+
+    // MARK: Pulling a page down reads the car again
+
+    func test09PullingHomeDownReadsTheCarAgain() {
+        autoRefresh(false)
+        demo("Home")
+        if waitUntilTheReportIsOld() {
+            pullDown()
+            see("Updated 2 min ago", seconds: 6)
+            snap("after-pull")
+        } else {
+            XCTFail("the sample car's report never got old: nothing to tell a pull by")
+        }
+        autoRefresh(true)
+    }
+
+    func test10PullingAnotherTabDownReadsTheCarAgain() {
+        autoRefresh(false)
+        demo("Home")
+        if waitUntilTheReportIsOld() {
+            // Opening another tab and coming back reads nothing by itself...
+            bar("Charging")
+            bar("Home")
+            see("Updated 3 min ago", seconds: 4)
+            // ...pulling that tab down does.
+            bar("Charging")
+            pullDown()
+            bar("Home")
+            see("Updated 2 min ago", seconds: 6)
+        } else {
+            XCTFail("the sample car's report never got old: nothing to tell a pull by")
+        }
+        autoRefresh(true)
+    }
+
+    /// The app follows a page in two ways (see LfScroll). Here each is tried alone, to know which of them this
+    /// system version really answers to. Nothing fails here: what was found is written down.
+    func test11EachWayOfFollowingAPage() {
+        autoRefresh(false)
+        for way in ["page", "layout"] {
+            demo("Home", "-scroll-watch", way)
+            var works = false
+            if waitUntilTheReportIsOld() {
+                pullDown()
+                works = texts("Updated 2 min ago").firstMatch.waitForExistence(timeout: 6)
+            }
+            note("following a page by its \(way): \(works ? "works" : "does NOT work") on \(UIDevice.current.systemName) \(UIDevice.current.systemVersion)")
+        }
+        autoRefresh(true)
+    }
+
+    /// A picture of the small circle that comes down while a page is pulled: taken from the side while the finger
+    /// is still held down.
+    func test12ThePullCircle() {
+        for (tab, look) in [("Charging", "dark"), ("Home", "dark"), ("Home", "light")] {
+            demo(tab, "-theme", look)
+            let from = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.45))
+            let to = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.92))
+            let taken = expectation(description: "a picture during the pull")
+            let held = Held()
+            DispatchQueue.global().asyncAfter(deadline: .now() + 3.0) {
+                held.shot = XCUIScreen.main.screenshot()
+                taken.fulfill()
+            }
+            from.press(forDuration: 0.05, thenDragTo: to, withVelocity: .fast, thenHoldForDuration: 4.5)
+            wait(for: [taken], timeout: 20)
+            if let shot = held.shot {
+                Self.count += 1
+                let title = String(format: "tour-%03d-pull-circle-%@-%@", Self.count, tab, look)
+                if let folder = ProcessInfo.processInfo.environment["TOUR_OUT"], !folder.isEmpty {
+                    try? FileManager.default.createDirectory(atPath: folder, withIntermediateDirectories: true)
+                    try? shot.pngRepresentation.write(to: URL(fileURLWithPath: folder).appendingPathComponent(title + ".png"))
+                }
+            }
+            alive("holding the page down")
+        }
+        demo("Home", "-theme", "dark")
+    }
+}
+
+/** A picture taken beside the test while it holds a finger down. */
+private final class Held: @unchecked Sendable {
+    var shot: XCUIScreenshot?
 }

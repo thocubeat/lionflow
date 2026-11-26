@@ -39,7 +39,7 @@ struct ClimateView: View {
         let st = ui.status
         let s = model.prefs
         let on = st?.preconditioningOn == true
-        ScreenColumn(wide: wide, onRefresh: { model.refresh() }) {
+        ScreenColumn(wide: wide, refreshing: model.ui.refreshing, onRefresh: { model.refresh() }) {
             ScreenHeader(kicker: "Outside \(fmtTemp(st?.outsideTempC ?? ui.weather?.tempC, s))", title: "Climate")
             LfCard(padding: 20) {
                 VStack(spacing: 12) {

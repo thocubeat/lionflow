@@ -19,7 +19,7 @@ struct ServiceView: View {
         let ui = model.ui
         let st = ui.status
         let s = model.prefs
-        ScreenColumn(wide: wide, onRefresh: { model.refresh() }) {
+        ScreenColumn(wide: wide, refreshing: model.ui.refreshing, onRefresh: { model.refresh() }) {
             ScreenHeader(kicker: nil, title: "Service")
             LfCard {
                 HStack(spacing: 12) {

@@ -24,7 +24,7 @@ struct ChargingView: View {
         let ui = model.ui
         let st = ui.status
         let s = model.prefs
-        ScreenColumn(wide: wide, onRefresh: { model.refresh() }) {
+        ScreenColumn(wide: wide, refreshing: model.ui.refreshing, onRefresh: { model.refresh() }) {
             if st?.energyType == "Fuel" {
                 ScreenHeader(kicker: ui.vehicle.map { model.vehicleKind($0) } ?? s.carName, title: "Charging")
                 LfCard { T("Charging controls are unavailable. Fuel level and range are on the Home screen.").font(LfType.body).foregroundColor(c.text2) }

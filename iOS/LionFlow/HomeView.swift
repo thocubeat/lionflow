@@ -90,41 +90,39 @@ struct HomeView: View {
         GeometryReader { geo in
             // The width a card has for what is in it: the column, less the page's and the card's own margins.
             let column = wide ? (min(geo.size.width, 980) - 54) / 2 : geo.size.width - 40
-            LfScroll(onRefresh: { model.refresh() }, passAt: 300, onPassed: { pastPicture = $0 }) {
-                VStack(spacing: 0) {
-                    Hero(topInset: c.isDark ? geo.safeAreaInsets.top : 0)
-                    if wide {
-                        HStack(alignment: .top, spacing: 14) {
-                            VStack(spacing: 14) { notes; cards(left: true) }.frame(maxWidth: .infinity)
-                            VStack(spacing: 14) { cards(left: false); customize }.frame(maxWidth: .infinity)
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 12)
-                        .padding(.bottom, 20)
-                        .frame(maxWidth: 980)
-                    } else {
-                        VStack(spacing: 14) { notes; cards(left: nil); customize }
+            ZStack(alignment: .top) {
+                LfScroll(refreshing: model.ui.refreshing, onRefresh: { model.refresh() }, passAt: 8, onPassed: { pastPicture = $0 },
+                         topInset: c.isDark ? geo.safeAreaInsets.top : 0) {
+                    VStack(spacing: 0) {
+                        Hero(topInset: c.isDark ? geo.safeAreaInsets.top : 0)
+                        if wide {
+                            HStack(alignment: .top, spacing: 14) {
+                                VStack(spacing: 14) { notes; cards(left: true) }.frame(maxWidth: .infinity)
+                                VStack(spacing: 14) { cards(left: false); customize }.frame(maxWidth: .infinity)
+                            }
                             .padding(.horizontal, 20)
                             .padding(.top, 12)
                             .padding(.bottom, 20)
+                            .frame(maxWidth: 980)
+                        } else {
+                            VStack(spacing: 14) { notes; cards(left: nil); customize }
+                                .padding(.horizontal, 20)
+                                .padding(.top, 12)
+                                .padding(.bottom, 20)
+                        }
                     }
+                    .environment(\.lfNarrowColumn, column - 44 < 285)
                 }
-                .environment(\.lfNarrowColumn, column - 44 < 285)
+                // In the dark look the top of the picture goes up behind the clock, as on Android. That only reads
+                // well while the page stands still at the top: as soon as it is scrolled, the car's name and then
+                // the cards would pass through the clock, so the page's own colour comes in behind it. In the light
+                // look the clock is dark too, so there the picture starts below it and the colour is always there.
+                .ignoresSafeArea(edges: c.isDark ? .top : [])
+                StatusBarBackdrop()
+                    .opacity(c.isDark && !pastPicture ? 0 : 1)
+                    .animation(.easeOut(duration: 0.15), value: pastPicture)
+                    .allowsHitTesting(false)
             }
-            // The dark top of the picture goes up behind the clock in the dark look, until the picture has been
-            // scrolled away: then the cards would show through the clock. In the light look the clock is dark too,
-            // so there the picture starts below it.
-            .ignoresSafeArea(edges: c.isDark ? .top : [])
-            .overlay(
-                Group {
-                    if c.isDark {
-                        c.bg.frame(height: geo.safeAreaInsets.top).opacity(pastPicture ? 1 : 0).animation(.easeOut(duration: 0.15), value: pastPicture)
-                    } else {
-                        StatusBarBackdrop()
-                    }
-                }
-                .allowsHitTesting(false),
-                alignment: .top)
         }
         .onAppear(perform: lookUpPlace)
         .onChange(of: parkedKey) { _ in lookUpPlace() }

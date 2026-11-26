@@ -104,7 +104,13 @@ The watch app doesn't update itself. Install a new version the same way when you
 
 LionFlow is also being built for iPhone and iPad (iOS and iPadOS 15 or newer, so an iPhone 6s from 2015 or an iPad Air 2 from 2014 is new enough), with a small Apple Watch app. The code is in [`iOS/`](iOS), written in Swift from the Android app, part by part.
 
-**Where it stands.** The car logic is checked against the Android app's own answers, value by value, every time the code changes, and the app is built and looked at in the iPhone, iPad and Apple Watch simulators (the pictures are on the [`ios-previews`](https://github.com/thocubeat/lionflow/tree/ios-previews) branch). It has **not yet been tried on a real iPhone, with a real account and a real car**. So treat it as a preview, expect rough edges, and please [tell me what you find](https://github.com/thocubeat/lionflow/issues).
+**Where it stands.** Nobody has tried it yet **on a real iPhone, with a real account and a real car**. So treat it as a preview, expect rough edges, and please [tell me what you find](https://github.com/thocubeat/lionflow/issues). What is checked, by a build machine every time the code changes:
+
+- the car logic gives the same answers as the Android app's own code, value by value;
+- the app builds for iPhone, iPad and Apple Watch, and every icon it uses exists on iOS 15;
+- a walk through the whole app in the iPhone and iPad simulators with a sample car, tapping and scrolling the way a person would: every tab from top to bottom, the sheets and editors, commands to the car, the first screens ([pictures](https://github.com/thocubeat/lionflow/tree/ios-previews-tour));
+- the same screens on iOS 16, the oldest system the simulator can still get, as an iPhone 8 and an iPad from 2017 (iOS 15 itself is no longer offered for the simulator);
+- the carmaker's servers accept the kind of encrypted connection iOS insists on.
 
 **What it has:** sign-in on the brand's own page, status, the Home screen you arrange yourself, charging with the charging log, places and prices, pre-heating and its schedules, trips with fuel and hybrid statistics, tags and CSV export/import, service, the charger map (Apple Maps), car data, several cars and accounts, remote control (lock, lights, horn, pre-heating, charging) confirmed with Face ID, Touch ID or your security code, the demo mode, all six languages, and iPad layouts.
 
@@ -151,6 +157,8 @@ In `iOS/project.yml`, change `LF_BUNDLE_ID` to a name of your own (for example `
 ### Apple Watch
 
 The watch app shows battery or fuel level and range, kilometres driven today and yesterday, and where the car is. It can lock or unlock, flash the lights and start pre-heating, and asks before each. Like the Wear OS app it has no sign-in of its own: it asks LionFlow on the iPhone. Choose what it shows under Settings → Home screens → Watch.
+
+What the watch asks and what the phone answers are tested against each other, and the watch's screens are looked at in the watch simulator. The link between a real watch and a real iPhone has not been tried yet.
 
 The tools above can't put a watch app on the watch with a free Apple ID (they install the iPhone app only), so for now the watch app needs a Mac: build with Xcode as above, then choose the **LionFlowWatch** scheme and your watch at the top, and press Run. `LionFlow-with-Watch.ipa` on the [download page](https://github.com/thocubeat/lionflow/releases/tag/ios-latest) is the same app with the watch app inside, for tools that can install it.
 

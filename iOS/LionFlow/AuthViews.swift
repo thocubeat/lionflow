@@ -12,6 +12,8 @@ private struct AuthColumn<Content: View>: View {
                 .frame(maxWidth: 460)
                 .frame(maxWidth: .infinity)
         }
+        // On a small phone these screens are taller than the screen: what is scrolled up stays out of the clock.
+        .overlay(StatusBarBackdrop(), alignment: .top)
     }
 }
 

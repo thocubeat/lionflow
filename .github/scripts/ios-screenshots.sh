@@ -78,9 +78,14 @@ done
 
 ready() { # device, what it is
   [ -n "$1" ] || { stamp "no simulator for the $2"; return 1; }
-  # "-b" starts it if the first try did not get it going.
-  limit 600 xcrun simctl bootstatus "$1" -b > /dev/null 2>&1 || stamp "the $2 simulator took too long to start; trying anyway"
-  stamp "the $2 simulator is up"
+  # Waits until it has started ("-b" starts it if the first try did not get it going). Asked a few times: right
+  # after the start was asked for, the question can be refused.
+  local try
+  for try in 1 2 3 4 5 6; do
+    if limit 600 xcrun simctl bootstatus "$1" -b > /dev/null 2>&1; then stamp "the $2 simulator is up"; return 0; fi
+    sleep 10
+  done
+  stamp "the $2 simulator took too long to start; trying anyway"
 }
 
 shoot() { # device, file name, arguments for the app...
@@ -134,6 +139,7 @@ run() { # device, prefix
 watch_shot() { # file name, seconds to wait, arguments for the watch app...
   local name="$1" wait="$2"; shift 2
   limit 20 xcrun simctl terminate "$WATCH" "$WATCH_BUNDLE" > /dev/null 2>&1
+  sleep 2
   limit 60 xcrun simctl launch "$WATCH" "$WATCH_BUNDLE" "$@" > /dev/null || { stamp "could not start the watch app for $name"; return 1; }
   sleep "$wait"
   snap "$WATCH" "$name"
