@@ -32,8 +32,18 @@ jobs:
           which xcodegen || brew install xcodegen
           xcodegen --version
 
+      # A message server on this machine, so the remote-control tests can send commands through a real one.
+      - name: Start a local MQTT server
+        run: |
+          brew install mosquitto > /dev/null 2>&1 || brew install mosquitto
+          "$(brew --prefix mosquitto)/sbin/mosquitto" -p 18830 -d
+          sleep 1
+          nc -z 127.0.0.1 18830 && echo "MQTT server is up"
+
       # The logic is checked against the Android app's own answers (iOS/CoreTests/Fixtures, made by iOS/oracle).
       - name: Test the car logic
+        env:
+          LIONFLOW_MQTT_TEST: "1"
         run: |
           set +e
           swift test > test.log 2>&1

@@ -1,0 +1,1142 @@
+{
+ "pin": "4321",
+ "sms": "K7QW2M",
+ "deviceId": "0123456789abcdef",
+ "seed": 20261126,
+ "keys": {
+  "factoryN": "874df7dc0fe21da9680c197774c5e1cb7834a6a0aa8a545118fb61cd9f153dc8665506ab31f2400981e65ee583ef7d9c054db27e32625aeb47f2690fd77125cd870e77371544dc31e3687b7856645ce913bf5fd5c80c8117fd619edf54aaab8d48b59fd4e5dfe1dc58edc36196ddcaf3ba0f24ad6946d0e0d519c61860fc7ac9",
+  "factoryD": "7f5870cf1e01fdcc9e2981615ed85c0acb7cd90faf91404c53bf6b1be104eedabaaa60a11ff30f1801c9c2b9e5961bde231bf34998d50a46da4d900ee8e2f665a853ae0e8ace0fa165efa6f221136d3df79a9464c24d0015f925b441b61dc54543f2861318f5d98a303af14988bdd9b759a3d06aaeb982eea044c56316dd8531",
+  "deviceN": "bcc667c3dbf8525acf28846e17cbeccd6948930e3085cf05269846a98391acdbc3ec9e1e4ecf88c39c46a769fd50ede02361deecb4022e0608200d718e1f4e07cb7bd2f54855e9c0b7a56cc3c2549cba6dd782cc7cae67995dde4bc541e001ad0ca7f0e075905daf016d6e36e9402174a279bcb6f1dbf79708c638ca967ac3fd",
+  "deviceD": "905b7c86b7456c27531efbdbb7d82d8e05377f83524834e5d23836092860570268a5e253697186b3b3bd8f14d0c56a9c574ad7a5f310b9c86090fb38b7f9d240dfedbf568140e7174ae5710f1c3ae30922cd9ce85f926ad839ef9265ea4a7c104f28441e27c1c7d260a66994574f62a117427c593959e296f3cb693ccacdb191",
+  "tempN": "f54640bda565ef1c0afcbe265e5f2c484131a29aa6687de005b8d944963fafb57e638addfaa67b2523c73c0a20ec244535fbfff81d4025b8bbaec8ee392addd49fae9c89d9f554d632bd42f6c5510d9898ac796e3b871b48acf8b7a9d559c6b53e8844dbe43b683f87b23b25d16131135ecbeaa59b7820875f14147f9bddf297",
+  "tempD": "0e6d8b5673241d1fc469385c9c23b74f8b5d45ccdc9cbc1c3c92672226f4affb9e05dafdffaf70a7d4ed9a1eb6a47a9aa8d296961fd698cea1a0dea499f37675cdcb9c1678db500c18d7efcf04696e628a7ebf337f42fee803f945e312004f3eb6887dffe1eeb6e24266e0a086e8e09c60ff29d37371ab04155cfc8d8b6d7b71"
+ },
+ "afterActivate": {
+  "deviceId": "0123456789abcdef",
+  "iwalea": "7faeb4c2a48e8237d0f64bfa7efd923d",
+  "kiw": "bcc667c3dbf8525acf28846e17cbeccd6948930e3085cf05269846a98391acdbc3ec9e1e4ecf88c39c46a769fd50ede02361deecb4022e0608200d718e1f4e07cb7bd2f54855e9c0b7a56cc3c2549cba6dd782cc7cae67995dde4bc541e001ad0ca7f0e075905daf016d6e36e9402174a279bcb6f1dbf79708c638ca967ac3fd",
+  "kfact": "874df7dc0fe21da9680c197774c5e1cb7834a6a0aa8a545118fb61cd9f153dc8665506ab31f2400981e65ee583ef7d9c054db27e32625aeb47f2690fd77125cd870e77371544dc31e3687b7856645ce913bf5fd5c80c8117fd619edf54aaab8d48b59fd4e5dfe1dc58edc36196ddcaf3ba0f24ad6946d0e0d519c61860fc7ac9",
+  "codepin": "4321",
+  "action": "synchro",
+  "defi": "0",
+  "iwid": "iw-7f3a",
+  "iwTsync": "1795000043",
+  "iwK0": "72dc17c1d74f51d46c2f74a8a16d2139",
+  "iwK1": "ec23bf50eb86dc9b8ba34fe476260bbb",
+  "iwsecid": "sid-9c",
+  "iwsecval": "1a83b0df2ff5d673cfc45f17bf438961"
+ },
+ "serial": "0123456789abcdef\/_\/7faeb4c2a48e8237d0f64bfa7efd923d",
+ "kma": "84590ea4011f39b43553b36597cc03c0",
+ "afterFirstCode": {
+  "deviceId": "0123456789abcdef",
+  "iwalea": "7faeb4c2a48e8237d0f64bfa7efd923d",
+  "kiw": "bcc667c3dbf8525acf28846e17cbeccd6948930e3085cf05269846a98391acdbc3ec9e1e4ecf88c39c46a769fd50ede02361deecb4022e0608200d718e1f4e07cb7bd2f54855e9c0b7a56cc3c2549cba6dd782cc7cae67995dde4bc541e001ad0ca7f0e075905daf016d6e36e9402174a279bcb6f1dbf79708c638ca967ac3fd",
+  "kfact": "874df7dc0fe21da9680c197774c5e1cb7834a6a0aa8a545118fb61cd9f153dc8665506ab31f2400981e65ee583ef7d9c054db27e32625aeb47f2690fd77125cd870e77371544dc31e3687b7856645ce913bf5fd5c80c8117fd619edf54aaab8d48b59fd4e5dfe1dc58edc36196ddcaf3ba0f24ad6946d0e0d519c61860fc7ac9",
+  "codepin": "4321",
+  "action": "synchro",
+  "defi": "d-second",
+  "iwid": "iw-7f3a",
+  "iwTsync": "1795000043",
+  "iwK0": "72dc17c1d74f51d46c2f74a8a16d2139",
+  "iwK1": "ed20092dbf3e43f5274154dd1b5dde57",
+  "iwsecid": "sid-9c",
+  "iwsecval": "1a83b0df2ff5d673cfc45f17bf438961"
+ },
+ "afterSecondCode": {
+  "deviceId": "0123456789abcdef",
+  "iwalea": "7faeb4c2a48e8237d0f64bfa7efd923d",
+  "kiw": "bcc667c3dbf8525acf28846e17cbeccd6948930e3085cf05269846a98391acdbc3ec9e1e4ecf88c39c46a769fd50ede02361deecb4022e0608200d718e1f4e07cb7bd2f54855e9c0b7a56cc3c2549cba6dd782cc7cae67995dde4bc541e001ad0ca7f0e075905daf016d6e36e9402174a279bcb6f1dbf79708c638ca967ac3fd",
+  "kfact": "874df7dc0fe21da9680c197774c5e1cb7834a6a0aa8a545118fb61cd9f153dc8665506ab31f2400981e65ee583ef7d9c054db27e32625aeb47f2690fd77125cd870e77371544dc31e3687b7856645ce913bf5fd5c80c8117fd619edf54aaab8d48b59fd4e5dfe1dc58edc36196ddcaf3ba0f24ad6946d0e0d519c61860fc7ac9",
+  "codepin": "4321",
+  "action": "synchro",
+  "defi": "d-third",
+  "iwid": "iw-7f3a",
+  "iwTsync": "1795000043",
+  "iwK0": "72dc17c1d74f51d46c2f74a8a16d2139",
+  "iwK1": "c0e3fba93e7ad71ca85447332a4ed6fb",
+  "iwsecid": "sid-9c",
+  "iwsecval": "1a83b0df2ff5d673cfc45f17bf438961"
+ },
+ "afterThirdCode": {
+  "deviceId": "0123456789abcdef",
+  "iwalea": "7faeb4c2a48e8237d0f64bfa7efd923d",
+  "kiw": "bcc667c3dbf8525acf28846e17cbeccd6948930e3085cf05269846a98391acdbc3ec9e1e4ecf88c39c46a769fd50ede02361deecb4022e0608200d718e1f4e07cb7bd2f54855e9c0b7a56cc3c2549cba6dd782cc7cae67995dde4bc541e001ad0ca7f0e075905daf016d6e36e9402174a279bcb6f1dbf79708c638ca967ac3fd",
+  "kfact": "874df7dc0fe21da9680c197774c5e1cb7834a6a0aa8a545118fb61cd9f153dc8665506ab31f2400981e65ee583ef7d9c054db27e32625aeb47f2690fd77125cd870e77371544dc31e3687b7856645ce913bf5fd5c80c8117fd619edf54aaab8d48b59fd4e5dfe1dc58edc36196ddcaf3ba0f24ad6946d0e0d519c61860fc7ac9",
+  "codepin": "4321",
+  "action": "synchro",
+  "defi": "1795000099",
+  "iwid": "iw-new",
+  "iwTsync": "1795000100",
+  "iwK0": "72dc17c1d74f51d46c2f74a8a16d2139",
+  "iwK1": "c0e3fba93e7ad71ca85447332a4ed6fb",
+  "iwsecid": "sid-9c",
+  "iwsecval": "1a83b0df2ff5d673cfc45f17bf438961"
+ },
+ "steps": [
+  {
+   "name": "activate with a wrong SMS code",
+   "result": "error: OTP setup refused: NOK:Bad activation code",
+   "calls": [
+    {
+     "setup": true,
+     "params": [
+      [
+       "action",
+       "ActionSetup"
+      ],
+      [
+       "mode",
+       "activate"
+      ],
+      [
+       "id",
+       ""
+      ],
+      [
+       "lastsync",
+       "0"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "code",
+       "WRONG1"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "NOK:Bad activation code"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "activate",
+   "result": "kotlin.Unit",
+   "calls": [
+    {
+     "setup": true,
+     "params": [
+      [
+       "action",
+       "ActionSetup"
+      ],
+      [
+       "mode",
+       "activate"
+      ],
+      [
+       "id",
+       ""
+      ],
+      [
+       "lastsync",
+       "0"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "code",
+       "K7QW2M"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "OK"
+      ],
+      [
+       "Kfact",
+       "874df7dc0fe21da9680c197774c5e1cb7834a6a0aa8a545118fb61cd9f153dc8665506ab31f2400981e65ee583ef7d9c054db27e32625aeb47f2690fd77125cd870e77371544dc31e3687b7856645ce913bf5fd5c80c8117fd619edf54aaab8d48b59fd4e5dfe1dc58edc36196ddcaf3ba0f24ad6946d0e0d519c61860fc7ac9"
+      ],
+      [
+       "Kiw",
+       "07791874e033c853b377133238a8ea996972aed6b7ea2e5d5cacee92f7103589352919e499a9a788bec89defce3184fd7d8bf690e6feeac69de760a2049330a5c4a66c770fe7aa2dea3d265afc8cd408485d7cd092df025be8a21d5f4565035e176db10e45d3e679b3bb66c6325a9028d1f80a90f946df074999bb6aa1476fb544596159d345ee081a3524befddd1d5ec0c0a2eaa42f1f3363878cbb1d89d12a7166c7562a069dd3a47b6b52f4a9d76dfa3e93b7c93e5b74685cc694038f0a45c011bff77249778b399d3f12375ffdb3061882077452eafcf339757de7850d60dae43022dc32187b0c18568f659dcd7f7229a011bf7167f028f23c4b4a909af300bd94e65c7aa7be61b578df1269728bd29c94bd627d25c323f8a03ef274970e6925513a4cce486a102b4d509110742732177d779aa95b1d31eea570e92264066d473b5f975b80b9f500b1f2ac804d63cea89858ca34a1d427905ac0aa82933cc89d445d0c00177d383cf82154e1b454a9059ed779fef732234ca4304a33c082"
+      ]
+     ]
+    },
+    {
+     "setup": false,
+     "params": [
+      [
+       "action",
+       "ActionFinalize"
+      ],
+      [
+       "mode",
+       "activate"
+      ],
+      [
+       "id",
+       ""
+      ],
+      [
+       "lastsync",
+       "0"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "lang",
+       "fr"
+      ],
+      [
+       "ack",
+       ""
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "serial",
+       "0123456789abcdef\/_\/7faeb4c2a48e8237d0f64bfa7efd923d"
+      ],
+      [
+       "code",
+       "K7QW2M"
+      ],
+      [
+       "Kma",
+       "767696b5000f93f132d1aec6b4a1012cf7b7d483f0743001885caff20725a70d637d11c57472f7b043ba6074cba787d0fdd0de832190047e63581bfc59063e29aadea25866314f13239fd252f8407013f6f7ee13f4dfc0bbfd47b4da263997a62cf7924ac76dc8b8386da1ed41bafd871fe01c21cce65183760d1de47729a16b"
+      ],
+      [
+       "pin",
+       "7726b530df6eec83779404948b57f68b96f2d2a9ff333953aa0f9abce0637fa30db09ecae0a5c4075524d67a801ffd4f7cf502ad63b255a6ac645c9b68f9273c8b50c827ec40ec7c1e044ec694d2360a490f4a7a907e5f4e906cc286dcecb59333d00efaf0ee03850950aa374ab10a56a163f6a50953fbc3dfc43271832c9d88"
+      ],
+      [
+       "name",
+       "Android SDK built for x86_64 \/ UNKNOWN"
+      ],
+      [
+       "R0",
+       "8fdcafcdf685195959723b04a4bb0c3e21b4561026a1d61b914e08a0dc53f6d3"
+      ],
+      [
+       "R1",
+       "a9032d0faccd7977d530484b5368c4dbc6c7c8964941a94a97a269c079c9f2ea"
+      ],
+      [
+       "R2",
+       "a9032d0faccd7977d530484b5368c4dbc6c7c8964941a94a97a269c079c9f2ea"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "OK"
+      ],
+      [
+       "id",
+       "iw-7f3a"
+      ],
+      [
+       "K0",
+       "cc8bd9ee6071f3fea947cd871d2c49fc"
+      ],
+      [
+       "K1",
+       "97a2123d51dcbb1b10025fc219e1aef5"
+      ],
+      [
+       "s_n",
+       "1"
+      ],
+      [
+       "Tsync",
+       "1795000042"
+      ],
+      [
+       "ms_n",
+       "1"
+      ],
+      [
+       "ms_key",
+       "0ac18b1fedb7217cc5c16bb70719c1506a2a30f80fcccede73420d3b819f71da17b751f5d7753d1330604612c5e4751957bd0804a529ffe2085d4fa74d88df6424ff82ff6251ac0b119afce31d46b62df3aa55859a76335a52b9393d43ab834305030b13ff50fcbf6949e93da77209596b16029dc3742f27dda39ff0b23cb8fb0d986c412bfe28edcdc54e2f99d2639bc65ef5ff2cf72f7ed97ba2cd2b079db53f1b4967ef1df214fdbf6d45e04d677806662c420ee21ceb35e615ea122dd5319090b51f60c4723549688b8211e53e8e1ce17d3191a0370434b62cc029de59f19a945537c186b1d179795000181d844a7ba938d5feef9564b3db6ee173f33b50657b670f84a587d2c9f6e82942d29afbb92685519635e051319fd127cef30cd88ad2a8578570f71472f7e993af68ffd58810303aca25a6faa0840872945abea7d3ac7a56c09c3170d50bb3ff659c864a8b77a491537cd56ac0cf7df42591a2742dccc35bece4cf311bb208e56f6d0aa7a95af8b3cb2b376a36bdac293e777d9c"
+      ],
+      [
+       "ms_id",
+       "ms-01"
+      ],
+      [
+       "s_id",
+       "sid-9c"
+      ],
+      [
+       "challenge",
+       "5e1f00d5"
+      ]
+     ]
+    },
+    {
+     "setup": false,
+     "params": [
+      [
+       "action",
+       "ActionFinalize"
+      ],
+      [
+       "mode",
+       "ms"
+      ],
+      [
+       "ms_id0",
+       "ms-01"
+      ],
+      [
+       "ms_val0",
+       "46ea8e09ab31084848188f8466eed5b6a07865396c39a9098131978aa182cdf09745f0c0a0d3e87dac0f8478b516a50b4c28036473719de58ae16eb10da1800d7310db49873725f9f878f16131c0a864e007c738f9d9c8e1583bb2f01be785e4d2bd1406700e7369b2182185ddcdefd6affee25e110c2a95bb7976cdb494da7d"
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "id",
+       "iw-7f3a"
+      ],
+      [
+       "lastsync",
+       "1795000042"
+      ],
+      [
+       "ms_n",
+       "1"
+      ],
+      [
+       "R0",
+       "5ecdd58a40ae80948b7fbc73e2e707fb7d4b2d3cb54186d95993a0dd6235d200"
+      ],
+      [
+       "R1",
+       "2f747a121f7adcacf2b4cd0aaca85250ef2495ca683ab37666634afc077c2ad1"
+      ],
+      [
+       "R2",
+       "202921100edfd4a5f902575fd405f3950094bbb6a9b6101d1edc9cbc30684eac"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "OK"
+      ],
+      [
+       "dK1",
+       "a1b2c3"
+      ],
+      [
+       "s_n",
+       "1"
+      ],
+      [
+       "Tsync",
+       "1795000043"
+      ],
+      [
+       "empty",
+       ""
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "first code (the server asks twice)",
+   "result": "4f2x3akd",
+   "calls": [
+    {
+     "setup": true,
+     "params": [
+      [
+       "action",
+       "ActionSetup"
+      ],
+      [
+       "mode",
+       "otp"
+      ],
+      [
+       "id",
+       "iw-7f3a"
+      ],
+      [
+       "lastsync",
+       "1795000043"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "sid",
+       "sid-9c"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "OK"
+      ],
+      [
+       "challenge",
+       "ch-1"
+      ]
+     ]
+    },
+    {
+     "setup": false,
+     "params": [
+      [
+       "action",
+       "ActionFinalize"
+      ],
+      [
+       "mode",
+       "otp"
+      ],
+      [
+       "id",
+       "iw-7f3a"
+      ],
+      [
+       "lastsync",
+       "1795000043"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "lang",
+       "fr"
+      ],
+      [
+       "ack",
+       ""
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "keytype",
+       "0"
+      ],
+      [
+       "sid",
+       "sid-9c"
+      ],
+      [
+       "R0",
+       "3bf1bc5c16850bb9130cd0947110ce91377c0ecdacaa89ecb6d58d6205554b25"
+      ],
+      [
+       "R1",
+       "4bdeaa66c91a411ced497a84223b5bd06b9a4bdcd976b1fe4420bf1576cd70b4"
+      ],
+      [
+       "R2",
+       "559d8c3c4ebf746e9bc029f1fbc423ff0070e870128865ff1cfa909ad76dea0c"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "OK"
+      ],
+      [
+       "defi",
+       "d-first"
+      ],
+      [
+       "J",
+       "1"
+      ],
+      [
+       "dK1",
+       "0f0f"
+      ]
+     ]
+    },
+    {
+     "setup": true,
+     "params": [
+      [
+       "action",
+       "ActionSetup"
+      ],
+      [
+       "mode",
+       "otp"
+      ],
+      [
+       "id",
+       "iw-7f3a"
+      ],
+      [
+       "lastsync",
+       "1795000043"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "sid",
+       "sid-9c"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "OK"
+      ],
+      [
+       "challenge",
+       "ch-2"
+      ]
+     ]
+    },
+    {
+     "setup": false,
+     "params": [
+      [
+       "action",
+       "ActionFinalize"
+      ],
+      [
+       "mode",
+       "otp"
+      ],
+      [
+       "id",
+       "iw-7f3a"
+      ],
+      [
+       "lastsync",
+       "1795000043"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "lang",
+       "fr"
+      ],
+      [
+       "ack",
+       ""
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "keytype",
+       "0"
+      ],
+      [
+       "sid",
+       "sid-9c"
+      ],
+      [
+       "R0",
+       "928f5a078d5cadc9ce008f91b2c39e2f0b586a173553de09a0ad20bfde4d3526"
+      ],
+      [
+       "R1",
+       "1537895b19f4a6afd194564354527d67c922864a1093b8c9bee600b799289243"
+      ],
+      [
+       "R2",
+       "9751f2bd00f119d1cd97b904695b7840685a2eb59511d98ad312d24b4688faaf"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "OK"
+      ],
+      [
+       "defi",
+       "d-second"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "second code",
+   "result": "pvlzmk8b",
+   "calls": [
+    {
+     "setup": true,
+     "params": [
+      [
+       "action",
+       "ActionSetup"
+      ],
+      [
+       "mode",
+       "otp"
+      ],
+      [
+       "id",
+       "iw-7f3a"
+      ],
+      [
+       "lastsync",
+       "1795000043"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "sid",
+       "sid-9c"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "OK"
+      ],
+      [
+       "challenge",
+       "ch-3"
+      ]
+     ]
+    },
+    {
+     "setup": false,
+     "params": [
+      [
+       "action",
+       "ActionFinalize"
+      ],
+      [
+       "mode",
+       "otp"
+      ],
+      [
+       "id",
+       "iw-7f3a"
+      ],
+      [
+       "lastsync",
+       "1795000043"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "lang",
+       "fr"
+      ],
+      [
+       "ack",
+       ""
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "keytype",
+       "0"
+      ],
+      [
+       "sid",
+       "sid-9c"
+      ],
+      [
+       "R0",
+       "43b4df2d4c64b2aea31e2827958eb8dcf33137dc97130c14da2ebbabf5c51f26"
+      ],
+      [
+       "R1",
+       "7f5aedce87bb9f7dc1bde3532474bcaccb4ba4a170d6d80065f1008d6076d78a"
+      ],
+      [
+       "R2",
+       "c5cd4b7239c4673ea666bcc4dd03443cc67bb780d1797cc6f5cafa5b0dd53d89"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "OK"
+      ],
+      [
+       "defi",
+       "d-third"
+      ],
+      [
+       "K1",
+       "840a566b0560df0f2cee1365e2f15d2a"
+      ],
+      [
+       "s_n",
+       ""
+      ],
+      [
+       "Tsync",
+       "ignored"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "third code",
+   "result": "m3hh215b",
+   "calls": [
+    {
+     "setup": true,
+     "params": [
+      [
+       "action",
+       "ActionSetup"
+      ],
+      [
+       "mode",
+       "otp"
+      ],
+      [
+       "id",
+       "iw-7f3a"
+      ],
+      [
+       "lastsync",
+       "1795000043"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "sid",
+       "sid-9c"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "OK"
+      ],
+      [
+       "challenge",
+       "ch-4"
+      ]
+     ]
+    },
+    {
+     "setup": false,
+     "params": [
+      [
+       "action",
+       "ActionFinalize"
+      ],
+      [
+       "mode",
+       "otp"
+      ],
+      [
+       "id",
+       "iw-7f3a"
+      ],
+      [
+       "lastsync",
+       "1795000043"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "lang",
+       "fr"
+      ],
+      [
+       "ack",
+       ""
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "keytype",
+       "0"
+      ],
+      [
+       "sid",
+       "sid-9c"
+      ],
+      [
+       "R0",
+       "9f7c8d577a87f812056d35609291f08b108ba704af5acf0deddd30b2be3607a8"
+      ],
+      [
+       "R1",
+       "64b7b253f6ab413a9155e8a532aabf52363097b60595d6c100bab3d9700fa5b8"
+      ],
+      [
+       "R2",
+       "671010d4970dfad487a7a1e0a776c292bdc9d46431d9ffa5008bee04a1e68368"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "OK"
+      ],
+      [
+       "defi",
+       "1795000099"
+      ],
+      [
+       "s_n",
+       "2"
+      ],
+      [
+       "Tsync",
+       "1795000100"
+      ],
+      [
+       "id",
+       "iw-new"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "fourth code is refused",
+   "result": "error: OTP error: NOK:Too many codes today",
+   "calls": [
+    {
+     "setup": true,
+     "params": [
+      [
+       "action",
+       "ActionSetup"
+      ],
+      [
+       "mode",
+       "otp"
+      ],
+      [
+       "id",
+       "iw-new"
+      ],
+      [
+       "lastsync",
+       "1795000100"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "sid",
+       "sid-9c"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "OK"
+      ],
+      [
+       "challenge",
+       "ch-5"
+      ]
+     ]
+    },
+    {
+     "setup": false,
+     "params": [
+      [
+       "action",
+       "ActionFinalize"
+      ],
+      [
+       "mode",
+       "otp"
+      ],
+      [
+       "id",
+       "iw-new"
+      ],
+      [
+       "lastsync",
+       "1795000100"
+      ],
+      [
+       "version",
+       "Generator-1.0\/0.2.11"
+      ],
+      [
+       "lang",
+       "fr"
+      ],
+      [
+       "ack",
+       ""
+      ],
+      [
+       "macid",
+       "bb8e981582b0f31353108fb020bead1c"
+      ],
+      [
+       "keytype",
+       "0"
+      ],
+      [
+       "sid",
+       "sid-9c"
+      ],
+      [
+       "R0",
+       "539c830d8d306f8127ec2ffa2abe1ba4e6abeb6e42d9d93f25bef59618ba3872"
+      ],
+      [
+       "R1",
+       "e7c24f09a2b6caa36df608f76ef5f6801cb4430ad8a7ec75e7afbe7ba6a85531"
+      ],
+      [
+       "R2",
+       "580a8d0e9397394a05d08a4e6324e5161f6dbb9050a40f04122ccefc6590d856"
+      ]
+     ],
+     "answer": [
+      [
+       "err",
+       "NOK:Too many codes today"
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "serverCouldRead": [
+  {
+   "Kma": "84590ea4011f39b43553b36597cc03c0",
+   "pin": "4321"
+  },
+  {
+   "ms_val0": "28778fb89f22e23b68c1b21cf94c7601"
+  }
+ ],
+ "sha256": [
+  [
+   "",
+   "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  ],
+  [
+   "abc",
+   "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+  ],
+  [
+   "4321;0123456789abcdef\/_\/00",
+   "cdfe0afd32c1b866f82b2b1e4945fcc1cc3f963019b98ca33f561e86104b3d32"
+  ],
+  [
+   "æøå 🚗",
+   "e9a030f8b1ff93250007a15eaf665bb8d5dbb6072e2dc05a4640028b909ea78d"
+  ]
+ ],
+ "hex": [
+  [
+   "",
+   ""
+  ],
+  [
+   "0",
+   "00"
+  ],
+  [
+   "abc",
+   "0abc"
+  ],
+  [
+   "00ff10",
+   "00ff10"
+  ],
+  [
+   "ABCDEF",
+   "abcdef"
+  ],
+  [
+   "123",
+   "0123"
+  ]
+ ],
+ "decodeOaep": [
+  {
+   "data": "",
+   "sealed": "",
+   "opened": ""
+  },
+  {
+   "data": "61",
+   "sealed": "11b74906bc4b406eacbfbb232c825303d36c8455bf6fc55c0f7c239eb987bfb5eda02059669e575902b76abda92fd02b4105fd2c2d5e4d0ba7c31f41fda8abf70d42f0bfa78f433ee7c2561984d4edea9fb0bed61576638f2a5fc4cf666d2f52d2f796f079303a1ac1cef6ebe34e7bd991d8c294d98d3913129d756583e5b1de",
+   "opened": "61"
+  },
+  {
+   "data": "7a3e56a49d42fd813443bba1a0fa2ce7",
+   "sealed": "66138fa69a1bd429dbb528fef7548957d66e47d831d8a99fa934ed345d495c6669e589c56d7744b4e13bcc2203deeac8515ef3f5a5bf7deb1b6c2b81286693a25e31d0897f6a4d28a9f2126b52854e8fcfa832004c59f1df6911a90b45ac86bde20fd04e5fa506793330c2f189b7d580aaa379a8eaa7cde0335be921a07f3b8a",
+   "opened": "7a3e56a49d42fd813443bba1a0fa2ce7"
+  },
+  {
+   "data": "2e9be3a2b96c12d7adc7d8159415a407bd7ed74884eef4d1904596c8af2b919d9da71ebf02eba12b9def4722e955f13dd2efe24225db59e240e97dfe391b",
+   "sealed": "41d434d7affedf37cc0986d5f9967b30bd3f5be5d8185b28d84405739c31ae0a722dc9f96f7fbf77a7640a0403aef0ca44e772d5aded6857f1acd05c8fe7704e556ec6f40d6881401052680da6143c91439ec723d633548328b610f6202149d78061a13a9aff868f042f00df9548f06286d0d981d6502f8b201e30eb638d7c3e",
+   "opened": "2e9be3a2b96c12d7adc7d8159415a407bd7ed74884eef4d1904596c8af2b919d9da71ebf02eba12b9def4722e955f13dd2efe24225db59e240e97dfe391b"
+  },
+  {
+   "data": "b88d22a13f39e769f27e155f274b25b5001d74cab1efdf7dde007be19f6d202ef7b313cbe87e0213c8235cc806dcb6420e8955628a0e6be12a0ca57592d7e4",
+   "sealed": "56e57bc26ae06db321935d9696a928f73bc9d67e52041e6033b6b331e6e8bfb38c1e2711c1759daa5b2f42d2f4237ae6bbd7299f5ba7012480d286b5f86b1585b03703753cf153217d4fea7b069d5f02d7e56890bf760ac1fae838715c81da1746bad4fabf5550e7a0ab3964160807499bf50bcb3fb24c0b87c5acf07480e47663586aacd8446761885ee9ae0a6e3549b166340ae7671b7500fd350bcfd10f99da979d2fa50d0ed2ccd5b8bd0c1da3cb81bbff83c1272b2cffcab8166337903bc9ec95a82565d4ab6170366e87762470d5c10c64331227f8b2428fcad84831842241696ed8aa8d1335deea940f09d03f37b63c2dad202920167f6f82b48f5afa",
+   "opened": "b88d22a13f39e769f27e155f274b25b5001d74cab1efdf7dde007be19f6d202ef7b313cbe87e0213c8235cc806dcb6420e8955628a0e6be12a0ca57592d7e4"
+  },
+  {
+   "data": "96ec5e6bebdd6b649f67a011d6307be7ca9ace7fc5c797698538b5669c54140a12aa093028cd44c6dc37c323f6d18c2c869972dcafdbb72474f1c85b97ad3591b043246bf4428a1f47fe8c365e16889196b9228f458decd52301b6fd334f87ddf649902497af717d8c49538a16e276c3d33895d9bac44821df40923a757058a3",
+   "sealed": "15636cad780b2134b6603a875a208893dce6a70952ecc0b56e9f9627bf7c4fe88f3277928d8fe640da3afb01581ae0d57ca0bf0214cf327fbfd1938f6c5488a723ae01cb4156eabb4d1f6995eecad50bb2645d6ee3fa6892797b933f186bd897bd443d9076475eaa5ee8fd6a6f2aa92a3f7a17a89782c127dff4726d65bb1f4c307206f1bb80712c28579bb90e092d15430e1e117b9cab083f6b15afaec363b34998892346e9b71afc50f52fceca5d0b7ae5132c5dc809d6828d41d134a36c71095ab7453282d73d8e9fd2a7e5368b5e1eb1dbbffffb711c2a6331e98fb16b82e6383dda9a2abebe3403e915d067801dea355754689861bd8c95383b1082ac491aab97cb607f3375ff02d7d087609a37e0ed9e29af15a51aac0374c2c7a71e1b7ff46ed9d15355a1e8f97221f8a9865fab5783fbdb1783f6435b90cd6489c8d7712ff5321898e70e120c17cc9f88a74a77e95d84d71d1e196c60e6d2d4e32586dff425101d298866e64eb33997394497a34e6967df51fbea1d2053f5a29693e6",
+   "opened": "96ec5e6bebdd6b649f67a011d6307be7ca9ace7fc5c797698538b5669c54140a12aa093028cd44c6dc37c323f6d18c2c869972dcafdbb72474f1c85b97ad3591b043246bf4428a1f47fe8c365e16889196b9228f458decd52301b6fd334f87ddf649902497af717d8c49538a16e276c3d33895d9bac44821df40923a757058a3"
+  },
+  {
+   "data": "bcc667c3dbf8525acf28846e17cbeccd6948930e3085cf05269846a98391acdbc3ec9e1e4ecf88c39c46a769fd50ede02361deecb4022e0608200d718e1f4e07cb7bd2f54855e9c0b7a56cc3c2549cba6dd782cc7cae67995dde4bc541e001ad0ca7f0e075905daf016d6e36e9402174a279bcb6f1dbf79708c638ca967ac3fd",
+   "sealed": "23c44bb84ad4195fe3ac8f599bcc5b97f3c3e9917dd21f3f9bfb2f132e1be8fd7438be2ee2d99bc5944ef75bfa43de92235c7d79db88abdb4d742932cd872c1580f2a16a4de9caf70fb4a721371b243212010ff09f74b685fc017351ed10bbdead3d257b88e3d84c5f7327f428b4d7dca70c1f1cb7ea71774b5c74bccec956b00802b5a971cd5871baa1f4b31da5d290113c5d2c8a983b5f51c0e8f616a2bb505d80f7022562177fb2cf9d23bb326f03a913fd8397a9c38e2d9a6366116c2c61e5ed4b579dafdf2a76643ad315721636757849bd7cf3190336e760813cbcd92ee84c7944097aa67b79d4011c737c2f82d88ef6fc4d5bbd1d923ab54cb838c3d616879c3bf0c58d08699fd51295a058742a759965dffae1addac9e617d7cfd28d4e45fc379f8f40a4638ab1e990b2f2b9a9812faba42fd7a2fb1dbee718a2f068946e7ddec0c09103061af8204a122727d40a9c137299216eadbfefb113303311c2d0bf4c4f75c519987644a31c6e072b48295cfd1bb8c22bb175a76dc9875bfe",
+   "opened": "bcc667c3dbf8525acf28846e17cbeccd6948930e3085cf05269846a98391acdbc3ec9e1e4ecf88c39c46a769fd50ede02361deecb4022e0608200d718e1f4e07cb7bd2f54855e9c0b7a56cc3c2549cba6dd782cc7cae67995dde4bc541e001ad0ca7f0e075905daf016d6e36e9402174a279bcb6f1dbf79708c638ca967ac3fd"
+  },
+  {
+   "data": "30eb8c49cec77a1aba057b14bdb405251b8bf32ff50125ec9bd950433289f087ec67bb06491f0019c744d9470308dce9ce966160101f0f786c1497ba98187f7b7e978d7d2e935034099734802ffe31a8530180e8dae2ff610dbb2a8ea6bbcd6d7d7c507294849b42bef3687e9960fdcc918b3b775663c07a5c089cfeaf93aef544e9444409e339a18531f0d031ee4fd0767e7b513a38a960db280d6bdcfc60c87234787d0d071e8ce30ed1faf7f9c060742781d0717d25de304b3991a694668b6afd4e8c955c74f0",
+   "sealed": "4acb533dee9f61fcebb022a95b1d791a1f9f8a9b6d321702020034caf76d31abef6fc7354e167dd384e50cdbcb6b964f20e760616ec3bb9afd32374da3be2af8b95035e94d2cf9c33553057e7bc1df93f32ed9f74aee63d9b67b1f2b5409d5cdb0bb499d5bbc7de0af6d892d0a66fb1cf40048277b77e7b543c8a29c13deb4d34390b5bc18dc86925c5e09a434adc07cd1f6e4254a9090cf86861007b25fe22e2c747f9d9fa7104d7e20b9e3adf0a019ed5c0697c6e3a8a8db596fa8abf7b4d6f9d9c3e4561946ccab30bc8ecddcfce1fceca5d45a423ed66fa7597032703178b27c261889a7f93c3b17f178b510dd8e1f53f642775eb28354e1b714e3e26afc77d27426d94143fd987344f7bc4b591129861e172e4acddcd8b082e3b2a47bb716e6e7df6b11b17ef9a36bd3af0f43b602568435eb96625d392779279e02ec26d27b9e14a2d34661d377735e34a0eaf73a242556f936388db21dcfd5785f8cb1a2ef00a8beaaf49c5a30e0a9827f2212313552e07281604847c99bcb8fa428cf5c7fcc61de7753103a2b336f9d66832f6c08e54338f2d9fe67bd132a005237117ee3d3d8b732313b570cee43c010c71f4ab2f0a8139f10cdba19ab284d07b25cc0138de770bfbf4198805c1e71125c8e67849fa11bd579285d3ccba3650d52f72312c4913bb246e4307422eae697e7cc781acdf06dea78784626f78b83b94bad",
+   "opened": "30eb8c49cec77a1aba057b14bdb405251b8bf32ff50125ec9bd950433289f087ec67bb06491f0019c744d9470308dce9ce966160101f0f786c1497ba98187f7b7e978d7d2e935034099734802ffe31a8530180e8dae2ff610dbb2a8ea6bbcd6d7d7c507294849b42bef3687e9960fdcc918b3b775663c07a5c089cfeaf93aef544e9444409e339a18531f0d031ee4fd0767e7b513a38a960db280d6bdcfc60c87234787d0d071e8ce30ed1faf7f9c060742781d0717d25de304b3991a694668b6afd4e8c955c74f0"
+  }
+ ],
+ "decodeOaepWrongKey": "error: Incorrect decryption",
+ "oaepEncrypt": {
+  "seed": 7,
+  "cases": [
+   {
+    "data": "",
+    "encrypted": "5be655bdbf8e7f6c5743a34d9e53c4ac47e4ac348e8eb9c1f7d0d3b9d38d7a5b0ea39892c265e9aab41815ec7630ec7adac65a2c5d7509adda142bc3ae61cb3871f053a4003c801ae2acd3b0d6e0d1373ca317a2b0c68dcc5d0b3c72c8fce2a93e9751dada8aab13f064ef0c37ea00bd0f527fbc29ec96b5aa1aec409bb0ab81",
+    "opened": ""
+   },
+   {
+    "data": "34333231",
+    "encrypted": "8f2f0f71c4236b8cd4af77eca85c6770f958056fe2e3aacf1292bf3dd62df34dcb6cd84ff7a4e85ca4829a62725da0d642165ef29e67d67ac70921affc225e4a893bc3d9bdf503f18ede3cc7c9afa6e26f62f5aca068a08692dfd59e8aaba017f5fa130bb5aaf10f67422648be2ea66cad0ed22ed3722dfc0241c12ec83a1881",
+    "opened": "34333231"
+   },
+   {
+    "data": "6b202e87243eb489f1b9c4a61e3eb898",
+    "encrypted": "39142d854d5a10ae15fe0cb378012348e01b6802c8ad19e5cb33e78c33cef2b721032ab3716eeca214183fb7f3ada4951431fcf345cfb4204b42fbd96ae102fd6c36cdadf62bfd95d5923c395f237de481145d9812644a44086bfe55e15881694782d8f2ee51af407c4ff3f0da2f42eea116e65be65b6b4e86bd927ff2996934",
+    "opened": "6b202e87243eb489f1b9c4a61e3eb898"
+   },
+   {
+    "data": "cd05fd8aa20454bd3740e94e2c12e33f95b593963a8f5291a8af7cc85e4605e56e51400d75ac25823dea5061547b8992a2c21d6174f0e251fd09da6a6330",
+    "encrypted": "1af6861c9a1fc62e1b028334b1c978b3b6ab34930ee7e56c1ec589165c9f519392990991c2fd1c164673a58337022cee590d35dd340bb9e1ca3eb330b2d5b70c416ce3779d3ccd7ee45cd83817cfa05137c2815af637aceaf5e474024319fbfe4d431d491c7e191d834fdc8b96732f4409755ca79d4d84b5afdeea44b3bb4e8a",
+    "opened": "cd05fd8aa20454bd3740e94e2c12e33f95b593963a8f5291a8af7cc85e4605e56e51400d75ac25823dea5061547b8992a2c21d6174f0e251fd09da6a6330"
+   }
+  ]
+ },
+ "computeOtp": [
+  [
+   "00112233445566778899aabbccddeeff",
+   "0",
+   "",
+   "glaexvqb"
+  ],
+  [
+   "",
+   "",
+   "",
+   "tra82rk"
+  ],
+  [
+   "ffeeddccbbaa99887766554433221100",
+   "d-1",
+   "0123456789abcdef0123456789abcdef",
+   "kw1w4wcc"
+  ],
+  [
+   "a",
+   "1795000099",
+   "b",
+   "dymgdfjd"
+  ],
+  [
+   "00000000000000000000000000000000",
+   "x",
+   "y",
+   "ka3qlwgc"
+  ]
+ ],
+ "getR": {
+  "R0": "1e3c59f24becc97f6b8be4e4a8b3709eaad6a75c6b9d744fe5b8f4bd3b9389c8",
+  "R1": "819b96a6a8915992bbb2bc0869ed68073998ae175609d6261bc0b0c54100b3c6",
+  "R2": "79d908e35a9aab49d7ab6029c0896b8393f98cd0ef8743b24fcb37bdd3820972"
+ },
+ "getRSynchro": {
+  "R0": "1e3c59f24becc97f6b8be4e4a8b3709eaad6a75c6b9d744fe5b8f4bd3b9389c8",
+  "R1": "819b96a6a8915992bbb2bc0869ed68073998ae175609d6261bc0b0c54100b3c6",
+  "R2": "7473d06cd725db10956ab76810eff9d5e53a10eb910ebe2d2ae03a43998a8ae5"
+ },
+ "fromSparseJson": {
+  "deviceId": "d",
+  "iwalea": "aa",
+  "kiw": "",
+  "kfact": "",
+  "codepin": "",
+  "action": "",
+  "defi": "0",
+  "iwid": "",
+  "iwTsync": "0",
+  "iwK0": "",
+  "iwK1": "",
+  "iwsecid": "",
+  "iwsecval": ""
+ }
+}

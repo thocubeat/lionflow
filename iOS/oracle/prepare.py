@@ -112,3 +112,21 @@ write('Weather.kt', 'package no.lionflow.app.api\n' + weather + 'object WeatherA
 timefmt = read('ui/l10n/TimeFmt.kt')
 write('TimeFmt.kt', 'package no.lionflow.app.ui.l10n\nobject TimeFmt {\n    var use24 = true\n' + between(timefmt, '    /** Turns a date pattern written with HH:mm into the chosen clock. */', None, 'TimeFmt.kt'))
 print('prepared', len(os.listdir(out)), 'files in all')
+
+# ---- The one-time-code generator, for Oracle3.kt: the same code, with the network call and the random bytes
+# handed to the fixture maker, so a whole activation can be played through and written down. ----
+otp = read('api/Otp.kt')
+for line in ['import android.util.Xml\n', 'import okhttp3.HttpUrl.Companion.toHttpUrl\n', 'import okhttp3.Request\n', 'import org.xmlpull.v1.XmlPullParser\n', 'import java.io.StringReader\n']:
+    otp = swap(otp, line, '')
+call = between(otp, '    private suspend fun request(params: Map<String, String>, setup: Boolean): Map<String, String> {', '    /** Step 1 of activation, or step 1 of producing an OTP. */', 'Otp.kt')
+otp = swap(otp, call, '    private fun request(params: Map<String, String>, setup: Boolean): Map<String, String> = OracleOtp.server(params, setup)\n\n')
+xml = between(otp, '        /** Flattens the children of the given root element into tag -> text (first occurrence wins). */', '\nfun ByteArray.toHex()', 'Otp.kt')
+otp = swap(otp, xml, '    }\n}\n')
+assert otp.count('SecureRandom().nextBytes(it)') == 3, 'Otp.kt changed: random bytes'
+otp = otp.replace('SecureRandom().nextBytes(it)', 'OracleOtp.fill(it)')
+otp = otp.replace('suspend fun ', 'fun ')
+for name in ['kma', 'getR', 'computeOtp', 'serial']:
+    otp = swap(otp, '    private fun %s(' % name, '    fun %s(' % name)
+assert 'Xml' not in otp and 'Http.' not in otp, 'Otp.kt changed: still uses the phone or the network'
+write('Otp.kt', otp)
+print('prepared', len(os.listdir(out)), 'files in all')
