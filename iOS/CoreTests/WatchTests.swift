@@ -410,7 +410,7 @@ final class WatchTests: XCTestCase {
         let english = ["Battery", "Fuel", "Range", "Today", "Yesterday", "Unlock", "Lock", "Flash lights", "Pre-heat", "Car is at", "Refresh",
                        "Getting car status…", "Open LionFlow on your phone. The watch gets its data from there.", "Unlock the car?",
                        "Lock the car?", "Flash the lights?", "Start pre-heating?", "Yes", "No", "Sending to the car…", "Updated %s", "Switch car"]
-        XCTAssertEqual(Set(WatchText.table.keys), ["nb", "fr", "de", "es"])
+        XCTAssertEqual(Set(WatchText.table.keys), ["nb", "fr", "de", "es", "fi"])
         for (language, words) in WatchText.table {
             XCTAssertEqual(Set(words.keys), Set(english), language)
             XCTAssertTrue(words["Updated %s"]?.contains("%s") ?? false, language)

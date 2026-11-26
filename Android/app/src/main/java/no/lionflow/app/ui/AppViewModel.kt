@@ -744,7 +744,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     // What the user just asked for, kept until the car's status catches up (Peugeot's server lags behind).
     private var holdPrecond: Pair<Boolean, Long>? = null
-    private var holdLock: Pair<Boolean, Long>? = null
+    private var holdLock: no.lionflow.app.model.LockHold? = null
 
     private fun applyHolds(st: VehicleStatus): VehicleStatus {
         val now = System.currentTimeMillis()
@@ -753,9 +753,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             if (now > until || st.preconditioningOn == want) holdPrecond = null
             else out = out.copy(preconditioningOn = want)
         }
-        holdLock?.let { (want, until) ->
-            if (now > until || st.locked == want) holdLock = null
-            else out = out.copy(locked = want)
+        holdLock?.let { h ->
+            if (h.holds(st, now)) out = out.copy(locked = h.want) else holdLock = null
         }
         return out
     }
@@ -814,7 +813,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun lockCar(lock: Boolean) = runCommand(if (lock) "Lock" else "Unlock", { holdLock = lock to System.currentTimeMillis() + 300_000; it.copy(locked = lock) }) { p -> remote.lock(lock, p) }
+    fun lockCar(lock: Boolean) = runCommand(if (lock) "Lock" else "Unlock", { holdLock = no.lionflow.app.model.LockHold(lock, System.currentTimeMillis()); it.copy(locked = lock) }) { p -> remote.lock(lock, p) }
     fun horn() = runCommand("Horn") { p -> remote.horn(p) }
     fun lights() = runCommand("Flash lights") { p -> remote.lights(p) }
     fun preconditioning(on: Boolean) {

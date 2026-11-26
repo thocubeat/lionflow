@@ -204,6 +204,15 @@ enum WatchText {
             "Start pre-heating?": "¿Iniciar el preacondicionamiento?", "Yes": "Sí", "No": "No",
             "Sending to the car…": "Enviando al coche…", "Updated %s": "Actualizado %s", "Switch car": "Cambiar de coche",
         ],
+        "fi": [
+            "Battery": "Akku", "Fuel": "Polttoaine", "Range": "Toimintamatka", "Today": "Tänään", "Yesterday": "Eilen",
+            "Unlock": "Avaa", "Lock": "Lukitse", "Flash lights": "Vilkuta", "Pre-heat": "Esilämmitä",
+            "Car is at": "Auto on", "Refresh": "Päivitä", "Getting car status…": "Haetaan auton tilaa…",
+            "Open LionFlow on your phone. The watch gets its data from there.": "Avaa LionFlow puhelimellasi. Kello saa tietonsa sieltä.",
+            "Unlock the car?": "Avataanko auton lukitus?", "Lock the car?": "Lukitaanko auto?", "Flash the lights?": "Vilkutetaanko valoja?",
+            "Start pre-heating?": "Aloitetaanko esilämmitys?", "Yes": "Kyllä", "No": "Ei",
+            "Sending to the car…": "Lähetetään autolle…", "Updated %s": "Päivitetty %s", "Switch car": "Vaihda autoa",
+        ],
     ]
 
     /** "nb" for a watch set to Norwegian ("nb-NO", "no", "nn"), "fr" for "fr-CA", and so on. */

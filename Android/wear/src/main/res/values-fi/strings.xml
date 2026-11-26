@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LionFlow</string>
+    <string name="battery">Akku</string>
+    <string name="fuel">Polttoaine</string>
+    <string name="range">Toimintamatka</string>
+    <string name="today">Tänään</string>
+    <string name="yesterday">Eilen</string>
+    <string name="unlock">Avaa</string>
+    <string name="lock">Lukitse</string>
+    <string name="flash">Vilkuta</string>
+    <string name="preheat">Esilämmitä</string>
+    <string name="find_car">Auto on</string>
+    <string name="refresh">Päivitä</string>
+    <string name="loading">Haetaan auton tilaa…</string>
+    <string name="no_phone">Avaa LionFlow puhelimellasi. Kello saa tietonsa sieltä.</string>
+    <string name="confirm_unlock">Avataanko auton lukitus?</string>
+    <string name="confirm_lock">Lukitaanko auto?</string>
+    <string name="confirm_flash">Vilkutetaanko valoja?</string>
+    <string name="confirm_preheat">Aloitetaanko esilämmitys?</string>
+    <string name="yes">Kyllä</string>
+    <string name="no">Ei</string>
+    <string name="sending">Lähetetään autolle…</string>
+    <string name="updated" formatted="false">Päivitetty %s</string>
+    <string name="switch_car">Vaihda autoa</string>
+</resources>

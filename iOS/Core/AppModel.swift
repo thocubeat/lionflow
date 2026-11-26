@@ -139,7 +139,7 @@ final class AppModel: ObservableObject {
     private var alertsOff = Set<String>()
     // What the user just asked for, kept until the car's status catches up (the carmaker's server lags behind).
     private var holdPrecond: (want: Bool, until: Int64)?
-    private var holdLock: (want: Bool, until: Int64)?
+    private var holdLock: LockHold?
     private var parkedKey = ""
     private var addressCache: [String: String] = [:]
 
@@ -974,7 +974,7 @@ final class AppModel: ObservableObject {
             if now > h.until || st.preconditioningOn == h.want { holdPrecond = nil } else { out.preconditioningOn = h.want }
         }
         if let h = holdLock {
-            if now > h.until || st.locked == h.want { holdLock = nil } else { out.locked = h.want }
+            if h.holds(st, now: now) { out.locked = h.want } else { holdLock = nil }
         }
         return out
     }
@@ -1056,7 +1056,7 @@ final class AppModel: ObservableObject {
 
     func lockCar(_ lock: Bool) {
         runCommand(lock ? "Lock" : "Unlock", optimistic: { st in
-            self.holdLock = (lock, nowMillis() + 300_000)
+            self.holdLock = LockHold(want: lock, since: nowMillis())
             var s = st
             s.locked = lock
             return s

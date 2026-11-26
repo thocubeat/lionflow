@@ -22,8 +22,9 @@ object L10n {
         "es" to "Español",
         "nb" to "Norsk (bokmål)",
         "nl" to "Nederlands",
+        "fi" to "Suomi",
     )
-    private val COLUMNS = listOf("fr", "de", "es", "nb", "nl")
+    private val COLUMNS = listOf("fr", "de", "es", "nb", "nl", "fi")
 
     /** The language in use right now (never "system"). Compose re-draws when it changes. */
     var lang by mutableStateOf("en")
