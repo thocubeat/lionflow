@@ -23,3 +23,6 @@ jobs:
           gradle-version: "8.11.1"
       - name: Build debug APK (no signing secrets needed)
         run: gradle :app:assembleDebug :wear:assembleDebug --stacktrace --no-daemon
+      # The logic tests that need no phone (the car's status, the lock state after a command, mild hybrids).
+      - name: Test the car logic
+        run: gradle :app:testDebugUnitTest --tests 'no.lionflow.app.model.*' --stacktrace --no-daemon
