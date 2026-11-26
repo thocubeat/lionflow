@@ -113,16 +113,19 @@ struct BrandGrid: View {
                 HStack(spacing: 12) {
                     ForEach(row, id: \.self) { b in
                         Button(action: { onPick(b) }) {
-                            // Brand names are shown as they are, in every language.
-                            Plain(b.display).font(.system(size: 22, weight: .semibold)).foregroundColor(c.text)
-                                .frame(maxWidth: .infinity)
+                            // A square tile, as wide as half the row, with the name in the middle. Brand names are
+                            // shown as they are, in every language.
+                            RoundedRectangle(cornerRadius: 24, style: .continuous).fill(c.card)
                                 .aspectRatio(1, contentMode: .fit)
-                                .frame(maxWidth: .infinity)
-                                .background(RoundedRectangle(cornerRadius: 24, style: .continuous).fill(c.card))
                                 .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).strokeBorder(c.line, lineWidth: 1))
+                                .overlay(
+                                    Plain(b.display).font(.system(size: 22, weight: .semibold)).foregroundColor(c.text)
+                                        .lineLimit(1).minimumScaleFactor(0.6).padding(.horizontal, 10)
+                                )
                                 .contentShape(Rectangle())
                         }
                         .buttonStyle(LfPress())
+                        .accessibilityLabel(Text(verbatim: b.display))
                     }
                     if row.count == 1 { Color.clear.frame(maxWidth: .infinity).frame(height: 1) }
                 }
