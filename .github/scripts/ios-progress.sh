@@ -19,9 +19,9 @@ while true; do
     echo "load: $(sysctl -n vm.loadavg 2>/dev/null)   disk: $(df -h / | tail -n 1 | awk '{ print $4 " free of " $2 }')"
     vm_stat 2>/dev/null | sed -n 2,5p
     echo "--- most memory"
-    ps -axo rss=,pcpu=,pid=,comm= | sort -rn | head -n 10 | awk '{ printf "%6d MB %6s%% %7s %s\n", $1 / 1024, $2, $3, $4 }'
+    ps -axo rss=,pcpu=,pid=,comm= | sort -rn 2> /dev/null | head -n 10 | awk '{ printf "%6d MB %6s%% %7s %s\n", $1 / 1024, $2, $3, $4 }'
     echo "--- most processor"
-    ps -axo pcpu=,rss=,pid=,comm= | sort -rn | head -n 8 | awk '{ printf "%6s%% %6d MB %7s %s\n", $1, $2 / 1024, $3, $4 }'
+    ps -axo pcpu=,rss=,pid=,comm= | sort -rn 2> /dev/null | head -n 8 | awk '{ printf "%6s%% %6d MB %7s %s\n", $1, $2 / 1024, $3, $4 }'
     ps -axo rss=,pid=,comm= | awk '$1 > 2000000 && $3 ~ /LionFlow\.app\/LionFlow$/ { print $1, $2 }' | while read -r rss pid; do
       echo "!!! the app (pid $pid) uses $((rss / 1024)) MB of memory: stopped"
       kill -9 "$pid"

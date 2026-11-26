@@ -7,6 +7,7 @@ private struct AuthColumn<Content: View>: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: 18) { content() }
+                .ownHeight()
                 .padding(.horizontal, 24)
                 .padding(.vertical, 32)
                 .frame(maxWidth: 460)

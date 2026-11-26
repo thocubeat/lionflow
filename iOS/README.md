@@ -65,5 +65,4 @@ change when the Android code did.
 
 The app takes a few arguments at launch, used for the pictures: `-demo electric|hybrid|fuel`, `-brand opel`,
 `-tab Charging`, `-theme light`, `-lang nb`, `-clean` (no demo banner), `-signedout`. The watch app takes `-preview`
-(a sample car, no phone needed). They only ever start or leave demo mode. One more is for the walk-through alone:
-`-scroll-watch page|layout` makes a scrolling page follow its own movement in that one way only (see `LfScroll`).
+(a sample car, no phone needed). They only ever start or leave demo mode.

@@ -111,6 +111,7 @@ struct HomeView: View {
                                 .padding(.bottom, 20)
                         }
                     }
+                    .ownHeight()
                     .environment(\.lfNarrowColumn, column - 44 < 285)
                 }
                 // In the dark look the top of the picture goes up behind the clock, as on Android. That only reads

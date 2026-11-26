@@ -225,7 +225,7 @@ jobs:
           TEST_RUNNER_TOUR_OUT="$PWD/tour" perl -e 'alarm shift; exec @ARGV' 2400 xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
             -destination "platform=iOS Simulator,id=$TOUR_DEVICE" -destination-timeout 180 -derivedDataPath build-tour \
             -test-timeouts-enabled YES -default-test-execution-time-allowance 900 -maximum-test-execution-time-allowance 900 \
-            -skip-testing:LionFlowTour/TourTests/test12ThePullCircle > tour.log 2>&1
+            -skip-testing:LionFlowTour/TourTests/test11ThePullCircle > tour.log 2>&1
           status=$?
           grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST|LionFlow tour: " tour.log | cut -c1-500 | head -150
           # When the test could not start at all, say why, and which simulators this walk-through can run on.
@@ -245,7 +245,7 @@ jobs:
           TEST_RUNNER_TOUR_OUT="$PWD/tour" perl -e 'alarm shift; exec @ARGV' 420 xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
             -destination "platform=iOS Simulator,id=$TOUR_DEVICE" -destination-timeout 180 -derivedDataPath build-tour \
             -test-timeouts-enabled YES -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 240 \
-            -only-testing:LionFlowTour/TourTests/test12ThePullCircle > tour-circle.log 2>&1 || echo "no picture of the pull circle this time"
+            -only-testing:LionFlowTour/TourTests/test11ThePullCircle > tour-circle.log 2>&1 || echo "no picture of the pull circle this time"
           grep -E "Test Case .*(passed|failed)|error:|Executed [0-9]+ tests" tour-circle.log | cut -c1-300 | head -20
           ls tour | grep -c "pull-circle" || true
 

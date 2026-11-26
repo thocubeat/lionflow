@@ -85,6 +85,16 @@ ready() { # device, what it is
   stamp "the $2 simulator took too long to start; trying anyway"
 }
 
+settle() { # what it is: waits until the machine has calmed down (an old system's first start keeps it busy for minutes)
+  local n load=0
+  for n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24; do
+    load="$(sysctl -n vm.loadavg 2>/dev/null | awk '{ print int($2) }')"
+    [ "${load:-0}" -lt 20 ] && return 0
+    sleep 15
+  done
+  stamp "the machine is still busy after the $1 simulator started (load $load); going on anyway"
+}
+
 shoot() { # device, file name, arguments for the app...
   local device="$1" name="$2"; shift 2
   limit 20 xcrun simctl terminate "$device" "$BUNDLE" > /dev/null 2>&1
@@ -107,11 +117,17 @@ snap() { # device, file name: a picture of the screen, tried a few times (a simu
 run() { # device, prefix
   local device="$1" prefix="$2"
   ready "$device" "$prefix" || return 0
-  limit 180 xcrun simctl install "$device" "$APP" || { stamp "could not install the app on the $prefix simulator"; return 1; }
+  settle "$prefix"
+  local try
+  for try in 1 2 3 4; do
+    limit 300 xcrun simctl install "$device" "$APP" && break
+    stamp "could not install the app on the $prefix simulator (try $try)"
+    [ "$try" = 4 ] && return 1
+    sleep 20
+  done
   # A simulator that has only just started can refuse apps for a while (an old system on its first start, for
   # minutes): try until the app starts. The app asks where the phone is: answered in advance each time, so the
   # question doesn't cover the pictures.
-  local try
   for try in 1 2 3 4 5 6 7 8; do
     limit 30 xcrun simctl privacy "$device" grant location "$BUNDLE" > /dev/null 2>&1
     limit 90 xcrun simctl launch "$device" "$BUNDLE" -signedout > /dev/null 2>&1 && break
@@ -175,3 +191,10 @@ limit 60 xcrun simctl shutdown "$WATCH" > /dev/null 2>&1
 run "$PAD" pad
 limit 60 xcrun simctl shutdown "$PAD" > /dev/null 2>&1
 ls -la "$OUT" | head -80
+
+# A workflow that is there for the pictures says so (PICTURES_REQUIRED=1): then none at all of a device is a failure.
+if [ "${PICTURES_REQUIRED:-}" = "1" ]; then
+  [ -z "$PHONE" ] || ls "$OUT"/phone-*.png > /dev/null 2>&1 || { stamp "no pictures of the phone"; exit 1; }
+  [ -z "$PAD" ] || ls "$OUT"/pad-*.png > /dev/null 2>&1 || { stamp "no pictures of the pad"; exit 1; }
+fi
+exit 0

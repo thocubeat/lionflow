@@ -19,6 +19,14 @@ extension View {
         lineLimit(1).minimumScaleFactor(smallest).fixedSize(horizontal: false, vertical: true)
     }
 
+    /// Lets a column of things have the height it needs, whatever height it is offered. On iOS 16 (and so surely on
+    /// 15) a scrolling page first shares its height out among its parts in equal portions, and a card that needs
+    /// more than its portion then gets its texts cut down to one line ending in three dots. Seen in the walk-through
+    /// on iOS 16.0; newer systems don't do it. Pages and cards all say this, so nothing in them is cut short.
+    func ownHeight(_ yes: Bool = true) -> some View {
+        fixedSize(horizontal: false, vertical: yes)
+    }
+
     /** Makes anything a button without the system's own button look. */
     func tap(_ action: @escaping () -> Void) -> some View {
         Button(action: action) { self.contentShape(Rectangle()) }.buttonStyle(LfPress())
@@ -61,7 +69,9 @@ struct LfCard<Content: View>: View {
 
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
+        // (A card that fills the height of the row it stands in shares that height out itself: not for those.)
         let card = VStack(alignment: .leading, spacing: 12) { content() }
+            .ownHeight(!stretch)
             .padding(padding)
             .frame(maxWidth: .infinity, maxHeight: stretch ? .infinity : nil, alignment: .topLeading)
             .background(shape.fill(c.card))
@@ -279,6 +289,7 @@ struct GroupCard<Content: View>: View {
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: 20, style: .continuous)
         VStack(alignment: .leading, spacing: 0) { content() }
+            .ownHeight()
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(shape.fill(c.card))
             .clipShape(shape)
@@ -464,10 +475,9 @@ struct Busy: View {
 /// A page that scrolls, and that can be pulled down to read the car again. Written by hand so it works the same on
 /// every iPhone and iPad the app supports (the system's own pull-to-refresh came to scrolling pages with iOS 16).
 ///
-/// How far the page has moved is asked of the scrolling page itself (`ScrollWatcher`). Where that page can't be found,
-/// it is worked out from where SwiftUI has laid the content out instead. That second way used to be the usual one,
-/// but it stopped saying anything while a page is scrolled: on iOS 26.5 the walk-through finds that it does not
-/// work at all (`test11EachWayOfFollowingAPage` writes down what it finds, per system version).
+/// How far the page has moved is asked of the scrolling page itself (`ScrollWatcher`). The usual way in SwiftUI is
+/// to work it out from where the content has been laid out, but that says nothing while this page is scrolled: the
+/// walk-through tried it on iOS 16.0 and on iOS 26.5, and it worked on neither.
 struct LfScroll<Content: View>: View {
     /** The car is being read: the small circle at the top keeps spinning. */
     var refreshing = false
@@ -484,17 +494,12 @@ struct LfScroll<Content: View>: View {
         ScrollView(.vertical, showsIndicators: false) {
             content()
                 .frame(maxWidth: .infinity)
-                .background(GeometryReader { g in
-                    Color.clear.preference(key: PullOffset.self, value: g.frame(in: .named("lf-scroll")).minY)
-                })
                 .background(
-                    ScrollWatcher(onFound: { track.pageFound = true }, onMoved: { moved($0, byHand: $1, from: .page) })
+                    ScrollWatcher { scrolled, byHand in moved(scrolled, byHand: byHand) }
                         .frame(width: 0, height: 0)
                         .accessibilityHidden(true),
                     alignment: .top)
         }
-        .coordinateSpace(name: "lf-scroll")
-        .onPreferenceChange(PullOffset.self) { y in moved(-y, byHand: true, from: .layout) }
         .overlay(
             Group { if onRefresh != nil { PullCircle(track: track, refreshing: refreshing, topInset: topInset) } },
             alignment: .top)
@@ -502,12 +507,7 @@ struct LfScroll<Content: View>: View {
 
     /// `scrolled` is above zero when the page has been pushed up, and below zero while it is pulled down. Only a pull
     /// made by hand counts as one: a page that is still settling into place when it opens is not being pulled.
-    private func moved(_ scrolled: CGFloat, byHand: Bool, from source: ScrollTrack.Source) {
-        if let only = ScrollTrack.only {
-            if only != source { return }
-        } else if source == .layout && track.pageFound {
-            return
-        }
+    private func moved(_ scrolled: CGFloat, byHand: Bool) {
         if let onPassed = onPassed {
             let now = scrolled > passAt
             if now != track.passed {
@@ -529,23 +529,13 @@ struct LfScroll<Content: View>: View {
 
 /** What a scrolling page remembers between two reports of how far it has moved. */
 final class ScrollTrack: ObservableObject {
-    enum Source: String { case page, layout }
-
     /** Pulled this far down, the car is read again. */
     static let pullToRefresh: CGFloat = 76
-    /// For the walk-through that is run when the app is built: "-scroll-watch page" or "-scroll-watch layout" makes
-    /// the app listen to that one way only, so each of them is known to work on its own.
-    static let only: Source? = {
-        let args = ProcessInfo.processInfo.arguments
-        guard let i = args.firstIndex(of: "-scroll-watch"), i + 1 < args.count else { return nil }
-        return Source(rawValue: args[i + 1])
-    }()
 
     /** How far the page is pulled down right now. */
     @Published var pull: CGFloat = 0
     var armed = true
     var passed = false
-    var pageFound = false
 }
 
 /// The small circle that comes down from the top while the page is pulled, as in the Android app: its ring closes as
@@ -587,7 +577,6 @@ private struct PullCircle: View {
 /// Sits in a scrolling page and tells how far the page has been scrolled: above zero when it is pushed up, below
 /// zero while it is pulled down. It listens to the page SwiftUI scrolls with, which says so on every system version.
 private struct ScrollWatcher: UIViewRepresentable {
-    let onFound: () -> Void
     /** How far, and whether a finger is moving the page (or it is on its way back after being let go). */
     let onMoved: (CGFloat, Bool) -> Void
 
@@ -595,18 +584,15 @@ private struct ScrollWatcher: UIViewRepresentable {
         let probe = Probe()
         probe.isUserInteractionEnabled = false
         probe.isAccessibilityElement = false
-        probe.onFound = onFound
         probe.onMoved = onMoved
         return probe
     }
 
     func updateUIView(_ probe: Probe, context: Context) {
-        probe.onFound = onFound
         probe.onMoved = onMoved
     }
 
     final class Probe: UIView {
-        var onFound: (() -> Void)?
         var onMoved: ((CGFloat, Bool) -> Void)?
         private weak var page: UIScrollView?
         private var watching: NSKeyValueObservation?
@@ -629,17 +615,11 @@ private struct ScrollWatcher: UIViewRepresentable {
             guard let found = above as? UIScrollView else { return }
             if found === page && watching != nil { return }
             page = found
-            onFound?()
             watching = found.observe(\.contentOffset, options: [.new]) { [weak self] page, _ in
                 self?.onMoved?(page.contentOffset.y + page.adjustedContentInset.top, page.isDragging || page.isDecelerating)
             }
         }
     }
-}
-
-private struct PullOffset: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
 }
 
 /** The frame every tab's content sits in: it scrolls and keeps to a readable width on big screens. */
@@ -653,6 +633,7 @@ struct ScreenColumn<Content: View>: View {
     var body: some View {
         LfScroll(refreshing: refreshing, onRefresh: onRefresh) {
             VStack(alignment: .leading, spacing: 14) { content() }
+                .ownHeight()
                 .padding(20)
                 .frame(maxWidth: wide ? maxWidth : .infinity)
         }

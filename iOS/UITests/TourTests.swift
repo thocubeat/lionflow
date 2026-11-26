@@ -445,26 +445,9 @@ final class TourTests: XCTestCase {
         autoRefresh(true)
     }
 
-    /// The app follows a page in two ways (see LfScroll). Here each is tried alone, to know which of them this
-    /// system version really answers to. Nothing fails here: what was found is written down.
-    func test11EachWayOfFollowingAPage() {
-        autoRefresh(false)
-        for way in ["page", "layout"] {
-            demo("Home", "-scroll-watch", way)
-            var works = false
-            if waitUntilTheReportIsOld() {
-                pullDown()
-                works = texts("Updated 2 min ago").firstMatch.waitForExistence(timeout: 6)
-            }
-            let how = way == "page" ? "asking the scrolling page itself" : "where SwiftUI lays the content out"
-            note("Following a page by \(how): \(works ? "works" : "does NOT work") on \(UIDevice.current.systemName) \(UIDevice.current.systemVersion)")
-        }
-        autoRefresh(true)
-    }
-
     /// A picture of the small circle that comes down while a page is pulled: taken from the side while the finger
     /// is still held down.
-    func test12ThePullCircle() {
+    func test11ThePullCircle() {
         for (tab, look) in [("Charging", "dark"), ("Home", "dark"), ("Home", "light")] {
             demo(tab, "-theme", look)
             let from = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.45))

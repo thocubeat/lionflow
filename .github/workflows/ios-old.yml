@@ -118,6 +118,7 @@ jobs:
       - name: Take pictures on the old iPhone
         env:
           SKIP_WATCH: "1"
+          PICTURES_REQUIRED: "1"
           PAD_UDID: ""
         run: |
           set -o pipefail
@@ -147,7 +148,7 @@ jobs:
             -only-testing:LionFlowTour/TourTests/test01EveryTabOfTheElectricCar -only-testing:LionFlowTour/TourTests/test03CommandsChangeTheSampleCar \
             -only-testing:LionFlowTour/TourTests/test04SheetsAndEditorsOpen -only-testing:LionFlowTour/TourTests/test08NothingShowsThroughTheClock \
             -only-testing:LionFlowTour/TourTests/test09PullingHomeDownReadsTheCarAgain -only-testing:LionFlowTour/TourTests/test10PullingAnotherTabDownReadsTheCarAgain \
-            -only-testing:LionFlowTour/TourTests/test11EachWayOfFollowingAPage > "$RUNNER_TEMP/tour.log" 2>&1
+            > "$RUNNER_TEMP/tour.log" 2>&1
           status=$?
           cp "$RUNNER_TEMP/tour.log" tour.log
           grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST|LionFlow tour: " tour.log | cut -c1-500 | head -150
@@ -161,6 +162,7 @@ jobs:
         if: ${{ !cancelled() }}
         env:
           SKIP_WATCH: "1"
+          PICTURES_REQUIRED: "1"
           PHONE_UDID: ""
         run: |
           set -o pipefail
