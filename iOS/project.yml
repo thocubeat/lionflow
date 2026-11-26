@@ -25,12 +25,10 @@ targets:
       - path: LionFlow
       - path: l10n-ios.tsv
         buildPhase: resources
-      # The texts, sign-in settings and prices are the Android app's own files: one copy for both apps.
+      # The texts and the sign-in settings are the Android app's own files: one copy for both apps.
       - path: ../Android/app/src/main/assets/l10n.tsv
         buildPhase: resources
       - path: ../Android/app/src/main/assets/stellantis_configs.json
-        buildPhase: resources
-      - path: ../Android/app/src/main/assets/charge_prices.json
         buildPhase: resources
     info:
       path: LionFlow/Info.plist
@@ -51,6 +49,8 @@ targets:
           - UIInterfaceOrientationLandscapeRight
         UIApplicationSupportsIndirectInputEvents: true
         ITSAppUsesNonExemptEncryption: false
+        LSApplicationQueriesSchemes:
+          - mailto
         NSLocationWhenInUseUsageDescription: LionFlow shows where you are on the map, to find chargers near you and the way to your car. Your position is not sent to LionFlow or anyone else.
         NSFaceIDUsageDescription: LionFlow can ask for Face ID before it unlocks your car or opens the app.
     settings:

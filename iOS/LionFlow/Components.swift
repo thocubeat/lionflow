@@ -8,6 +8,11 @@ extension View {
         shadow(color: c.isDark ? .clear : Color(hex: 0xFF3B2A16).opacity(0.16), radius: radius * 0.8, x: 0, y: radius * 0.35)
     }
 
+    /** Lets the app's own background show behind a text box with several lines. */
+    @ViewBuilder func clearEditorBackground() -> some View {
+        if #available(iOS 16.0, *) { self.scrollContentBackground(.hidden) } else { self }
+    }
+
     /** Makes anything a button without the system's own button look. */
     func tap(_ action: @escaping () -> Void) -> some View {
         Button(action: action) { self.contentShape(Rectangle()) }.buttonStyle(LfPress())

@@ -203,6 +203,8 @@ final class AppHolder: ObservableObject {
     let platform: Platform
 
     init() {
+        // Text boxes with several lines draw their own background unless told not to (before iOS 16).
+        UITextView.appearance().backgroundColor = .clear
         let bundle = Bundle.main
         func text(_ name: String, _ ext: String) -> String? {
             bundle.url(forResource: name, withExtension: ext).flatMap { try? String(contentsOf: $0, encoding: .utf8) }
