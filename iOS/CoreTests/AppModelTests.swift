@@ -22,6 +22,16 @@ final class AppModelTests: XCTestCase {
     }
 
     override func tearDown() {
+        // The sample car is one for the whole app, and remembers what was done to it: put it back as it was, so the
+        // tests that compare it with Android's start from a fresh one.
+        Demo.choose(MemoryStore(), "electric")
+        Demo.reset()
+        Demo.apply("", [
+            Program(slot: 1, days: ["Mon", "Tue", "Wed", "Thu", "Fri"], hour: 7, minute: 15, enabled: true),
+            Program(slot: 2, days: ["Sat"], hour: 9, minute: 0, enabled: false),
+            Program(slot: 3, days: [], hour: 0, minute: 0, enabled: false),
+            Program(slot: 4, days: [], hour: 0, minute: 0, enabled: false),
+        ])
         ChargeLog.exitDemo()
         ChargeLog.onChange = nil
         ChargeLog.addressLookup = nil
