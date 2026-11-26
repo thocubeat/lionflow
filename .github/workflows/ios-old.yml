@@ -70,6 +70,15 @@ jobs:
         with:
           name: LionFlow-simulator
 
+      # A machine that runs out of memory loses touch, and its log with it. So while the rest runs, this says once a
+      # minute how the machine is doing, on the branch "ios-previews-old-progress" (removed again when all went well).
+      - name: Keep saying how the machine is doing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          touch "$RUNNER_TEMP/steps.log" "$RUNNER_TEMP/tour.log"
+          nohup .github/scripts/ios-progress.sh ios-previews-old-progress "$RUNNER_TEMP/steps.log" "$RUNNER_TEMP/tour.log" > /dev/null 2>&1 &
+
       - name: What this machine has
         run: |
           xcodebuild -version
@@ -106,12 +115,15 @@ jobs:
           echo "PHONE_UDID=$(make old-phone 'iPhone 6s' 'iPhone SE (1st generation)' 'iPhone 7' 'iPhone 8' 'iPhone SE (2nd generation)' 'iPhone 11')" >> "$GITHUB_ENV"
           echo "PAD_UDID=$(make old-pad 'iPad Air 2' 'iPad mini 4' 'iPad (5th generation)' 'iPad (6th generation)' 'iPad Pro (9.7-inch)' 'iPad (9th generation)')" >> "$GITHUB_ENV"
 
-      - name: Take pictures on the old system
+      - name: Take pictures on the old iPhone
         env:
           SKIP_WATCH: "1"
+          PAD_UDID: ""
         run: |
-          [ -n "${PHONE_UDID:-}${PAD_UDID:-}" ] || { echo "no old device to run on"; exit 1; }
-          .github/scripts/ios-screenshots.sh "$PWD/Products/Debug-iphonesimulator/LionFlow.app" "$PWD/shots"
+          set -o pipefail
+          [ -n "${PHONE_UDID:-}" ] || { echo "no old iPhone to run on"; exit 1; }
+          xcrun simctl shutdown all > /dev/null 2>&1 || true
+          .github/scripts/ios-screenshots.sh "$PWD/Products/Debug-iphonesimulator/LionFlow.app" "$PWD/shots" 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
           # A crash would leave a report behind: there should be none.
           ls ~/Library/Logs/DiagnosticReports/ 2>/dev/null | grep -i lionflow || echo "no crash reports"
 
@@ -124,10 +136,10 @@ jobs:
           run="$(ls "$PWD"/Products/*.xctestrun | head -n 1)"
           # One simulator at a time: two make the machine too slow for a test that waits for things to appear.
           xcrun simctl shutdown all > /dev/null 2>&1 || true
-          xcrun simctl boot "$PHONE_UDID" > /dev/null 2>&1 || true
-          perl -e 'alarm shift; exec @ARGV' 600 xcrun simctl bootstatus "$PHONE_UDID" > /dev/null 2>&1 || echo "the simulator took long to start"
+          perl -e 'alarm shift; exec @ARGV' 600 xcrun simctl bootstatus "$PHONE_UDID" -b > /dev/null 2>&1 || echo "the simulator took long to start"
           xcrun simctl status_bar "$PHONE_UDID" override --time "9:41" --batteryState charged --batteryLevel 100 || true
           mkdir -p tour
+          echo "the walk-through starts" >> "$RUNNER_TEMP/steps.log"
           set +e
           TEST_RUNNER_TOUR_OUT="$PWD/tour" perl -e 'alarm shift; exec @ARGV' 2700 xcodebuild test-without-building -xctestrun "$run" \
             -destination "platform=iOS Simulator,id=$PHONE_UDID" -destination-timeout 180 \
@@ -135,13 +147,27 @@ jobs:
             -only-testing:LionFlowTour/TourTests/test01EveryTabOfTheElectricCar -only-testing:LionFlowTour/TourTests/test03CommandsChangeTheSampleCar \
             -only-testing:LionFlowTour/TourTests/test04SheetsAndEditorsOpen -only-testing:LionFlowTour/TourTests/test08NothingShowsThroughTheClock \
             -only-testing:LionFlowTour/TourTests/test09PullingHomeDownReadsTheCarAgain -only-testing:LionFlowTour/TourTests/test10PullingAnotherTabDownReadsTheCarAgain \
-            -only-testing:LionFlowTour/TourTests/test11EachWayOfFollowingAPage > tour.log 2>&1
+            -only-testing:LionFlowTour/TourTests/test11EachWayOfFollowingAPage > "$RUNNER_TEMP/tour.log" 2>&1
           status=$?
+          cp "$RUNNER_TEMP/tour.log" tour.log
           grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST|LionFlow tour: " tour.log | cut -c1-500 | head -150
           if ! grep -q "Executed [0-9]* tests" tour.log; then grep -E -B 2 -A 30 "error" tour.log | head -120; tail -n 40 tour.log; fi
           ls tour | wc -l
           ls ~/Library/Logs/DiagnosticReports/ 2>/dev/null | grep -i lionflow || echo "no crash reports"
+          xcrun simctl shutdown "$PHONE_UDID" > /dev/null 2>&1 || true
           exit $status
+
+      - name: Take pictures on the old iPad
+        if: ${{ !cancelled() }}
+        env:
+          SKIP_WATCH: "1"
+          PHONE_UDID: ""
+        run: |
+          set -o pipefail
+          [ -n "${PAD_UDID:-}" ] || { echo "no old iPad to run on"; exit 1; }
+          xcrun simctl shutdown all > /dev/null 2>&1 || true
+          .github/scripts/ios-screenshots.sh "$PWD/Products/Debug-iphonesimulator/LionFlow.app" "$PWD/shots" 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
+          ls ~/Library/Logs/DiagnosticReports/ 2>/dev/null | grep -i lionflow || echo "no crash reports"
 
       - name: Publish the pictures
         if: always()
@@ -169,3 +195,12 @@ jobs:
           git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$branch"
           # The first version of this workflow used another branch name: that branch is not needed any more.
           gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/ios-previews-ios15" > /dev/null 2>&1 || true
+
+      - name: All went well - the notes on how the machine was doing can go
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pkill -f ios-progress.sh || true
+          sleep 3
+          gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/ios-previews-old-progress" > /dev/null 2>&1 || true

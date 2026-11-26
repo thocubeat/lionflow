@@ -256,6 +256,10 @@ private struct Hero: View {
         .frame(height: 400 + topInset)
         .frame(maxWidth: .infinity)
         .clipped()
+        // In the dark look the picture begins at the very top of the screen. When the page is pulled down, what
+        // comes into view above it is the same near-black the picture's shade begins with, not the page's colour:
+        // otherwise a lighter band with a hard edge shows up there.
+        .background(Group { if c.isDark { Color(hex: 0xFF050607).frame(height: 900).offset(y: -900) } }, alignment: .top)
         .onAppear(perform: loadPhoto)
         .onChange(of: model.ui.photoPath) { _ in loadPhoto() }
         .sheet(isPresented: $picking) { PhotoPicker { data in model.savePhoto(data) }.ignoresSafeArea() }

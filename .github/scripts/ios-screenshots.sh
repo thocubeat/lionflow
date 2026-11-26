@@ -71,18 +71,15 @@ echo "iPhone simulator: $PHONE ($PHONE_NAME)"
 echo "iPad simulator:   $PAD ($PAD_NAME)"
 echo "Watch simulator:  $WATCH ($WATCH_NAME), paired with the iPhone: $PAIRED"
 
-# All of them start at once: starting one takes minutes.
-for device in "$PHONE" "$PAD" "$WATCH"; do
-  [ -n "$device" ] && (xcrun simctl boot "$device" > /dev/null 2>&1 &)
-done
-
+# Each simulator is started when its turn comes, and the iPhone and the watch are shut down before the iPad starts:
+# the machines this runs on have little memory, and two old systems starting at once can bring one to a halt.
 ready() { # device, what it is
   [ -n "$1" ] || { stamp "no simulator for the $2"; return 1; }
-  # Waits until it has started ("-b" starts it if the first try did not get it going). Asked a few times: right
-  # after the start was asked for, the question can be refused.
+  # Starts it ("-b") and waits until it is up. Asked again if that takes too long or is refused.
   local try
-  for try in 1 2 3 4 5 6; do
-    if limit 600 xcrun simctl bootstatus "$1" -b > /dev/null 2>&1; then stamp "the $2 simulator is up"; return 0; fi
+  for try in 1 2 3; do
+    if limit 420 xcrun simctl bootstatus "$1" -b > /dev/null 2>&1; then stamp "the $2 simulator is up"; return 0; fi
+    stamp "the $2 simulator is not up yet (try $try)"
     sleep 10
   done
   stamp "the $2 simulator took too long to start; trying anyway"

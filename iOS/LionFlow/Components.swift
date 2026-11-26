@@ -465,7 +465,9 @@ struct Busy: View {
 /// every iPhone and iPad the app supports (the system's own pull-to-refresh came to scrolling pages with iOS 16).
 ///
 /// How far the page has moved is asked of the scrolling page itself (`ScrollWatcher`). Where that page can't be found,
-/// it is worked out from where SwiftUI has laid the content out instead.
+/// it is worked out from where SwiftUI has laid the content out instead. That second way used to be the usual one,
+/// but it stopped saying anything while a page is scrolled: on iOS 26.5 the walk-through finds that it does not
+/// work at all (`test11EachWayOfFollowingAPage` writes down what it finds, per system version).
 struct LfScroll<Content: View>: View {
     /** The car is being read: the small circle at the top keeps spinning. */
     var refreshing = false

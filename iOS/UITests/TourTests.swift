@@ -386,10 +386,23 @@ final class TourTests: XCTestCase {
             XCTAssertFalse(still.isEmpty, "no picture of the top of the screen")
             for tab in ["Home", "Charging", "Trips", "Settings"] {
                 demo(tab, "-theme", look)
+                // In the dark look the top of Home's picture stands behind the clock for as long as the page is at
+                // its top: that is how it is meant. On a screen the whole page fits on (an iPad), it never leaves.
+                let title = texts("Updated ").firstMatch
+                let top: CGFloat? = tab == "Home" && look == "dark" && title.exists ? title.frame.minY : nil
                 for step in 1...3 {
                     app.swipeUp(velocity: .slow)
                     Thread.sleep(forTimeInterval: 0.9)
-                    let share = alike(still, topStrip())
+                    if let top = top, title.exists, abs(title.frame.minY - top) < 4 {
+                        note("Home fits on this screen without scrolling: nothing can pass behind the clock there")
+                        break
+                    }
+                    var share = alike(still, topStrip())
+                    if share < 0.985 {
+                        // The system can lay a notice of its own over the top for a few seconds: look once more.
+                        Thread.sleep(forTimeInterval: 7)
+                        share = alike(still, topStrip())
+                    }
                     if share < 0.985 { snap("SHOWS-THROUGH-\(look)-\(tab)-\(step)") }
                     XCTAssertGreaterThanOrEqual(share, 0.985, "\(tab) (\(look)), scrolled \(step) times: something shows through the clock")
                 }
@@ -443,7 +456,8 @@ final class TourTests: XCTestCase {
                 pullDown()
                 works = texts("Updated 2 min ago").firstMatch.waitForExistence(timeout: 6)
             }
-            note("following a page by its \(way): \(works ? "works" : "does NOT work") on \(UIDevice.current.systemName) \(UIDevice.current.systemVersion)")
+            let how = way == "page" ? "asking the scrolling page itself" : "where SwiftUI lays the content out"
+            note("Following a page by \(how): \(works ? "works" : "does NOT work") on \(UIDevice.current.systemName) \(UIDevice.current.systemVersion)")
         }
         autoRefresh(true)
     }

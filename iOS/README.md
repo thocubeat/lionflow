@@ -38,13 +38,16 @@ Every push runs [`.github/workflows/ios.yml`](../.github/workflows/ios.yml), in 
   A build of `main` also puts `LionFlow.ipa` on the
   [download page](https://github.com/thocubeat/lionflow/releases/tag/ios-latest).
 - **tour**: `UITests/TourTests.swift` walks through the whole app in the iPhone and iPad simulators with the sample
-  car, tapping and scrolling: every tab from top to bottom, the sheets and editors, commands, the first screens. It
-  fails when something doesn't open or the app stops, and its pictures land on the branch
+  car, tapping and scrolling: every tab from top to bottom, the sheets and editors, commands, the first screens,
+  pulling a page down to read the car again, and that nothing scrolled up shows through the clock. It fails when
+  something doesn't open or the app stops, and its pictures land on the branch
   [`ios-previews-tour`](https://github.com/thocubeat/lionflow/tree/ios-previews-tour), with `result.txt` saying how
   it went.
 
-[`.github/workflows/ios-old.yml`](../.github/workflows/ios-old.yml) (run by hand) takes the same pictures on the
-oldest iOS the simulator can still get, which is iOS 16: Apple no longer offers iOS 15 for it.
+[`.github/workflows/ios-old.yml`](../.github/workflows/ios-old.yml) (run by hand, or when that file changes) takes the
+same pictures and does the same walk-through on the oldest iOS the simulator can still get, which is iOS 16: Apple
+no longer offers iOS 15 for it. Its pictures and `result.txt` land on the branch
+[`ios-previews-old-ios16-macos-26`](https://github.com/thocubeat/lionflow/tree/ios-previews-old-ios16-macos-26).
 
 ## Same answers as the Android app
 
@@ -62,4 +65,5 @@ change when the Android code did.
 
 The app takes a few arguments at launch, used for the pictures: `-demo electric|hybrid|fuel`, `-brand opel`,
 `-tab Charging`, `-theme light`, `-lang nb`, `-clean` (no demo banner), `-signedout`. The watch app takes `-preview`
-(a sample car, no phone needed). They only ever start or leave demo mode.
+(a sample car, no phone needed). They only ever start or leave demo mode. One more is for the walk-through alone:
+`-scroll-watch page|layout` makes a scrolling page follow its own movement in that one way only (see `LfScroll`).
