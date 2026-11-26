@@ -175,6 +175,17 @@ final class TourTests: XCTestCase {
         return old
     }
 
+    /// Right after the sample car has been read, its report is two minutes old, or one: the clock it was read with
+    /// can be a millisecond behind the report's own, and minutes are counted whole.
+    private func seeAFreshReport(seconds: TimeInterval = 6) {
+        let two = texts("Updated 2 min ago").firstMatch, one = texts("Updated 1 min ago").firstMatch
+        let deadline = Date().addingTimeInterval(seconds)
+        while Date() < deadline && !two.exists && !one.exists { Thread.sleep(forTimeInterval: 0.5) }
+        let found = two.exists || one.exists
+        if !found { snap("MISSING-a-fresh-report") }
+        XCTAssertTrue(found, "the report did not say it was fresh (\"Updated 2 min ago\" or \"1 min ago\")")
+    }
+
     /// The strip at the very top of the screen, where the clock is, as plain numbers (red, green, blue and alpha
     /// for every dot).
     private func topStrip() -> [UInt8] {
@@ -418,7 +429,7 @@ final class TourTests: XCTestCase {
         demo("Home")
         if waitUntilTheReportIsOld() {
             pullDown()
-            see("Updated 2 min ago", seconds: 6)
+            seeAFreshReport()
             snap("after-pull")
         } else {
             XCTFail("the sample car's report never got old: nothing to tell a pull by")
@@ -438,7 +449,7 @@ final class TourTests: XCTestCase {
             bar("Charging")
             pullDown()
             bar("Home")
-            see("Updated 2 min ago", seconds: 6)
+            seeAFreshReport()
         } else {
             XCTFail("the sample car's report never got old: nothing to tell a pull by")
         }
