@@ -144,6 +144,7 @@ jobs:
           set +e
           TEST_RUNNER_TOUR_OUT="$PWD/tour" perl -e 'alarm shift; exec @ARGV' 2700 xcodebuild test-without-building -xctestrun "$run" \
             -destination "platform=iOS Simulator,id=$PHONE_UDID" -destination-timeout 180 \
+            -retry-tests-on-failure -test-iterations 2 \
             -test-timeouts-enabled YES -default-test-execution-time-allowance 900 -maximum-test-execution-time-allowance 900 \
             -only-testing:LionFlowTour/TourTests/test01EveryTabOfTheElectricCar -only-testing:LionFlowTour/TourTests/test03CommandsChangeTheSampleCar \
             -only-testing:LionFlowTour/TourTests/test04SheetsAndEditorsOpen -only-testing:LionFlowTour/TourTests/test08NothingShowsThroughTheClock \

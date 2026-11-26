@@ -211,7 +211,7 @@ jobs:
   # open or the app stops, and its pictures go to the branch "ios-previews-tour".
   tour:
     runs-on: macos-26
-    timeout-minutes: 80
+    timeout-minutes: 95
     defaults:
       run:
         working-directory: iOS
@@ -246,12 +246,20 @@ jobs:
           xcrun simctl install "$TOUR_DEVICE" build-tour/Build/Products/Debug-iphonesimulator/LionFlow.app
           xcrun simctl privacy "$TOUR_DEVICE" grant location no.lionflow.app || true
           xcrun simctl status_bar "$TOUR_DEVICE" override --time "9:41" --batteryState charged --batteryLevel 100 || true
+          # The first start of the app on a freshly started simulator can take longer than the test waits for
+          # ("Timed out while launching application"): it is started once here, until it opens.
+          for try in 1 2 3 4; do
+            perl -e 'alarm shift; exec @ARGV' 90 xcrun simctl launch "$TOUR_DEVICE" no.lionflow.app -signedout > /dev/null 2>&1 && break
+            echo "the app did not start yet (try $try)"; sleep 15
+          done
+          sleep 5; xcrun simctl terminate "$TOUR_DEVICE" no.lionflow.app > /dev/null 2>&1 || true
           mkdir -p tour
           set +e
           # A test that hangs is stopped after a quarter of an hour, and the ones after it still run.
           TEST_RUNNER_TOUR_OUT="$PWD/tour" perl -e 'alarm shift; exec @ARGV' 2400 xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
             -destination "platform=iOS Simulator,id=$TOUR_DEVICE" -destination-timeout 180 -derivedDataPath build-tour \
             -test-timeouts-enabled YES -default-test-execution-time-allowance 900 -maximum-test-execution-time-allowance 900 \
+            -retry-tests-on-failure -test-iterations 2 \
             -skip-testing:LionFlowTour/TourTests/test11ThePullCircle > tour.log 2>&1
           status=$?
           grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST|LionFlow tour: " tour.log | cut -c1-500 | head -150
@@ -287,10 +295,20 @@ jobs:
           xcrun simctl install "$TOUR_PAD" build-tour/Build/Products/Debug-iphonesimulator/LionFlow.app
           xcrun simctl privacy "$TOUR_PAD" grant location no.lionflow.app || true
           xcrun simctl status_bar "$TOUR_PAD" override --time "9:41" --batteryState charged --batteryLevel 100 || true
+          # The first start of the app on a freshly started simulator can take longer than the test waits for
+          # ("Timed out while launching application"): it is started once here, until it opens.
+          for try in 1 2 3 4; do
+            perl -e 'alarm shift; exec @ARGV' 90 xcrun simctl launch "$TOUR_PAD" no.lionflow.app -signedout > /dev/null 2>&1 && break
+            echo "the app did not start yet (try $try)"; sleep 15
+          done
+          sleep 5; xcrun simctl terminate "$TOUR_PAD" no.lionflow.app > /dev/null 2>&1 || true
           mkdir -p tour-pad
           set +e
-          TEST_RUNNER_TOUR_OUT="$PWD/tour-pad" perl -e 'alarm shift; exec @ARGV' 1500 xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
+          # A test that fails is run once more: a simulator on a busy machine sometimes doesn't start the app in time.
+          # A real fault fails both times.
+          TEST_RUNNER_TOUR_OUT="$PWD/tour-pad" perl -e 'alarm shift; exec @ARGV' 1800 xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
             -destination "platform=iOS Simulator,id=$TOUR_PAD" -destination-timeout 180 -derivedDataPath build-tour \
+            -retry-tests-on-failure -test-iterations 2 \
             -test-timeouts-enabled YES -default-test-execution-time-allowance 900 -maximum-test-execution-time-allowance 900 \
             -only-testing:LionFlowTour/TourTests/test01EveryTabOfTheElectricCar -only-testing:LionFlowTour/TourTests/test03CommandsChangeTheSampleCar \
             -only-testing:LionFlowTour/TourTests/test04SheetsAndEditorsOpen -only-testing:LionFlowTour/TourTests/test08NothingShowsThroughTheClock \
