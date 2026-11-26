@@ -3,7 +3,8 @@ name: Build APK
 on:
   push:
     branches: [ main ]
-    paths-ignore: [ "README.md", "PRIVACY.md" ]
+    # Only the Android app releases from here. The iPhone app lives in iOS/ and has its own workflow.
+    paths: [ "Android/**", ".github/workflows/build.yml" ]
   workflow_dispatch:
 
 permissions:
@@ -12,6 +13,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Android
     env:
       HAS_PLAY_KEY: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
     steps:
@@ -81,6 +85,7 @@ jobs:
           arch: x86_64
           target: google_apis
           disable-animations: true
+          working-directory: Android
           script: |
             adb install -r LionFlow.apk
             adb logcat -c
@@ -93,7 +98,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: LionFlow-apk
-          path: LionFlow.apk
+          path: Android/LionFlow.apk
 
       # Release notes = the commit message, without trailer lines (Co-Authored-By, sessions, etc.)
       - name: Release notes
@@ -112,13 +117,13 @@ jobs:
         with:
           tag_name: v${{ env.APP_VERSION_NAME }}.${{ github.run_number }}
           name: LionFlow ${{ env.APP_VERSION_NAME }}
-          body_path: notes.md
+          body_path: Android/notes.md
           files: |
-            LionFlow-*.apk
-            LionFlow.apk
-            LionFlow-*.aab
-            Watch-LionFlow-*.apk
-            ping.txt
+            Android/LionFlow-*.apk
+            Android/LionFlow.apk
+            Android/LionFlow-*.aab
+            Android/Watch-LionFlow-*.apk
+            Android/ping.txt
           make_latest: true
 
       # Google Play internal testing (no review, instant). Promote to the closed test in Play Console when wanted.
@@ -130,7 +135,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: no.lionflow.app
-          releaseFiles: LionFlow-${{ env.APP_VERSION_NAME }}.aab
+          releaseFiles: Android/LionFlow-${{ env.APP_VERSION_NAME }}.aab
           releaseName: "${{ env.APP_VERSION_NAME }}"
           track: internal
           status: completed

@@ -3,13 +3,13 @@
 LionFlow is licensed under the GNU General Public License v3.0 (see `LICENSE`).
 
 ## psa_car_controller — GPL-3.0
-The one-time-password generator for remote commands (`app/src/main/java/no/lionflow/app/api/Otp.kt`)
+The one-time-password generator for remote commands (`Android/app/src/main/java/no/lionflow/app/api/Otp.kt`)
 is a Kotlin port of the OTP code in [psa_car_controller](https://github.com/flobz/psa_car_controller)
 by Florian Bezannier, licensed under the GNU General Public License v3.0.
 
 ## homeassistant-stellantis-vehicles — MIT
 The Stellantis sign-in, API and MQTT command flow (`StellantisApi.kt`, `RemoteControl.kt`, `VehicleStatus.kt`)
-and `app/src/main/assets/stellantis_configs.json` are based on
+and `Android/app/src/main/assets/stellantis_configs.json` are based on
 [homeassistant-stellantis-vehicles](https://github.com/andreadegiovine/homeassistant-stellantis-vehicles).
 Its OTP step is itself a fork of psa_car_controller.
 
@@ -38,7 +38,7 @@ SOFTWARE.
 ```
 
 ## lionCar — GPL-3.0
-The fuel statistics (`app/src/main/java/no/lionflow/app/model/FuelStats.kt`: fill-ups read from the fuel gauge, the tank
+The fuel statistics (`Android/app/src/main/java/no/lionflow/app/model/FuelStats.kt`: fill-ups read from the fuel gauge, the tank
 size worked out from the gauge, the average since new from the car's fuel counter) follow the method in
 [lionCar](https://github.com/t-shock/lionCar-iOS) by t-shock, the iPhone port of LionFlow, licensed under the GNU General
 Public License v3.0. The "All car data" screen, the notes on Home and the extra values read from the car's status

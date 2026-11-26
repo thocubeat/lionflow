@@ -20,14 +20,15 @@ jobs:
           key: robolectric-android-34
       - name: Draw the screens
         # Tried twice: the download of Android's graphics for the test is sometimes refused the first time.
+        working-directory: Android
         run: |
           gradle :app:testDebugUnitTest -PcarPreviews --tests 'no.lionflow.app.car.*' --no-daemon || { sleep 45; gradle :app:testDebugUnitTest -PcarPreviews --tests 'no.lionflow.app.car.*' --stacktrace --no-daemon; }
       - name: Push to the car-previews branch
         if: always()
         run: |
           mkdir -p /tmp/out
-          cp -r app/build/car-previews /tmp/out/pictures 2>/dev/null || true
-          cp -r app/build/test-results/testDebugUnitTest /tmp/out/results 2>/dev/null || true
+          cp -r Android/app/build/car-previews /tmp/out/pictures 2>/dev/null || true
+          cp -r Android/app/build/test-results/testDebugUnitTest /tmp/out/results 2>/dev/null || true
           git config user.name "github-actions" && git config user.email "actions@github.com"
           git checkout --orphan previews-tmp && git rm -rfq . && git clean -fdxq
           cp -r /tmp/out/* . 2>/dev/null || true

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Runs inside the emulator job. Opens demo mode and screenshots each tab in a few screen sizes.
 set -x
-APK=app/build/outputs/apk/debug/app-debug.apk
+APK=Android/app/build/outputs/apk/debug/app-debug.apk
 PKG=no.lionflow.app.debug
 adb install -r "$APK"
 # Let the emulator settle, then close "isn't responding" dialogs from the first boot.

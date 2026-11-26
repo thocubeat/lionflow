@@ -46,7 +46,7 @@ jobs:
           osmium export /mnt/w/cs.osm.pbf -f geojsonseq --geometry-types=point,polygon --add-unique-id=type_id -o /mnt/w/cs.geojsonseq
           ls -lh /mnt/w
       - name: Build tiles
-        run: python3 scripts/build_chargers.py /mnt/w/cs.geojsonseq out
+        run: python3 .github/scripts/build_chargers.py /mnt/w/cs.geojsonseq out
       - name: Publish
         env:
           GH_TOKEN: ${{ github.token }}
