@@ -21,6 +21,15 @@ final class JSONTests: XCTestCase {
         XCTAssertEqual(j.keys(), ["a", "b", "c", "d", "e", "f", "s"])
     }
 
+    /// Android's JSON writer puts a backslash before every "/": libcore's JSONStringer handles '/' in the same
+    /// `case` as '"' and the backslash itself. The desktop library the fixtures were made with only does so in "</",
+    /// so this is checked here by hand.
+    func testSlashesAreWrittenLikeAndroid() throws {
+        let j = JSONObject().put("u", "https://a/b</c>")
+        XCTAssertEqual(j.toString(), "{\"u\":\"https:\\/\\/a\\/b<\\/c>\"}")
+        XCTAssertEqual(try JSONObject(j.toString()).optString("u"), "https://a/b</c>")
+    }
+
     func testWritesLikeAndroid() {
         let j = JSONObject().put("a", 1).put("b", 2.0).put("c", 2.5).put("d", "x/y\"z").put("e", JSONArray().put(true).put(JSONValue.null))
         XCTAssertEqual(j.toString(), "{\"a\":1,\"b\":2,\"c\":2.5,\"d\":\"x\\/y\\\"z\",\"e\":[true,null]}")

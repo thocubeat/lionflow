@@ -66,6 +66,17 @@ final class AndroidParityTests: XCTestCase {
         miss(what(), got.map { JSONValue.javaDouble($0) } ?? "nil", (want as? String) ?? "nil", file: file, line: line)
     }
 
+    /// JSON text is compared with an escaped slash (backslash + "/") read as a plain "/".
+    ///
+    /// The fixtures were made on a desktop with open-json, a copy of Android's JSON classes that differs from
+    /// Android's own in one thing: Android writes a backslash before every "/", open-json only in "</". The app
+    /// writes it the way Android does (JSONTests.testSlashesAreWrittenLikeAndroid checks that by hand), so this
+    /// one known difference in the reference is left out of the comparison here.
+    private func sameJSONText(_ what: @autoclosure () -> String, _ got: String?, _ want: String?, file: StaticString = #filePath, line: UInt = #line) {
+        func plain(_ s: String?) -> String? { s?.replacingOccurrences(of: "\\/", with: "/") }
+        same(what(), plain(got), plain(want), file: file, line: line)
+    }
+
     private func sameLong(_ what: @autoclosure () -> String, _ got: Int64?, _ want: Any?, file: StaticString = #filePath, line: UInt = #line) {
         same(what(), got.map { String($0) }, want as? String, file: file, line: line)
     }
@@ -89,21 +100,21 @@ final class AndroidParityTests: XCTestCase {
             let j = try JSONObject(t)
             let w = want[i]
             sameList("json[\(i)].keys", j.keys(), w["keys"])
-            same("json[\(i)].toString", j.toString(), w["toString"] as? String)
-            same("json[\(i)].toString(2)", j.toString(2), w["toString2"] as? String)
+            sameJSONText("json[\(i)].toString", j.toString(), w["toString"] as? String)
+            sameJSONText("json[\(i)].toString(2)", j.toString(2), w["toString2"] as? String)
             let probes = try XCTUnwrap(w["probes"] as? [String: [String: Any]])
             for k in keys {
                 let p = try XCTUnwrap(probes[k])
                 let at = "json[\(i)].\(k)"
                 same(at + ".has", j.has(k), p["has"])
                 same(at + ".isNull", j.isNull(k), p["isNull"])
-                same(at + ".optString", j.optString(k), p["optString"] as? String)
+                sameJSONText(at + ".optString", j.optString(k), p["optString"] as? String)
                 same(at + ".optDouble", JSONValue.javaDouble(j.optDouble(k)), p["optDouble"] as? String)
                 same(at + ".optInt", String(j.optInt(k)), p["optInt"] as? String)
                 same(at + ".optLong", String(j.optLong(k)), p["optLong"] as? String)
                 same(at + ".optBoolean", j.optBoolean(k), p["optBoolean"])
                 same(at + ".optBoolean(true)", j.optBoolean(k, true), p["optBooleanT"])
-                same(at + ".str", j.str(k), p["str"] as? String)
+                sameJSONText(at + ".str", j.str(k), p["str"] as? String)
                 same(at + ".num", j.num(k).map { JSONValue.javaDouble($0) }, p["num"] as? String)
                 same(at + ".isObject", j.optJSONObject(k) != nil, p["isObject"])
                 same(at + ".isArray", j.optJSONArray(k) != nil, p["isArray"])
@@ -177,12 +188,12 @@ final class AndroidParityTests: XCTestCase {
             sameNumber(at("fuelTotalRaw"), st.fuelTotalRaw, w["fuelTotalRaw"])
             same(at("isCharging"), st.isCharging, w["isCharging"])
             same(at("privacyOn"), st.privacyOn, w["privacyOn"])
-            same(at("programsJson"), st.programsJson().toString(), w["programsJson"] as? String)
+            sameJSONText(at("programsJson"), st.programsJson().toString(), w["programsJson"] as? String)
             let caps: [Bool] = [Caps.battery(st), Caps.fuel(st), Caps.position(st), Caps.climate(st), Caps.lockState(st)] + AppTab.allCases.map { Caps.tab($0, st) }
             let wantCaps = (w["caps"] as? [Bool]) ?? []
             same(at("caps"), caps.map { String($0) }.joined(separator: ","), wantCaps.map { String($0) }.joined(separator: ","))
             sameList(at("flatten"), CarData.flatten(st.raw).map { $0.0 + " = " + $0.1 }, w["flatten"])
-            same(at("pretty"), CarData.pretty(st.raw), w["pretty"] as? String)
+            sameJSONText(at("pretty"), CarData.pretty(st.raw), w["pretty"] as? String)
             sameNumber(at("lifetimeLiters"), FuelStats.lifetimeLiters(st), w["lifetimeLiters"])
             sameNumber(at("lifetimeLPer100"), FuelStats.lifetimeLPer100(st), w["lifetimeLPer100"])
         }
