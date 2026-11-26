@@ -1,0 +1,567 @@
+{
+ "cases": [
+  {
+   "name": "electric E-5008",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc1",
+    "vin": "VR3EV000000000001",
+    "pictures": [
+     "https://visuel3d-secure.peugeot.com/V3DImage.ashx?client=x&view=1"
+    ],
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc1/maintenance"
+     }
+    },
+    "motorization": "Electric",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Peugeot",
+       "label": "E-5008 GT Electric 210"
+      }
+     }
+    }
+   },
+   "detail": {
+    "id": "other",
+    "vin": "VR3EV000000000001",
+    "motorization": "Hybrid"
+   }
+  },
+  {
+   "name": "plug-in hybrid by label",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc2",
+    "vin": "VR3PH000000000002",
+    "pictures": [
+     ""
+    ],
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc2/maintenance"
+     }
+    },
+    "motorization": "Hybrid",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Peugeot",
+       "label": "3008 Plug-in Hybrid 225 e-EAT8"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "mild hybrid by motorization",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc3",
+    "vin": "VR3MH000000000003",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc3/maintenance"
+     }
+    },
+    "motorization": "MHEV 48V",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Peugeot",
+       "label": "3008 Hybrid 136"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "208 hybrid 100 by model name",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc4",
+    "vin": "VR3MH000000000004",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc4/maintenance"
+     }
+    },
+    "motorization": "Hybrid",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Peugeot",
+       "label": "208 Allure Hybrid 100 e-DCS6"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "208 hybrid 136 not by model name",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc5",
+    "vin": "VR3MH000000000005",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc5/maintenance"
+     }
+    },
+    "motorization": "Hybrid",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Peugeot",
+       "label": "208 GT Hybrid 136 e-DCS6"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "petrol",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc6",
+    "vin": "VR3TH000000000006",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc6/maintenance"
+     }
+    },
+    "motorization": "Thermal",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Peugeot",
+       "label": "2008 PureTech 130"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "nothing known",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "x7",
+    "vin": "VR3NONE0000000007"
+   },
+   "detail": {
+    "id": "x7",
+    "vin": "VR3NONE0000000007",
+    "motorization": "Hybrid",
+    "label": "208 Hybrid 100 e-DCS6",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Peugeot",
+       "label": "208 Style Hybrid 100 e-DCS6"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "citroen top-level label",
+   "defaultBrand": "Citroën",
+   "api": {
+    "id": "abc8",
+    "vin": "VR7CI000000000008",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc8/maintenance"
+     }
+    },
+    "motorization": "Unknown",
+    "brand": "Citroën",
+    "label": "C5 Aircross Hybrid 136"
+   },
+   "detail": {
+    "id": "abc8",
+    "motorization": "  ",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "label": "C5 Aircross Plug-In Hybrid 225"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "two labels",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc9",
+    "vin": "VR3EV000000000009",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc9/maintenance"
+     }
+    },
+    "motorization": "Electric",
+    "label": "e-208",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Peugeot",
+       "label": "E-208 Active"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "ds with spaces",
+   "defaultBrand": "DS",
+   "api": {
+    "id": "abc10",
+    "vin": "VR1DS000000000010",
+    "pictures": [],
+    "motorization": "PHEV",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": " DS ",
+       "label": " DS 7 E-TENSE 4x4 300 "
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "generic hybrid words",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc11",
+    "vin": "VR3HY000000000011",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc11/maintenance"
+     }
+    },
+    "motorization": "hybrid-electric vehicle",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Peugeot",
+       "label": "5008 Hybrid 136"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "opel diesel",
+   "defaultBrand": "Opel",
+   "api": {
+    "id": "abc12",
+    "vin": "W0VOP000000000012",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc12/maintenance"
+     }
+    },
+    "motorization": "Diesel",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Opel",
+       "label": "Grandland"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "values that are not text",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc13",
+    "vin": "VR3NT000000000013",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc13/maintenance"
+     }
+    },
+    "motorization": 12,
+    "label": null,
+    "brand": true
+   }
+  },
+  {
+   "name": "plug-in by label, unknown motorization",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc14",
+    "vin": "VR3PH000000000014",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc14/maintenance"
+     }
+    },
+    "motorization": "Unknown",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Peugeot",
+       "label": "408 Plug-In Hybrid 180"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "electric van by label",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc15",
+    "vin": "VR3EV000000000015",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc15/maintenance"
+     }
+    },
+    "motorization": "",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Peugeot",
+       "label": "Expert Électrique / Electric 75 kWh"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "e 208 by label",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc16",
+    "vin": "VR3EV000000000016",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc16/maintenance"
+     }
+    },
+    "label": "E 208 GT"
+   }
+  },
+  {
+   "name": "vauxhall 48 V",
+   "defaultBrand": "Vauxhall",
+   "api": {
+    "id": "abc17",
+    "vin": "W0VVX000000000017",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc17/maintenance"
+     }
+    },
+    "motorization": "Hybrid 48V",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Vauxhall",
+       "label": "Corsa Hybrid"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "208 hybrid 100, other brand",
+   "defaultBrand": "Opel",
+   "api": {
+    "id": "abc18",
+    "vin": "W0VOP000000000018",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc18/maintenance"
+     }
+    },
+    "motorization": "Hybrid",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Opel",
+       "label": "208 Hybrid 100 e-DCS6"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "208 hybrid 100 with a number in between",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc19",
+    "vin": "VR3MH000000000019",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc19/maintenance"
+     }
+    },
+    "motorization": "",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "peugeot",
+       "label": "208 1.2 Hybrid 100 eDCS6"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "208 then 2024 then hybrid",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc20",
+    "vin": "VR3MH000000000020",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc20/maintenance"
+     }
+    },
+    "motorization": "HEV",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "PEUGEOT",
+       "label": "208 2024 Hybrid 100 e-DCS 6"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "full hybrid",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc21",
+    "vin": "VR3HY000000000021",
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc21/maintenance"
+     }
+    },
+    "motorization": "Full Hybrid",
+    "_embedded": {
+     "extension": {
+      "branding": {
+       "brand": "Peugeot"
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "bev lower case, picture is a number",
+   "defaultBrand": "Peugeot",
+   "api": {
+    "id": "abc22",
+    "vin": "VR3EV000000000022",
+    "pictures": [
+     7
+    ],
+    "_links": {
+     "maintenance": {
+      "href": "https://api.groupe-psa.com/connectedcar/v4/user/vehicles/abc22/maintenance"
+     }
+    },
+    "motorization": "bev"
+   }
+  }
+ ],
+ "statuses": {
+  "hybrid unplugged": {
+   "updatedAt": "2026-11-25T17:42:10Z",
+   "energies": [
+    {
+     "type": "Electric",
+     "level": 80,
+     "autonomy": 40,
+     "updatedAt": "2026-11-25T17:42:10Z",
+     "extension": {
+      "electric": {
+       "charging": {
+        "plugged": false,
+        "status": "Disconnected",
+        "type": "No"
+       }
+      }
+     }
+    },
+    {
+     "type": "Fuel",
+     "level": 60,
+     "autonomy": 500,
+     "updatedAt": "2026-11-25T17:42:10Z"
+    }
+   ]
+  },
+  "hybrid charging": {
+   "updatedAt": "2026-11-25T17:42:10Z",
+   "energies": [
+    {
+     "type": "Electric",
+     "level": 35,
+     "autonomy": 18,
+     "updatedAt": "2026-11-25T17:42:10Z",
+     "extension": {
+      "electric": {
+       "charging": {
+        "plugged": true,
+        "status": "InProgress",
+        "type": "Full",
+        "chargingMode": "Slow"
+       }
+      }
+     }
+    },
+    {
+     "type": "Fuel",
+     "level": 61,
+     "autonomy": 510,
+     "updatedAt": "2026-11-25T17:42:10Z"
+    }
+   ]
+  },
+  "electric only": {
+   "updatedAt": "2026-11-25T17:42:10Z",
+   "energies": [
+    {
+     "type": "Electric",
+     "level": 64,
+     "autonomy": 275,
+     "updatedAt": "2026-11-25T17:42:10Z",
+     "extension": {
+      "electric": {
+       "charging": {
+        "plugged": false,
+        "status": "Disconnected"
+       }
+      }
+     }
+    }
+   ]
+  },
+  "fuel only": {
+   "updatedAt": "2026-11-25T17:42:10Z",
+   "energies": [
+    {
+     "type": "Fuel",
+     "level": 44,
+     "autonomy": 380,
+     "updatedAt": "2026-11-25T17:42:10Z"
+    }
+   ]
+  },
+  "nothing": {}
+ }
+}

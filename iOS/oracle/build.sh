@@ -26,3 +26,7 @@ echo "3/4 Compile"
 echo "4/4 Run"
 java -Duser.timezone=UTC -Duser.language=en -Duser.country=US -cp "$WORK/oracle.jar:$WORK/json" OracleKt \
   "$ROOT/iOS/CoreTests/Fixtures" "$ROOT/Android/app/src/main/assets/l10n.tsv"
+# The second part (Oracle2.kt) never writes over a file that is there: delete the ones to make again first
+# (random, demo, vehicles, configs and misc _expected.json).
+java -Duser.timezone=UTC -Duser.language=en -Duser.country=US -cp "$WORK/oracle.jar:$WORK/json" Oracle2Kt \
+  "$ROOT/iOS/CoreTests/Fixtures" "$ROOT/Android/app/src/main/assets"

@@ -1,0 +1,1092 @@
+{
+ "cases": [
+  {
+   "name": "electric E-5008",
+   "car": {
+    "fields": "abc1|VR3EV000000000001|Electric|Peugeot|https:\/\/visuel3d-secure.peugeot.com\/V3DImage.ashx?client=x&view=1|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc1\/maintenance|E-5008 GT Electric 210|null",
+    "detection": "OtherPowertrain",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Electric",
+     "48 V mild hybrid",
+     "Electric"
+    ],
+    "json": "{\"id\":\"abc1\",\"vin\":\"VR3EV000000000001\",\"motorization\":\"Electric\",\"brand\":\"Peugeot\",\"picture\":\"https:\\\/\\\/visuel3d-secure.peugeot.com\\\/V3DImage.ashx?client=x&view=1\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc1\\\/maintenance\",\"modelLabel\":\"E-5008 GT Electric 210\"}",
+    "again": "abc1|VR3EV000000000001|Electric|Peugeot|https:\/\/visuel3d-secure.peugeot.com\/V3DImage.ashx?client=x&view=1|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc1\/maintenance|E-5008 GT Electric 210|null",
+    "status": {
+     "hybrid unplugged": [
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "detailed": {
+    "fields": "abc1|VR3EV000000000001|Electric|Peugeot|https:\/\/visuel3d-secure.peugeot.com\/V3DImage.ashx?client=x&view=1|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc1\/maintenance|E-5008 GT Electric 210|null",
+    "detection": "OtherPowertrain",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Electric",
+     "48 V mild hybrid",
+     "Electric"
+    ],
+    "json": "{\"id\":\"abc1\",\"vin\":\"VR3EV000000000001\",\"motorization\":\"Electric\",\"brand\":\"Peugeot\",\"picture\":\"https:\\\/\\\/visuel3d-secure.peugeot.com\\\/V3DImage.ashx?client=x&view=1\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc1\\\/maintenance\",\"modelLabel\":\"E-5008 GT Electric 210\"}",
+    "again": "abc1|VR3EV000000000001|Electric|Peugeot|https:\/\/visuel3d-secure.peugeot.com\/V3DImage.ashx?client=x&view=1|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc1\/maintenance|E-5008 GT Electric 210|null",
+    "status": {
+     "hybrid unplugged": [
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc1|VR3EV000000000001|Electric|Peugeot|https:\/\/visuel3d-secure.peugeot.com\/V3DImage.ashx?client=x&view=1|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc1\/maintenance|E-5008 GT Electric 210|null"
+  },
+  {
+   "name": "plug-in hybrid by label",
+   "car": {
+    "fields": "abc2|VR3PH000000000002|Hybrid|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc2\/maintenance|3008 Plug-in Hybrid 225 e-EAT8|null",
+    "detection": "OtherPowertrain",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Plug-in hybrid",
+     "48 V mild hybrid",
+     "Plug-in hybrid"
+    ],
+    "json": "{\"id\":\"abc2\",\"vin\":\"VR3PH000000000002\",\"motorization\":\"Hybrid\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc2\\\/maintenance\",\"modelLabel\":\"3008 Plug-in Hybrid 225 e-EAT8\"}",
+    "again": "abc2|VR3PH000000000002|Hybrid|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc2\/maintenance|3008 Plug-in Hybrid 225 e-EAT8|null",
+    "status": {
+     "hybrid unplugged": [
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc2|VR3PH000000000002|Hybrid|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc2\/maintenance|3008 Plug-in Hybrid 225 e-EAT8|null"
+  },
+  {
+   "name": "mild hybrid by motorization",
+   "car": {
+    "fields": "abc3|VR3MH000000000003|MHEV 48V|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc3\/maintenance|3008 Hybrid 136|null",
+    "detection": "VehicleMetadata",
+    "reportsMildHybrid": true,
+    "needsBranding": false,
+    "kind": [
+     "48 V mild hybrid",
+     "48 V mild hybrid",
+     "Hybrid (type unknown)"
+    ],
+    "json": "{\"id\":\"abc3\",\"vin\":\"VR3MH000000000003\",\"motorization\":\"MHEV 48V\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc3\\\/maintenance\",\"modelLabel\":\"3008 Hybrid 136\"}",
+    "again": "abc3|VR3MH000000000003|MHEV 48V|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc3\/maintenance|3008 Hybrid 136|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Fuel|null|null|true|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Fuel|null|null|true|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc3|VR3MH000000000003|MHEV 48V|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc3\/maintenance|3008 Hybrid 136|null"
+  },
+  {
+   "name": "208 hybrid 100 by model name",
+   "car": {
+    "fields": "abc4|VR3MH000000000004|Hybrid|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc4\/maintenance|208 Allure Hybrid 100 e-DCS6|null",
+    "detection": "ModelName",
+    "reportsMildHybrid": true,
+    "needsBranding": false,
+    "kind": [
+     "48 V mild hybrid",
+     "48 V mild hybrid",
+     "Hybrid (type unknown)"
+    ],
+    "json": "{\"id\":\"abc4\",\"vin\":\"VR3MH000000000004\",\"motorization\":\"Hybrid\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc4\\\/maintenance\",\"modelLabel\":\"208 Allure Hybrid 100 e-DCS6\"}",
+    "again": "abc4|VR3MH000000000004|Hybrid|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc4\/maintenance|208 Allure Hybrid 100 e-DCS6|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Fuel|null|null|true|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Fuel|null|null|true|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc4|VR3MH000000000004|Hybrid|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc4\/maintenance|208 Allure Hybrid 100 e-DCS6|null"
+  },
+  {
+   "name": "208 hybrid 136 not by model name",
+   "car": {
+    "fields": "abc5|VR3MH000000000005|Hybrid|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc5\/maintenance|208 GT Hybrid 136 e-DCS6|null",
+    "detection": "InsufficientMetadata",
+    "reportsMildHybrid": false,
+    "needsBranding": true,
+    "kind": [
+     "Hybrid (type unknown)",
+     "48 V mild hybrid",
+     "Hybrid (type unknown)"
+    ],
+    "json": "{\"id\":\"abc5\",\"vin\":\"VR3MH000000000005\",\"motorization\":\"Hybrid\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc5\\\/maintenance\",\"modelLabel\":\"208 GT Hybrid 136 e-DCS6\"}",
+    "again": "abc5|VR3MH000000000005|Hybrid|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc5\/maintenance|208 GT Hybrid 136 e-DCS6|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|false|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Fuel|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Fuel|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc5|VR3MH000000000005|Hybrid|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc5\/maintenance|208 GT Hybrid 136 e-DCS6|null"
+  },
+  {
+   "name": "petrol",
+   "car": {
+    "fields": "abc6|VR3TH000000000006|Thermal|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc6\/maintenance|2008 PureTech 130|null",
+    "detection": "OtherPowertrain",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Petrol \/ diesel",
+     "48 V mild hybrid",
+     "Petrol \/ diesel"
+    ],
+    "json": "{\"id\":\"abc6\",\"vin\":\"VR3TH000000000006\",\"motorization\":\"Thermal\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc6\\\/maintenance\",\"modelLabel\":\"2008 PureTech 130\"}",
+    "again": "abc6|VR3TH000000000006|Thermal|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc6\/maintenance|2008 PureTech 130|null",
+    "status": {
+     "hybrid unplugged": [
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc6|VR3TH000000000006|Thermal|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc6\/maintenance|2008 PureTech 130|null"
+  },
+  {
+   "name": "nothing known",
+   "car": {
+    "fields": "x7|VR3NONE0000000007||Peugeot|null|null|null|null",
+    "detection": "InsufficientMetadata",
+    "reportsMildHybrid": false,
+    "needsBranding": true,
+    "kind": [
+     "Car",
+     "48 V mild hybrid",
+     "Car"
+    ],
+    "json": "{\"id\":\"x7\",\"vin\":\"VR3NONE0000000007\",\"motorization\":\"\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"\"}",
+    "again": "x7|VR3NONE0000000007||Peugeot|null|null|null|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|false|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "detailed": {
+    "fields": "x7|VR3NONE0000000007|Hybrid|Peugeot|null|null|208 Style Hybrid 100 e-DCS6|208 Hybrid 100 e-DCS6",
+    "detection": "ModelName",
+    "reportsMildHybrid": true,
+    "needsBranding": false,
+    "kind": [
+     "48 V mild hybrid",
+     "48 V mild hybrid",
+     "Hybrid (type unknown)"
+    ],
+    "json": "{\"id\":\"x7\",\"vin\":\"VR3NONE0000000007\",\"motorization\":\"Hybrid\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"\",\"modelLabel\":\"208 Style Hybrid 100 e-DCS6\",\"legacyLabel\":\"208 Hybrid 100 e-DCS6\"}",
+    "again": "x7|VR3NONE0000000007|Hybrid|Peugeot|null|null|208 Style Hybrid 100 e-DCS6|208 Hybrid 100 e-DCS6",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Fuel|null|null|true|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Fuel|null|null|true|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "x7|VR3NONE0000000007||Peugeot|null|null|null|null"
+  },
+  {
+   "name": "citroen top-level label",
+   "car": {
+    "fields": "abc8|VR7CI000000000008|Unknown|Citroën|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc8\/maintenance|C5 Aircross Hybrid 136|null",
+    "detection": "InsufficientMetadata",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Unknown",
+     "48 V mild hybrid",
+     "Unknown"
+    ],
+    "json": "{\"id\":\"abc8\",\"vin\":\"VR7CI000000000008\",\"motorization\":\"Unknown\",\"brand\":\"Citroën\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc8\\\/maintenance\",\"modelLabel\":\"C5 Aircross Hybrid 136\"}",
+    "again": "abc8|VR7CI000000000008|Unknown|Citroën|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc8\/maintenance|C5 Aircross Hybrid 136|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|false|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "detailed": {
+    "fields": "abc8|VR7CI000000000008|Unknown|Citroën|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc8\/maintenance|C5 Aircross Plug-In Hybrid 225|null",
+    "detection": "OtherPowertrain",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Plug-in hybrid",
+     "48 V mild hybrid",
+     "Plug-in hybrid"
+    ],
+    "json": "{\"id\":\"abc8\",\"vin\":\"VR7CI000000000008\",\"motorization\":\"Unknown\",\"brand\":\"Citroën\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc8\\\/maintenance\",\"modelLabel\":\"C5 Aircross Plug-In Hybrid 225\"}",
+    "again": "abc8|VR7CI000000000008|Unknown|Citroën|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc8\/maintenance|C5 Aircross Plug-In Hybrid 225|null",
+    "status": {
+     "hybrid unplugged": [
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc8|VR7CI000000000008|Unknown|Citroën|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc8\/maintenance|C5 Aircross Hybrid 136|null"
+  },
+  {
+   "name": "two labels",
+   "car": {
+    "fields": "abc9|VR3EV000000000009|Electric|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc9\/maintenance|E-208 Active|e-208",
+    "detection": "OtherPowertrain",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Electric",
+     "48 V mild hybrid",
+     "Electric"
+    ],
+    "json": "{\"id\":\"abc9\",\"vin\":\"VR3EV000000000009\",\"motorization\":\"Electric\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc9\\\/maintenance\",\"modelLabel\":\"E-208 Active\",\"legacyLabel\":\"e-208\"}",
+    "again": "abc9|VR3EV000000000009|Electric|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc9\/maintenance|E-208 Active|e-208",
+    "status": {
+     "hybrid unplugged": [
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc9|VR3EV000000000009|Electric|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc9\/maintenance|E-208 Active|e-208"
+  },
+  {
+   "name": "ds with spaces",
+   "car": {
+    "fields": "abc10|VR1DS000000000010|PHEV|DS|null|null|DS 7 E-TENSE 4x4 300|null",
+    "detection": "OtherPowertrain",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Plug-in hybrid",
+     "48 V mild hybrid",
+     "Plug-in hybrid"
+    ],
+    "json": "{\"id\":\"abc10\",\"vin\":\"VR1DS000000000010\",\"motorization\":\"PHEV\",\"brand\":\"DS\",\"picture\":\"\",\"maintenance\":\"\",\"modelLabel\":\"DS 7 E-TENSE 4x4 300\"}",
+    "again": "abc10|VR1DS000000000010|PHEV|DS|null|null|DS 7 E-TENSE 4x4 300|null",
+    "status": {
+     "hybrid unplugged": [
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc10|VR1DS000000000010|PHEV|DS|null|null|DS 7 E-TENSE 4x4 300|null"
+  },
+  {
+   "name": "generic hybrid words",
+   "car": {
+    "fields": "abc11|VR3HY000000000011|hybrid-electric vehicle|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc11\/maintenance|5008 Hybrid 136|null",
+    "detection": "InsufficientMetadata",
+    "reportsMildHybrid": false,
+    "needsBranding": true,
+    "kind": [
+     "Hybrid (type unknown)",
+     "48 V mild hybrid",
+     "Hybrid (type unknown)"
+    ],
+    "json": "{\"id\":\"abc11\",\"vin\":\"VR3HY000000000011\",\"motorization\":\"hybrid-electric vehicle\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc11\\\/maintenance\",\"modelLabel\":\"5008 Hybrid 136\"}",
+    "again": "abc11|VR3HY000000000011|hybrid-electric vehicle|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc11\/maintenance|5008 Hybrid 136|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|false|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Fuel|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Fuel|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc11|VR3HY000000000011|hybrid-electric vehicle|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc11\/maintenance|5008 Hybrid 136|null"
+  },
+  {
+   "name": "opel diesel",
+   "car": {
+    "fields": "abc12|W0VOP000000000012|Diesel|Opel|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc12\/maintenance|Grandland|null",
+    "detection": "OtherPowertrain",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Petrol \/ diesel",
+     "48 V mild hybrid",
+     "Petrol \/ diesel"
+    ],
+    "json": "{\"id\":\"abc12\",\"vin\":\"W0VOP000000000012\",\"motorization\":\"Diesel\",\"brand\":\"Opel\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc12\\\/maintenance\",\"modelLabel\":\"Grandland\"}",
+    "again": "abc12|W0VOP000000000012|Diesel|Opel|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc12\/maintenance|Grandland|null",
+    "status": {
+     "hybrid unplugged": [
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc12|W0VOP000000000012|Diesel|Opel|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc12\/maintenance|Grandland|null"
+  },
+  {
+   "name": "values that are not text",
+   "car": {
+    "fields": "abc13|VR3NT000000000013||Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc13\/maintenance|null|null",
+    "detection": "InsufficientMetadata",
+    "reportsMildHybrid": false,
+    "needsBranding": true,
+    "kind": [
+     "Car",
+     "48 V mild hybrid",
+     "Car"
+    ],
+    "json": "{\"id\":\"abc13\",\"vin\":\"VR3NT000000000013\",\"motorization\":\"\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc13\\\/maintenance\"}",
+    "again": "abc13|VR3NT000000000013||Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc13\/maintenance|null|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|false|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc13|VR3NT000000000013||Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc13\/maintenance|null|null"
+  },
+  {
+   "name": "plug-in by label, unknown motorization",
+   "car": {
+    "fields": "abc14|VR3PH000000000014|Unknown|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc14\/maintenance|408 Plug-In Hybrid 180|null",
+    "detection": "OtherPowertrain",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Plug-in hybrid",
+     "48 V mild hybrid",
+     "Plug-in hybrid"
+    ],
+    "json": "{\"id\":\"abc14\",\"vin\":\"VR3PH000000000014\",\"motorization\":\"Unknown\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc14\\\/maintenance\",\"modelLabel\":\"408 Plug-In Hybrid 180\"}",
+    "again": "abc14|VR3PH000000000014|Unknown|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc14\/maintenance|408 Plug-In Hybrid 180|null",
+    "status": {
+     "hybrid unplugged": [
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc14|VR3PH000000000014|Unknown|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc14\/maintenance|408 Plug-In Hybrid 180|null"
+  },
+  {
+   "name": "electric van by label",
+   "car": {
+    "fields": "abc15|VR3EV000000000015||Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc15\/maintenance|Expert Électrique \/ Electric 75 kWh|null",
+    "detection": "OtherPowertrain",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Car",
+     "48 V mild hybrid",
+     "Car"
+    ],
+    "json": "{\"id\":\"abc15\",\"vin\":\"VR3EV000000000015\",\"motorization\":\"\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc15\\\/maintenance\",\"modelLabel\":\"Expert Électrique \\\/ Electric 75 kWh\"}",
+    "again": "abc15|VR3EV000000000015||Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc15\/maintenance|Expert Électrique \/ Electric 75 kWh|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|false|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc15|VR3EV000000000015||Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc15\/maintenance|Expert Électrique \/ Electric 75 kWh|null"
+  },
+  {
+   "name": "e 208 by label",
+   "car": {
+    "fields": "abc16|VR3EV000000000016||Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc16\/maintenance|E 208 GT|null",
+    "detection": "OtherPowertrain",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Car",
+     "48 V mild hybrid",
+     "Car"
+    ],
+    "json": "{\"id\":\"abc16\",\"vin\":\"VR3EV000000000016\",\"motorization\":\"\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc16\\\/maintenance\",\"modelLabel\":\"E 208 GT\"}",
+    "again": "abc16|VR3EV000000000016||Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc16\/maintenance|E 208 GT|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|false|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc16|VR3EV000000000016||Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc16\/maintenance|E 208 GT|null"
+  },
+  {
+   "name": "vauxhall 48 V",
+   "car": {
+    "fields": "abc17|W0VVX000000000017|Hybrid 48V|Vauxhall|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc17\/maintenance|Corsa Hybrid|null",
+    "detection": "VehicleMetadata",
+    "reportsMildHybrid": true,
+    "needsBranding": false,
+    "kind": [
+     "48 V mild hybrid",
+     "48 V mild hybrid",
+     "Hybrid (type unknown)"
+    ],
+    "json": "{\"id\":\"abc17\",\"vin\":\"W0VVX000000000017\",\"motorization\":\"Hybrid 48V\",\"brand\":\"Vauxhall\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc17\\\/maintenance\",\"modelLabel\":\"Corsa Hybrid\"}",
+    "again": "abc17|W0VVX000000000017|Hybrid 48V|Vauxhall|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc17\/maintenance|Corsa Hybrid|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Fuel|null|null|true|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Fuel|null|null|true|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc17|W0VVX000000000017|Hybrid 48V|Vauxhall|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc17\/maintenance|Corsa Hybrid|null"
+  },
+  {
+   "name": "208 hybrid 100, other brand",
+   "car": {
+    "fields": "abc18|W0VOP000000000018|Hybrid|Opel|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc18\/maintenance|208 Hybrid 100 e-DCS6|null",
+    "detection": "InsufficientMetadata",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Hybrid (type unknown)",
+     "48 V mild hybrid",
+     "Hybrid (type unknown)"
+    ],
+    "json": "{\"id\":\"abc18\",\"vin\":\"W0VOP000000000018\",\"motorization\":\"Hybrid\",\"brand\":\"Opel\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc18\\\/maintenance\",\"modelLabel\":\"208 Hybrid 100 e-DCS6\"}",
+    "again": "abc18|W0VOP000000000018|Hybrid|Opel|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc18\/maintenance|208 Hybrid 100 e-DCS6|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|false|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Fuel|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Fuel|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc18|W0VOP000000000018|Hybrid|Opel|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc18\/maintenance|208 Hybrid 100 e-DCS6|null"
+  },
+  {
+   "name": "208 hybrid 100 with a number in between",
+   "car": {
+    "fields": "abc19|VR3MH000000000019||peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc19\/maintenance|208 1.2 Hybrid 100 eDCS6|null",
+    "detection": "ModelName",
+    "reportsMildHybrid": true,
+    "needsBranding": false,
+    "kind": [
+     "48 V mild hybrid",
+     "48 V mild hybrid",
+     "Hybrid (type unknown)"
+    ],
+    "json": "{\"id\":\"abc19\",\"vin\":\"VR3MH000000000019\",\"motorization\":\"\",\"brand\":\"peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc19\\\/maintenance\",\"modelLabel\":\"208 1.2 Hybrid 100 eDCS6\"}",
+    "again": "abc19|VR3MH000000000019||peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc19\/maintenance|208 1.2 Hybrid 100 eDCS6|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Fuel|null|null|true|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Fuel|null|null|true|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc19|VR3MH000000000019||peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc19\/maintenance|208 1.2 Hybrid 100 eDCS6|null"
+  },
+  {
+   "name": "208 then 2024 then hybrid",
+   "car": {
+    "fields": "abc20|VR3MH000000000020|HEV|PEUGEOT|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc20\/maintenance|208 2024 Hybrid 100 e-DCS 6|null",
+    "detection": "InsufficientMetadata",
+    "reportsMildHybrid": false,
+    "needsBranding": true,
+    "kind": [
+     "Hybrid (type unknown)",
+     "48 V mild hybrid",
+     "Hybrid (type unknown)"
+    ],
+    "json": "{\"id\":\"abc20\",\"vin\":\"VR3MH000000000020\",\"motorization\":\"HEV\",\"brand\":\"PEUGEOT\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc20\\\/maintenance\",\"modelLabel\":\"208 2024 Hybrid 100 e-DCS 6\"}",
+    "again": "abc20|VR3MH000000000020|HEV|PEUGEOT|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc20\/maintenance|208 2024 Hybrid 100 e-DCS 6|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|false|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Fuel|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Fuel|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc20|VR3MH000000000020|HEV|PEUGEOT|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc20\/maintenance|208 2024 Hybrid 100 e-DCS 6|null"
+  },
+  {
+   "name": "full hybrid",
+   "car": {
+    "fields": "abc21|VR3HY000000000021|Full Hybrid|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc21\/maintenance|null|null",
+    "detection": "InsufficientMetadata",
+    "reportsMildHybrid": false,
+    "needsBranding": true,
+    "kind": [
+     "Hybrid (type unknown)",
+     "48 V mild hybrid",
+     "Hybrid (type unknown)"
+    ],
+    "json": "{\"id\":\"abc21\",\"vin\":\"VR3HY000000000021\",\"motorization\":\"Full Hybrid\",\"brand\":\"Peugeot\",\"picture\":\"\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc21\\\/maintenance\"}",
+    "again": "abc21|VR3HY000000000021|Full Hybrid|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc21\/maintenance|null|null",
+    "status": {
+     "hybrid unplugged": [
+      "Fuel|60.0|500.0|false|60.0|false|null",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Fuel|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Fuel|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc21|VR3HY000000000021|Full Hybrid|Peugeot|null|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc21\/maintenance|null|null"
+  },
+  {
+   "name": "bev lower case, picture is a number",
+   "car": {
+    "fields": "abc22|VR3EV000000000022|bev|Peugeot|7|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc22\/maintenance|null|null",
+    "detection": "OtherPowertrain",
+    "reportsMildHybrid": false,
+    "needsBranding": false,
+    "kind": [
+     "Electric",
+     "48 V mild hybrid",
+     "Electric"
+    ],
+    "json": "{\"id\":\"abc22\",\"vin\":\"VR3EV000000000022\",\"motorization\":\"bev\",\"brand\":\"Peugeot\",\"picture\":\"7\",\"maintenance\":\"https:\\\/\\\/api.groupe-psa.com\\\/connectedcar\\\/v4\\\/user\\\/vehicles\\\/abc22\\\/maintenance\"}",
+    "again": "abc22|VR3EV000000000022|bev|Peugeot|7|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc22\/maintenance|null|null",
+    "status": {
+     "hybrid unplugged": [
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected",
+      "Fuel|60.0|500.0|true|60.0|false|null",
+      "Hybrid|80.0|40.0|false|60.0|false|Disconnected"
+     ],
+     "hybrid charging": [
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress",
+      "Fuel|61.0|510.0|true|61.0|false|null",
+      "Hybrid|35.0|18.0|false|61.0|true|InProgress"
+     ],
+     "electric only": [
+      "Electric|64.0|275.0|false|null|false|Disconnected",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|64.0|275.0|false|null|false|Disconnected"
+     ],
+     "fuel only": [
+      "Fuel|44.0|380.0|false|44.0|false|null",
+      "Fuel|44.0|380.0|true|44.0|false|null",
+      "Fuel|44.0|380.0|false|44.0|false|null"
+     ],
+     "nothing": [
+      "Electric|null|null|false|null|false|null",
+      "Fuel|null|null|true|null|false|null",
+      "Electric|null|null|false|null|false|null"
+     ]
+    }
+   },
+   "noDetail": "abc22|VR3EV000000000022|bev|Peugeot|7|https:\/\/api.groupe-psa.com\/connectedcar\/v4\/user\/vehicles\/abc22\/maintenance|null|null"
+  }
+ ]
+}

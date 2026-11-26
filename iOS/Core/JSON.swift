@@ -209,7 +209,7 @@ extension JSONValue: JSONConvertible { var jsonValue: JSONValue { self } }
 extension JSONObject: JSONConvertible { var jsonValue: JSONValue { .object(self) } }
 extension JSONArray: JSONConvertible { var jsonValue: JSONValue { .array(self) } }
 
-final class JSONObject: Equatable, CustomStringConvertible {
+final class JSONObject: Equatable, CustomStringConvertible, @unchecked Sendable {
     private var order: [String] = []
     private var map: [String: JSONValue] = [:]
 
@@ -290,7 +290,7 @@ final class JSONObject: Equatable, CustomStringConvertible {
     var description: String { toString() }
 }
 
-final class JSONArray: Equatable, CustomStringConvertible {
+final class JSONArray: Equatable, CustomStringConvertible, @unchecked Sendable {
     private(set) var items: [JSONValue] = []
 
     init() {}

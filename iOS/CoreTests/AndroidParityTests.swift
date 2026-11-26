@@ -1,16 +1,16 @@
 import XCTest
 @testable import LionFlowCore
 
-/// Checks the iPhone app's logic against the Android app's own answers.
+/// What the tests that compare with the Android app share.
 ///
 /// The files in Fixtures/ named *_expected.json were written by the Android app's Kotlin code (see iOS/oracle), run on
 /// the inputs next to them. Each test gives the same inputs to the Swift code and compares, value by value.
-final class AndroidParityTests: XCTestCase {
+class ParityTestCase: XCTestCase {
     static let here = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
     static let fixtures = here.appendingPathComponent("Fixtures")
     static let assets = here.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("Android/app/src/main/assets")
 
-    private var misses = 0
+    var misses = 0
 
     override func setUp() {
         misses = 0
@@ -29,37 +29,37 @@ final class AndroidParityTests: XCTestCase {
 
     // MARK: helpers
 
-    private func text(_ name: String) throws -> String {
+    func text(_ name: String) throws -> String {
         try String(contentsOf: Self.fixtures.appendingPathComponent(name), encoding: .utf8)
     }
 
     /** Android's answers, read with Apple's own JSON reader so a mistake in ours can't hide itself. */
-    private func expected(_ name: String) throws -> Any {
+    func expected(_ name: String) throws -> Any {
         try JSONSerialization.jsonObject(with: Data(contentsOf: Self.fixtures.appendingPathComponent(name)), options: [.fragmentsAllowed])
     }
 
     /** Only the first 30 differences of a test are printed, so one mistake doesn't flood the log. */
-    private func miss(_ what: String, _ got: String, _ want: String, file: StaticString = #filePath, line: UInt = #line) {
+    func miss(_ what: String, _ got: String, _ want: String, file: StaticString = #filePath, line: UInt = #line) {
         misses += 1
         if misses <= 30 { XCTFail("DIFF \(what): iPhone «\(got)» Android «\(want)»", file: file, line: line) }
     }
 
-    private func same(_ what: @autoclosure () -> String, _ got: String?, _ want: String?, file: StaticString = #filePath, line: UInt = #line) {
+    func same(_ what: @autoclosure () -> String, _ got: String?, _ want: String?, file: StaticString = #filePath, line: UInt = #line) {
         if got != want { miss(what(), got ?? "nil", want ?? "nil", file: file, line: line) }
     }
 
-    private func same(_ what: @autoclosure () -> String, _ got: Bool, _ want: Any?, file: StaticString = #filePath, line: UInt = #line) {
+    func same(_ what: @autoclosure () -> String, _ got: Bool, _ want: Any?, file: StaticString = #filePath, line: UInt = #line) {
         let w = want as? Bool
         if w == nil || got != w! { miss(what(), String(got), w.map { String($0) } ?? "nil", file: file, line: line) }
     }
 
     /** A number Android wrote as text (Java's `Double.toString`), or nil for its null. */
-    private func number(_ any: Any?) -> Double? {
+    func number(_ any: Any?) -> Double? {
         guard let s = any as? String else { return nil }
         return s == "NaN" ? Double.nan : Double(s)
     }
 
-    private func sameNumber(_ what: @autoclosure () -> String, _ got: Double?, _ want: Any?, file: StaticString = #filePath, line: UInt = #line) {
+    func sameNumber(_ what: @autoclosure () -> String, _ got: Double?, _ want: Any?, file: StaticString = #filePath, line: UInt = #line) {
         let w = number(want)
         if got == nil && w == nil { return }
         if let g = got, let w = w, g == w || (g.isNaN && w.isNaN) { return }
@@ -72,21 +72,104 @@ final class AndroidParityTests: XCTestCase {
     /// Android's own in one thing: Android writes a backslash before every "/", open-json only in "</". The app
     /// writes it the way Android does (JSONTests.testSlashesAreWrittenLikeAndroid checks that by hand), so this
     /// one known difference in the reference is left out of the comparison here.
-    private func sameJSONText(_ what: @autoclosure () -> String, _ got: String?, _ want: String?, file: StaticString = #filePath, line: UInt = #line) {
+    func sameJSONText(_ what: @autoclosure () -> String, _ got: String?, _ want: String?, file: StaticString = #filePath, line: UInt = #line) {
         func plain(_ s: String?) -> String? { s?.replacingOccurrences(of: "\\/", with: "/") }
         same(what(), plain(got), plain(want), file: file, line: line)
     }
 
-    private func sameLong(_ what: @autoclosure () -> String, _ got: Int64?, _ want: Any?, file: StaticString = #filePath, line: UInt = #line) {
+    func sameLong(_ what: @autoclosure () -> String, _ got: Int64?, _ want: Any?, file: StaticString = #filePath, line: UInt = #line) {
         same(what(), got.map { String($0) }, want as? String, file: file, line: line)
     }
 
-    private func sameList(_ what: @autoclosure () -> String, _ got: [String], _ want: Any?, file: StaticString = #filePath, line: UInt = #line) {
+    func sameList(_ what: @autoclosure () -> String, _ got: [String], _ want: Any?, file: StaticString = #filePath, line: UInt = #line) {
         let w = (want as? [Any])?.map { ($0 as? String) ?? "null" } ?? ["<not a list>"]
         if got.count != w.count { miss(what() + ".count", String(got.count), String(w.count), file: file, line: line) }
         for i in 0..<min(got.count, w.count) where got[i] != w[i] { miss(what() + "[\(i)]", got[i], w[i], file: file, line: line) }
     }
 
+    /// For results of sin, cos, pow and the like: the phone's maths library and Java's can differ in the last
+    /// digit, so these are compared to 12 significant digits. Plain arithmetic is compared exactly (`sameNumber`).
+    func closeNumber(_ what: @autoclosure () -> String, _ got: Double?, _ want: Any?, file: StaticString = #filePath, line: UInt = #line) {
+        let w = number(want)
+        if got == nil && w == nil { return }
+        if let g = got, let w = w, g == w || abs(g - w) <= 1e-12 * max(abs(g), abs(w)) { return }
+        miss(what(), got.map { JSONValue.javaDouble($0) } ?? "nil", (want as? String) ?? "nil", file: file, line: line)
+    }
+
+    /** Kotlin writes a missing value as "null" inside a text. */
+    func kt(_ d: Double?) -> String { d.map { JSONValue.javaDouble($0) } ?? "null" }
+    func kt(_ s: String?) -> String { s ?? "null" }
+
+    /** Two JSON texts that say the same, whatever the order of their names. */
+    func sameJSONValue(_ what: @autoclosure () -> String, _ got: String, _ want: Any?, file: StaticString = #filePath, line: UInt = #line) {
+        func canonical(_ any: Any?) -> String {
+            guard let any = any, JSONSerialization.isValidJSONObject(any), let d = try? JSONSerialization.data(withJSONObject: any, options: [.sortedKeys]) else { return "<not JSON>" }
+            return String(decoding: d, as: UTF8.self)
+        }
+        let mine = try? JSONSerialization.jsonObject(with: Data(got.utf8), options: [])
+        same(what(), canonical(mine), canonical(want), file: file, line: line)
+    }
+
+    func sameStatus(_ at: String, _ st: VehicleStatus, _ w: [String: Any], file: StaticString = #filePath, line: UInt = #line) {
+        sameNumber(at + ".batteryPct", st.batteryPct, w["batteryPct"], file: file, line: line)
+        sameNumber(at + ".rangeKm", st.rangeKm, w["rangeKm"], file: file, line: line)
+        same(at + ".plugged", st.plugged, w["plugged"], file: file, line: line)
+        same(at + ".chargingStatus", st.chargingStatus, w["chargingStatus"] as? String, file: file, line: line)
+        same(at + ".chargingMode", st.chargingMode, w["chargingMode"] as? String, file: file, line: line)
+        sameNumber(at + ".chargingRateKmh", st.chargingRateKmh, w["chargingRateKmh"], file: file, line: line)
+        same(at + ".remainingMinutes", st.remainingMinutes.map { String($0) }, w["remainingMinutes"] as? String, file: file, line: line)
+        same(at + ".nextDelayedHour", st.nextDelayedHour.map { String($0) }, w["nextDelayedHour"] as? String, file: file, line: line)
+        same(at + ".nextDelayedMinute", st.nextDelayedMinute.map { String($0) }, w["nextDelayedMinute"] as? String, file: file, line: line)
+        sameNumber(at + ".batteryHealthPct", st.batteryHealthPct, w["batteryHealthPct"], file: file, line: line)
+        sameNumber(at + ".odometerKm", st.odometerKm, w["odometerKm"], file: file, line: line)
+        same(at + ".locked", st.locked.map { String($0) }, w["locked"] as? String, file: file, line: line)
+        sameList(at + ".openDoors", st.openDoors, w["openDoors"], file: file, line: line)
+        sameNumber(at + ".outsideTempC", st.outsideTempC, w["outsideTempC"], file: file, line: line)
+        same(at + ".preconditioningOn", st.preconditioningOn, w["preconditioningOn"], file: file, line: line)
+        sameList(at + ".programs", st.programs.map { "\($0.slot)|\($0.days.joined(separator: ","))|\($0.hour)|\($0.minute)|\($0.enabled)" }, w["programs"], file: file, line: line)
+        sameNumber(at + ".lat", st.lat, w["lat"], file: file, line: line)
+        sameNumber(at + ".lon", st.lon, w["lon"], file: file, line: line)
+        same(at + ".ignition", st.ignition, w["ignition"] as? String, file: file, line: line)
+        same(at + ".moving", st.moving, w["moving"], file: file, line: line)
+        sameLong(at + ".updatedAtMillis", st.updatedAtMillis, w["updatedAtMillis"], file: file, line: line)
+        sameNumber(at + ".kmToService", st.kmToService, w["kmToService"], file: file, line: line)
+        sameNumber(at + ".daysToService", st.daysToService, w["daysToService"], file: file, line: line)
+        sameNumber(at + ".residualKwh", st.residualKwh, w["residualKwh"], file: file, line: line)
+        sameNumber(at + ".capacityKwh", st.capacityKwh, w["capacityKwh"], file: file, line: line)
+        sameLong(at + ".energyAtMillis", st.energyAtMillis, w["energyAtMillis"], file: file, line: line)
+        same(at + ".rangeEstimated", st.rangeEstimated, w["rangeEstimated"], file: file, line: line)
+        same(at + ".chargeType", st.chargeType, w["chargeType"] as? String, file: file, line: line)
+        same(at + ".energyType", st.energyType, w["energyType"] as? String, file: file, line: line)
+        sameNumber(at + ".fuelPct", st.fuelPct, w["fuelPct"], file: file, line: line)
+        sameNumber(at + ".fuelRangeKm", st.fuelRangeKm, w["fuelRangeKm"], file: file, line: line)
+        same(at + ".isMildHybrid", st.isMildHybrid, w["isMildHybrid"], file: file, line: line)
+        sameNumber(at + ".heading", st.heading, w["heading"], file: file, line: line)
+        same(at + ".privacyState", st.privacyState, w["privacyState"] as? String, file: file, line: line)
+        sameList(at + ".fogLightsOn", st.fogLightsOn, w["fogLightsOn"], file: file, line: line)
+        same(at + ".alarmOn", st.alarmOn.map { String($0) }, w["alarmOn"] as? String, file: file, line: line)
+        sameNumber(at + ".fuelTotalRaw", st.fuelTotalRaw, w["fuelTotalRaw"], file: file, line: line)
+        sameJSONText(at + ".raw", st.raw.toString(), w["raw"] as? String, file: file, line: line)
+    }
+
+    func sameTrip(_ what: String, _ t: Trip, _ w: [String: Any], file: StaticString = #filePath, line: UInt = #line) {
+        same(what + ".id", t.id, w["id"] as? String, file: file, line: line)
+        sameLong(what + ".start", t.startMillis, w["start"], file: file, line: line)
+        sameLong(what + ".end", t.endMillis, w["end"], file: file, line: line)
+        sameNumber(what + ".km", t.distanceKm, w["km"], file: file, line: line)
+        sameNumber(what + ".dur", t.durationSec, w["dur"], file: file, line: line)
+        sameNumber(what + ".kwh", t.kwh, w["kwh"], file: file, line: line)
+        sameNumber(what + ".avgKwh", t.avgKwhPer100, w["avgKwh"], file: file, line: line)
+        sameNumber(what + ".speed", t.avgSpeedKmh, w["speed"], file: file, line: line)
+        sameNumber(what + ".liters", t.liters, w["liters"], file: file, line: line)
+        sameNumber(what + ".avgL", t.avgLPer100, w["avgL"], file: file, line: line)
+        sameNumber(what + ".fuelStart", t.fuelStartPct, w["fs"], file: file, line: line)
+        sameNumber(what + ".fuelEnd", t.fuelEndPct, w["fe"], file: file, line: line)
+    }
+}
+
+/// Checks the iPhone app's logic against the Android app's own answers: reading the car's status, trips and the
+/// figures worked out from them, texts, numbers and translations.
+final class AndroidParityTests: ParityTestCase {
     // MARK: JSON
 
     func testJSONReadsAndWritesLikeAndroid() throws {
@@ -200,21 +283,6 @@ final class AndroidParityTests: XCTestCase {
     }
 
     // MARK: Trips and what is worked out from them
-
-    private func sameTrip(_ what: String, _ t: Trip, _ w: [String: Any]) {
-        same(what + ".id", t.id, w["id"] as? String)
-        sameLong(what + ".start", t.startMillis, w["start"])
-        sameLong(what + ".end", t.endMillis, w["end"])
-        sameNumber(what + ".km", t.distanceKm, w["km"])
-        sameNumber(what + ".dur", t.durationSec, w["dur"])
-        sameNumber(what + ".kwh", t.kwh, w["kwh"])
-        sameNumber(what + ".avgKwh", t.avgKwhPer100, w["avgKwh"])
-        sameNumber(what + ".speed", t.avgSpeedKmh, w["speed"])
-        sameNumber(what + ".liters", t.liters, w["liters"])
-        sameNumber(what + ".avgL", t.avgLPer100, w["avgL"])
-        sameNumber(what + ".fuelStart", t.fuelStartPct, w["fs"])
-        sameNumber(what + ".fuelEnd", t.fuelEndPct, w["fe"])
-    }
 
     func testTripsAndFuelFiguresMatchAndroid() throws {
         let objs = try JSONArray(text("trips_inputs.json")).objects()

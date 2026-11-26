@@ -43,7 +43,7 @@ write('Fmt.kt', 'package no.lionflow.app.ui\nimport no.lionflow.app.data.AppSett
 # Translations: the same code, without the phone around it.
 l10n = read('ui/l10n/L10n.kt')
 def swap(text, a, b):
-    assert a in text, 'L10n.kt changed: ' + a[:60]
+    assert a in text, 'The Android source changed: ' + a[:60]
     return text.replace(a, b)
 l10n = swap(l10n, 'import android.content.Context\n', '')
 l10n = swap(l10n, 'import androidx.compose.runtime.getValue\nimport androidx.compose.runtime.mutableStateOf\nimport androidx.compose.runtime.setValue\n', '')
@@ -62,3 +62,53 @@ object OracleLog {
 }
 ''')
 print('prepared', len(os.listdir(out)), 'files')
+
+# ---- More of the app's logic, for Oracle2.kt ----
+
+# A clock the fixture maker can set, in place of the phone's.
+write('OracleClock.kt', 'object OracleClock { var now = 1_795_000_000_000L }\n')
+def fixed_clock(text): return text.replace('System.currentTimeMillis()', 'OracleClock.now')
+
+# The sign-in settings and the car record, from StellantisApi.kt.
+api = read('api/StellantisApi.kt')
+cfg = between(api, 'data class BrandConfig(', 'internal enum class MildHybridDetection', 'StellantisApi.kt')
+cfg = swap(cfg, 'Base64.encodeToString("$clientId:$clientSecret".toByteArray(Charsets.UTF_8), Base64.NO_WRAP)',
+           'java.util.Base64.getEncoder().encodeToString("$clientId:$clientSecret".toByteArray(Charsets.UTF_8))')
+cfg = swap(cfg, 'ctx.assets.open("stellantis_configs.json").bufferedReader().use { it.readText() }', 'ctx.readText()')
+cfg = swap(cfg, 'ctx: Context', 'ctx: java.io.File')
+car = between(api, 'internal enum class MildHybridDetection', 'class AuthExpiredException', 'StellantisApi.kt')
+write('Vehicle.kt', 'package no.lionflow.app.api\nimport no.lionflow.app.model.VehicleStatus\nimport org.json.JSONArray\nimport org.json.JSONObject\nimport java.util.Locale\n' + cfg + car)
+
+# Charging places and sessions (the data, and the two functions that need no phone), from ChargeLog.kt.
+log = read('model/ChargeLog.kt')
+models = between(log, '/** A place where you charge', '/**\n * Charging log.', 'ChargeLog.kt')
+match = swap(between(log, '    fun match(s: ChargeSession, cfg: PlacesConfig = _places.value): PlaceMatch {', '    fun savePlaces(', 'ChargeLog.kt'),
+             'cfg: PlacesConfig = _places.value', 'cfg: PlacesConfig')
+distance = between(log, '    fun distanceM(', None, 'ChargeLog.kt')
+write('ChargeModels.kt', 'package no.lionflow.app.model\nimport org.json.JSONObject\nimport kotlin.math.asin\nimport kotlin.math.cos\nimport kotlin.math.sin\nimport kotlin.math.sqrt\n'
+      + models + 'object ChargeLog {\n' + match + distance)
+
+# The sample car, without the phone's storage and with the settable clock.
+demo = read('demo/Demo.kt')
+demo = swap(demo, 'import android.content.Context\n', '')
+demo = swap(demo, '    fun load(ctx: Context) { kind = prefs(ctx).getString("kind", "electric")?.takeIf { it in kinds } ?: "electric" }\n', '')
+demo = swap(demo, '    fun choose(ctx: Context, k: String) {\n        kind = k.takeIf { it in kinds } ?: "electric"\n        prefs(ctx).edit().putString("kind", kind).apply()\n    }',
+            '    fun choose(k: String) { kind = k.takeIf { it in kinds } ?: "electric" }')
+demo = swap(demo, '    private fun prefs(ctx: Context) = ctx.getSharedPreferences("demo", Context.MODE_PRIVATE)\n    fun isOn(ctx: Context) = prefs(ctx).getBoolean("on", false)\n    fun setOn(ctx: Context, on: Boolean) { prefs(ctx).edit().putBoolean("on", on).apply() }\n', '')
+assert 'Context' not in demo, 'Demo.kt changed: still uses the phone'
+write('Demo.kt', fixed_clock(demo))
+
+# Trip tags, without the screen framework.
+tags = read('model/TripTags.kt')
+tags = swap(tags, 'import androidx.compose.runtime.getValue\nimport androidx.compose.runtime.mutableStateOf\nimport androidx.compose.runtime.setValue\n', '')
+tags = swap(tags, 'var data by mutableStateOf(parse(load()))', 'var data = parse(load())')
+write('TripTags.kt', fixed_clock(tags))
+
+# Weather words and the 12/24-hour clock.
+services = read('api/Services.kt')
+weather = between(services, 'data class WeatherHour(', 'object WeatherApi {', 'Services.kt')
+words = between(services, '    fun describe(symbol: String): String = when {', '\n}\n\n\n// ---------------- Chargers: NOBIL' if '\n}\n\n\n// ---------------- Chargers: NOBIL' in services else '\n}\n\n// ---------------- Chargers: NOBIL', 'Services.kt')
+write('Weather.kt', 'package no.lionflow.app.api\n' + weather + 'object WeatherApi {\n' + words + '\n}\n')
+timefmt = read('ui/l10n/TimeFmt.kt')
+write('TimeFmt.kt', 'package no.lionflow.app.ui.l10n\nobject TimeFmt {\n    var use24 = true\n' + between(timefmt, '    /** Turns a date pattern written with HH:mm into the chosen clock. */', None, 'TimeFmt.kt'))
+print('prepared', len(os.listdir(out)), 'files in all')

@@ -1,0 +1,1310 @@
+{
+ "health": [
+  {
+   "newKwh": 73.0,
+   "sessions": [
+    {
+     "id": 1,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 2,
+     "start": 7200000000,
+     "end": 7214400000,
+     "startPct": 30,
+     "endPct": 80,
+     "kwh": 35.1,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 3,
+     "start": 10800000000,
+     "end": 10810800000,
+     "startPct": 50,
+     "endPct": 80,
+     "kwh": 20.7,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 4,
+     "start": 14400000000,
+     "end": 14407200000,
+     "startPct": 60,
+     "endPct": 70,
+     "kwh": 9.0,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 5,
+     "start": 18000000000,
+     "end": 18021600000,
+     "startPct": 10,
+     "endPct": 90,
+     "kwh": 57.0,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": false
+    }
+   ]
+  },
+  {
+   "newKwh": 73.0,
+   "sessions": [
+    {
+     "id": 1,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 2,
+     "start": 7200000000,
+     "end": 7214400000,
+     "startPct": 30,
+     "endPct": 80,
+     "kwh": 35.1,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    }
+   ]
+  },
+  {
+   "newKwh": 73.0,
+   "sessions": [
+    {
+     "id": 1,
+     "start": 360000000,
+     "end": 374400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 40.37,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 2,
+     "start": 720000000,
+     "end": 734400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 40.74,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 3,
+     "start": 1080000000,
+     "end": 1094400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 41.11,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 4,
+     "start": 1440000000,
+     "end": 1454400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 41.48,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 5,
+     "start": 1800000000,
+     "end": 1814400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 41.85,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 6,
+     "start": 2160000000,
+     "end": 2174400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.22,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 7,
+     "start": 2520000000,
+     "end": 2534400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.59,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 8,
+     "start": 2880000000,
+     "end": 2894400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.96,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 9,
+     "start": 3240000000,
+     "end": 3254400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 43.33,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 10,
+     "start": 3600000000,
+     "end": 3614400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 43.7,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 11,
+     "start": 3960000000,
+     "end": 3974400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 44.07,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 12,
+     "start": 4320000000,
+     "end": 4334400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 44.44,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 13,
+     "start": 4680000000,
+     "end": 4694400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 44.81,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 14,
+     "start": 5040000000,
+     "end": 5054400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 45.18,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 15,
+     "start": 5400000000,
+     "end": 5414400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 45.55,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 16,
+     "start": 5760000000,
+     "end": 5774400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 45.92,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 17,
+     "start": 6120000000,
+     "end": 6134400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 46.29,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 18,
+     "start": 6480000000,
+     "end": 6494400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 46.66,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 19,
+     "start": 6840000000,
+     "end": 6854400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 47.03,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 20,
+     "start": 7200000000,
+     "end": 7214400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 47.4,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 21,
+     "start": 7560000000,
+     "end": 7574400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 47.769999999999996,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 22,
+     "start": 7920000000,
+     "end": 7934400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 48.14,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 23,
+     "start": 8280000000,
+     "end": 8294400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 48.51,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 24,
+     "start": 8640000000,
+     "end": 8654400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 48.879999999999995,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 25,
+     "start": 9000000000,
+     "end": 9014400000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 49.25,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    }
+   ]
+  },
+  {
+   "newKwh": 12.4,
+   "sessions": [
+    {
+     "id": 1,
+     "start": 3600000000,
+     "end": 3610800000,
+     "startPct": 0,
+     "endPct": 100,
+     "kwh": 12.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 2,
+     "start": 7200000000,
+     "end": 7210800000,
+     "startPct": 10,
+     "endPct": 100,
+     "kwh": 11.5,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 3,
+     "start": 10800000000,
+     "end": 10810800000,
+     "startPct": 20,
+     "endPct": 100,
+     "kwh": 9.6,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 4,
+     "start": 14400000000,
+     "end": 14410800000,
+     "startPct": 20,
+     "endPct": 100,
+     "kwh": 30.0,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 5,
+     "start": 18000000000,
+     "end": 18010800000,
+     "startPct": 20,
+     "endPct": 100,
+     "kwh": 2.0,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    }
+   ]
+  },
+  {
+   "newKwh": 4.0,
+   "sessions": [
+    {
+     "id": 1,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 2.0,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 2,
+     "start": 7200000000,
+     "end": 7214400000,
+     "startPct": 30,
+     "endPct": 80,
+     "kwh": 2.0,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 3,
+     "start": 10800000000,
+     "end": 10810800000,
+     "startPct": 50,
+     "endPct": 80,
+     "kwh": 1.2,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    }
+   ]
+  },
+  {
+   "newKwh": null,
+   "sessions": []
+  }
+ ],
+ "match": [
+  {
+   "places": {
+    "home": {
+     "id": "home",
+     "name": "Home",
+     "address": "Storgata 1",
+     "lat": 63.4305,
+     "lon": 10.3951,
+     "price": 1.25
+    },
+    "known": [
+     {
+      "id": "k1",
+      "name": "Work",
+      "address": "Kontorveien 2",
+      "lat": 63.44,
+      "lon": 10.4,
+      "price": 0.0
+     },
+     {
+      "id": "k2",
+      "name": " ",
+      "address": "Hytta",
+      "lat": 63.1,
+      "lon": 10.1,
+      "price": 2.5
+     },
+     {
+      "id": "k3",
+      "name": "No place yet",
+      "address": "",
+      "lat": null,
+      "lon": null,
+      "price": 9.0
+     }
+    ],
+    "publicAc": 4.5,
+    "publicDc": 6.9,
+    "currency": "kr"
+   },
+   "sessions": [
+    {
+     "id": 1,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 63.4305,
+     "lon": 10.3951,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 2,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 63.4309,
+     "lon": 10.3951,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 3,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 63.431,
+     "lon": 10.3951,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 4,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 63.44,
+     "lon": 10.401,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 5,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 63.1001,
+     "lon": 10.1001,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 6,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Quick",
+     "lat": 59.9,
+     "lon": 10.7,
+     "address": null,
+     "source": "Ionity Oslo",
+     "measured": true
+    },
+    {
+     "id": 7,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 59.9,
+     "lon": 10.7,
+     "address": "Karl Johans gate 1, Oslo",
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 8,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": null,
+     "lat": 59.9,
+     "lon": 10.7,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 9,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Quick",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 10,
+     "start": 3600000000,
+     "end": 3600060000,
+     "startPct": 20,
+     "endPct": 20.5,
+     "kwh": 0.2,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 63.4305,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    }
+   ]
+  },
+  {
+   "places": {
+    "home": null,
+    "known": [],
+    "publicAc": 0.0,
+    "publicDc": 0.0,
+    "currency": "€"
+   },
+   "sessions": [
+    {
+     "id": 1,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 63.4305,
+     "lon": 10.3951,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 2,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 63.4309,
+     "lon": 10.3951,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 3,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 63.431,
+     "lon": 10.3951,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 4,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 63.44,
+     "lon": 10.401,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 5,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 63.1001,
+     "lon": 10.1001,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 6,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Quick",
+     "lat": 59.9,
+     "lon": 10.7,
+     "address": null,
+     "source": "Ionity Oslo",
+     "measured": true
+    },
+    {
+     "id": 7,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 59.9,
+     "lon": 10.7,
+     "address": "Karl Johans gate 1, Oslo",
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 8,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": null,
+     "lat": 59.9,
+     "lon": 10.7,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 9,
+     "start": 3600000000,
+     "end": 3618000000,
+     "startPct": 20,
+     "endPct": 80,
+     "kwh": 42.9,
+     "peakKw": null,
+     "mode": "Quick",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    },
+    {
+     "id": 10,
+     "start": 3600000000,
+     "end": 3600060000,
+     "startPct": 20,
+     "endPct": 20.5,
+     "kwh": 0.2,
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": 63.4305,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true
+    }
+   ]
+  }
+ ],
+ "tags": {
+  "text": "{\"tags\": [{\"id\": \"tw\", \"name\": \"Work\", \"color\": 2, \"from\": {\"n\": \"Home\", \"lat\": 63.4305, \"lon\": 10.3951}, \"to\": {\"n\": \"Office\", \"lat\": 63.44, \"lon\": 10.4}}, {\"id\": \"th\", \"name\": \"Cabin\", \"color\": 9}, {\"id\": \"\", \"name\": \"no id\", \"color\": 1}, {\"id\": \"tx\", \"name\": \"\", \"color\": 1}], \"marks\": {\"old1\": {\"tag\": \"th\", \"auto\": false, \"km\": 84.0, \"speed\": 71.0, \"at\": 1795000000000}, \"old2\": {\"tag\": \"tw\", \"auto\": false, \"km\": 12.4, \"speed\": 37.2, \"at\": 1795000100000, \"ends\": [63.4305, 10.3951, 63.44, 10.4]}, \"old3\": {\"tag\": \"\", \"auto\": false, \"km\": 5.0, \"speed\": 30.0, \"at\": 1795000200000}, \"old4\": {\"tag\": \"gone\", \"auto\": false, \"km\": 5.0, \"speed\": 30.0, \"at\": 1795000300000}, \"old5\": {\"tag\": \"th\", \"auto\": true, \"km\": 200.0, \"at\": 1795000400000}}}",
+  "trips": [
+   {
+    "id": "n1",
+    "startedAt": "2026-11-20T07:00:00Z",
+    "distance": 12.9,
+    "duration": 1260
+   },
+   {
+    "id": "n2",
+    "startedAt": "2026-11-20T16:00:00Z",
+    "distance": 84.9,
+    "duration": 4300
+   },
+   {
+    "id": "n3",
+    "startedAt": "2026-11-21T07:00:00Z",
+    "distance": 12.4,
+    "duration": 600
+   },
+   {
+    "id": "n4",
+    "startedAt": "2026-11-21T09:00:00Z",
+    "distance": 30.0,
+    "duration": 1800
+   },
+   {
+    "id": "n5",
+    "startedAt": "2026-11-22T07:00:00Z",
+    "distance": 12.0,
+    "duration": 30,
+    "kinetic": {
+     "avgSpeed": 36.0
+    }
+   },
+   {
+    "id": "n6",
+    "startedAt": "2026-11-22T09:00:00Z",
+    "distance": 0.0,
+    "duration": 900
+   },
+   {
+    "id": "old3",
+    "startedAt": "2026-11-19T07:00:00Z",
+    "distance": 5.0,
+    "duration": 600
+   },
+   {
+    "id": "n7",
+    "startedAt": "2026-11-23T07:00:00Z",
+    "distance": 13.5,
+    "duration": 1300
+   },
+   {
+    "id": "n8",
+    "startedAt": "2026-11-23T16:00:00Z",
+    "distance": 13.1,
+    "duration": 1250
+   },
+   {
+    "id": "n9",
+    "startedAt": "2026-11-24T07:00:00Z",
+    "distance": 12.4,
+    "duration": 1200
+   },
+   {
+    "id": "n10",
+    "startedAt": "2026-11-24T12:00:00Z",
+    "distance": 85.0,
+    "duration": 4300
+   }
+  ],
+  "ends": {
+   "n7": [
+    63.4306,
+    10.3953,
+    63.4399,
+    10.4002
+   ],
+   "n8": [
+    63.4401,
+    10.3999,
+    63.4304,
+    10.395
+   ],
+   "n9": [
+    60.0,
+    11.0,
+    60.1,
+    11.1
+   ],
+   "n10": [
+    61.0,
+    9.0,
+    61.5,
+    9.5
+   ]
+  },
+  "pairs": [
+   [
+    63.4305,
+    10.3951,
+    63.44,
+    10.4
+   ],
+   [
+    0.0,
+    0.0,
+    0.0,
+    180.0
+   ],
+   [
+    59.9139,
+    10.7522,
+    48.8566,
+    2.3522
+   ],
+   [
+    -33.8688,
+    151.2093,
+    63.4305,
+    10.3951
+   ],
+   [
+    10.0,
+    10.0,
+    10.0,
+    10.0
+   ]
+  ],
+  "likeness": [
+   [
+    12.9,
+    36.9,
+    12.4,
+    37.2
+   ],
+   [
+    13.7,
+    37.2,
+    12.4,
+    37.2
+   ],
+   [
+    12.4,
+    45.3,
+    12.4,
+    37.2
+   ],
+   [
+    84.9,
+    71.1,
+    84.0,
+    71.0
+   ],
+   [
+    3.0,
+    30.0,
+    3.4,
+    22.0
+   ],
+   [
+    100.0,
+    90.0,
+    102.1,
+    98.0
+   ],
+   [
+    100.0,
+    90.0,
+    97.9,
+    82.0
+   ]
+  ],
+  "kmTol": [
+   0.0,
+   3.0,
+   5.0,
+   12.4,
+   20.0,
+   84.0,
+   500.0
+  ]
+ },
+ "weather": {
+  "feels": [
+   [
+    6.0,
+    3.0
+   ],
+   [
+    10.0,
+    1.4
+   ],
+   [
+    10.0,
+    1.3
+   ],
+   [
+    10.1,
+    8.0
+   ],
+   [
+    -12.5,
+    9.0
+   ],
+   [
+    0.0,
+    0.0
+   ],
+   [
+    -3.2,
+    15.5
+   ],
+   [
+    22.0,
+    6.0
+   ]
+  ],
+  "symbols": [
+   "clearsky_day",
+   "fair_night",
+   "partlycloudy_day",
+   "cloudy",
+   "fog",
+   "rainshowersandthunder_day",
+   "heavysleet",
+   "lightsnowshowers_polartwilight",
+   "lightrain",
+   "heavyrainandthunder",
+   "snowandthunder",
+   "sleetshowers_day",
+   "something_new",
+   ""
+  ]
+ },
+ "clock": [
+  [
+   0,
+   0
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   7,
+   15
+  ],
+  [
+   11,
+   59
+  ],
+  [
+   12,
+   0
+  ],
+  [
+   12,
+   30
+  ],
+  [
+   13,
+   7
+  ],
+  [
+   23,
+   59
+  ]
+ ],
+ "patterns": [
+  "HH:mm",
+  "EEE d MMM HH:mm",
+  "yyyy-MM-dd HH:mm:ss",
+  "d MMM",
+  "HH:mm · HH:mm:ss"
+ ],
+ "urls": [
+  "a b&c=d/é*~",
+  "mymap://oauth2redirect/no",
+  "",
+  "Ærlig talt: 100 % (ja)!",
+  "plain-text_1.2*",
+  "日本語 🚗",
+  "a+b c%20d",
+  "line\nbreak\ttab",
+  "'quoted' \"double\" <tag> {x} [y] | \\ ^ `"
+ ],
+ "iso": [
+  0,
+  1,
+  999,
+  1000,
+  1795628530000,
+  1795628530999,
+  951782400000,
+  951868799000,
+  1709251199000,
+  4102444800000,
+  86399999,
+  1798761600000,
+  -1000,
+  -86400001,
+  253402300799000
+ ],
+ "fixed4": [
+  63.4305,
+  10.3951,
+  48.85661,
+  2.35225,
+  -5e-05,
+  5e-05,
+  179.99995,
+  -33.868849999,
+  0.0,
+  59.91,
+  12.345649999,
+  12.34565,
+  7.00004999
+ ]
+}

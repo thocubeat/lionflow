@@ -1,0 +1,1588 @@
+{
+ "health": [
+  {
+   "sessions": [
+    {
+     "id": "1",
+     "start": "3600000000",
+     "end": "3618000000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "42.9",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "5.0",
+     "avgKw": "8.58"
+    },
+    {
+     "id": "2",
+     "start": "7200000000",
+     "end": "7214400000",
+     "startPct": "30.0",
+     "endPct": "80.0",
+     "kwh": "35.1",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "8.775"
+    },
+    {
+     "id": "3",
+     "start": "10800000000",
+     "end": "10810800000",
+     "startPct": "50.0",
+     "endPct": "80.0",
+     "kwh": "20.7",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "3.0",
+     "avgKw": "6.8999999999999995"
+    },
+    {
+     "id": "4",
+     "start": "14400000000",
+     "end": "14407200000",
+     "startPct": "60.0",
+     "endPct": "70.0",
+     "kwh": "9.0",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "2.0",
+     "avgKw": "4.5"
+    },
+    {
+     "id": "5",
+     "start": "18000000000",
+     "end": "18021600000",
+     "startPct": "10.0",
+     "endPct": "90.0",
+     "kwh": "57.0",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": false,
+     "hours": "6.0",
+     "avgKw": "9.5"
+    }
+   ],
+   "health": "96.16438356164385",
+   "used": 3
+  },
+  {
+   "sessions": [
+    {
+     "id": "1",
+     "start": "3600000000",
+     "end": "3618000000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "42.9",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "5.0",
+     "avgKw": "8.58"
+    },
+    {
+     "id": "2",
+     "start": "7200000000",
+     "end": "7214400000",
+     "startPct": "30.0",
+     "endPct": "80.0",
+     "kwh": "35.1",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "8.775"
+    }
+   ],
+   "health": null,
+   "used": null
+  },
+  {
+   "sessions": [
+    {
+     "id": "1",
+     "start": "360000000",
+     "end": "374400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "40.37",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "10.0925"
+    },
+    {
+     "id": "2",
+     "start": "720000000",
+     "end": "734400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "40.74",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "10.185"
+    },
+    {
+     "id": "3",
+     "start": "1080000000",
+     "end": "1094400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "41.11",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "10.2775"
+    },
+    {
+     "id": "4",
+     "start": "1440000000",
+     "end": "1454400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "41.48",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "10.37"
+    },
+    {
+     "id": "5",
+     "start": "1800000000",
+     "end": "1814400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "41.85",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "10.4625"
+    },
+    {
+     "id": "6",
+     "start": "2160000000",
+     "end": "2174400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "42.22",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "10.555"
+    },
+    {
+     "id": "7",
+     "start": "2520000000",
+     "end": "2534400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "42.59",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "10.6475"
+    },
+    {
+     "id": "8",
+     "start": "2880000000",
+     "end": "2894400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "42.96",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "10.74"
+    },
+    {
+     "id": "9",
+     "start": "3240000000",
+     "end": "3254400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "43.33",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "10.8325"
+    },
+    {
+     "id": "10",
+     "start": "3600000000",
+     "end": "3614400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "43.7",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "10.925"
+    },
+    {
+     "id": "11",
+     "start": "3960000000",
+     "end": "3974400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "44.07",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "11.0175"
+    },
+    {
+     "id": "12",
+     "start": "4320000000",
+     "end": "4334400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "44.44",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "11.11"
+    },
+    {
+     "id": "13",
+     "start": "4680000000",
+     "end": "4694400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "44.81",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "11.2025"
+    },
+    {
+     "id": "14",
+     "start": "5040000000",
+     "end": "5054400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "45.18",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "11.295"
+    },
+    {
+     "id": "15",
+     "start": "5400000000",
+     "end": "5414400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "45.55",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "11.3875"
+    },
+    {
+     "id": "16",
+     "start": "5760000000",
+     "end": "5774400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "45.92",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "11.48"
+    },
+    {
+     "id": "17",
+     "start": "6120000000",
+     "end": "6134400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "46.29",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "11.5725"
+    },
+    {
+     "id": "18",
+     "start": "6480000000",
+     "end": "6494400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "46.66",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "11.665"
+    },
+    {
+     "id": "19",
+     "start": "6840000000",
+     "end": "6854400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "47.03",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "11.7575"
+    },
+    {
+     "id": "20",
+     "start": "7200000000",
+     "end": "7214400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "47.4",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "11.85"
+    },
+    {
+     "id": "21",
+     "start": "7560000000",
+     "end": "7574400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "47.769999999999996",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "11.942499999999999"
+    },
+    {
+     "id": "22",
+     "start": "7920000000",
+     "end": "7934400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "48.14",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "12.035"
+    },
+    {
+     "id": "23",
+     "start": "8280000000",
+     "end": "8294400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "48.51",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "12.1275"
+    },
+    {
+     "id": "24",
+     "start": "8640000000",
+     "end": "8654400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "48.879999999999995",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "12.219999999999999"
+    },
+    {
+     "id": "25",
+     "start": "9000000000",
+     "end": "9014400000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "49.25",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "12.3125"
+    }
+   ],
+   "health": "100.0",
+   "used": 20
+  },
+  {
+   "sessions": [
+    {
+     "id": "1",
+     "start": "3600000000",
+     "end": "3610800000",
+     "startPct": "0.0",
+     "endPct": "100.0",
+     "kwh": "12.9",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "3.0",
+     "avgKw": "4.3"
+    },
+    {
+     "id": "2",
+     "start": "7200000000",
+     "end": "7210800000",
+     "startPct": "10.0",
+     "endPct": "100.0",
+     "kwh": "11.5",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "3.0",
+     "avgKw": "3.8333333333333335"
+    },
+    {
+     "id": "3",
+     "start": "10800000000",
+     "end": "10810800000",
+     "startPct": "20.0",
+     "endPct": "100.0",
+     "kwh": "9.6",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "3.0",
+     "avgKw": "3.1999999999999997"
+    },
+    {
+     "id": "4",
+     "start": "14400000000",
+     "end": "14410800000",
+     "startPct": "20.0",
+     "endPct": "100.0",
+     "kwh": "30.0",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "3.0",
+     "avgKw": "10.0"
+    },
+    {
+     "id": "5",
+     "start": "18000000000",
+     "end": "18010800000",
+     "startPct": "20.0",
+     "endPct": "100.0",
+     "kwh": "2.0",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "3.0",
+     "avgKw": "0.6666666666666666"
+    }
+   ],
+   "health": "100.0",
+   "used": 3
+  },
+  {
+   "sessions": [
+    {
+     "id": "1",
+     "start": "3600000000",
+     "end": "3618000000",
+     "startPct": "20.0",
+     "endPct": "80.0",
+     "kwh": "2.0",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "5.0",
+     "avgKw": "0.4"
+    },
+    {
+     "id": "2",
+     "start": "7200000000",
+     "end": "7214400000",
+     "startPct": "30.0",
+     "endPct": "80.0",
+     "kwh": "2.0",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "4.0",
+     "avgKw": "0.5"
+    },
+    {
+     "id": "3",
+     "start": "10800000000",
+     "end": "10810800000",
+     "startPct": "50.0",
+     "endPct": "80.0",
+     "kwh": "1.2",
+     "peakKw": null,
+     "mode": "Slow",
+     "lat": null,
+     "lon": null,
+     "address": null,
+     "source": null,
+     "measured": true,
+     "hours": "3.0",
+     "avgKw": "0.39999999999999997"
+    }
+   ],
+   "health": null,
+   "used": null
+  },
+  {
+   "sessions": [],
+   "health": null,
+   "used": null
+  }
+ ],
+ "match": [
+  [
+   "home|Home|1.25",
+   "home|Home|1.25",
+   "public|Away|4.5",
+   "known|Work|0.0",
+   "known|Known charger|2.5",
+   "public|Ionity Oslo|6.9",
+   "public|Karl Johans gate 1, Oslo|4.5",
+   "public|Away|4.5",
+   "unknown|Unknown place|6.9",
+   "public|Away|4.5"
+  ],
+  [
+   "public|Away|null",
+   "public|Away|null",
+   "public|Away|null",
+   "public|Away|null",
+   "public|Away|null",
+   "public|Ionity Oslo|null",
+   "public|Karl Johans gate 1, Oslo|null",
+   "public|Away|null",
+   "unknown|Unknown place|null",
+   "public|Away|null"
+  ]
+ ],
+ "distance": [
+  "0.0",
+  "44.47797065771984",
+  "55.59746332175475",
+  "1096.338295209431",
+  "39591.49971191962",
+  "392902.1532157362",
+  "392902.1532157362",
+  "392902.1532157362",
+  null,
+  null
+ ],
+ "tags": {
+  "parsed": {
+   "tags": [
+    {
+     "id": "tw",
+     "name": "Work",
+     "color": 2,
+     "from": {
+      "n": "Home",
+      "lat": 63.4305,
+      "lon": 10.3951
+     },
+     "to": {
+      "n": "Office",
+      "lat": 63.44,
+      "lon": 10.4
+     }
+    },
+    {
+     "id": "th",
+     "name": "Cabin",
+     "color": 9
+    }
+   ],
+   "marks": {
+    "old3": {
+     "tag": "",
+     "auto": false,
+     "km": 5,
+     "at": 1795000200000,
+     "speed": 30
+    },
+    "old4": {
+     "tag": "gone",
+     "auto": false,
+     "km": 5,
+     "at": 1795000300000,
+     "speed": 30
+    },
+    "old5": {
+     "tag": "th",
+     "auto": true,
+     "km": 200,
+     "at": 1795000400000
+    },
+    "old1": {
+     "tag": "th",
+     "auto": false,
+     "km": 84,
+     "at": 1795000000000,
+     "speed": 71
+    },
+    "old2": {
+     "tag": "tw",
+     "auto": false,
+     "km": 12.4,
+     "at": 1795000100000,
+     "speed": 37.2,
+     "ends": [
+      63.4305,
+      10.3951,
+      63.44,
+      10.4
+     ]
+    }
+   }
+  },
+  "empty": "{\"tags\":[],\"marks\":{}}",
+  "broken": "{\"tags\":[],\"marks\":{}}",
+  "autoByLook": 7,
+  "afterByLook": {
+   "tags": [
+    {
+     "id": "tw",
+     "name": "Work",
+     "color": 2,
+     "from": {
+      "n": "Home",
+      "lat": 63.4305,
+      "lon": 10.3951
+     },
+     "to": {
+      "n": "Office",
+      "lat": 63.44,
+      "lon": 10.4
+     }
+    },
+    {
+     "id": "th",
+     "name": "Cabin",
+     "color": 9
+    }
+   ],
+   "marks": {
+    "old3": {
+     "tag": "",
+     "auto": false,
+     "km": 5,
+     "at": 1795000200000,
+     "speed": 30
+    },
+    "old4": {
+     "tag": "gone",
+     "auto": false,
+     "km": 5,
+     "at": 1795000300000,
+     "speed": 30
+    },
+    "old5": {
+     "tag": "th",
+     "auto": true,
+     "km": 200,
+     "at": 1795000400000
+    },
+    "old1": {
+     "tag": "th",
+     "auto": false,
+     "km": 84,
+     "at": 1795000000000,
+     "speed": 71
+    },
+    "old2": {
+     "tag": "tw",
+     "auto": false,
+     "km": 12.4,
+     "at": 1795000100000,
+     "speed": 37.2,
+     "ends": [
+      63.4305,
+      10.3951,
+      63.44,
+      10.4
+     ]
+    },
+    "n1": {
+     "tag": "tw",
+     "auto": true,
+     "km": 12.9,
+     "at": 1795158000000,
+     "speed": 36.85714285714286
+    },
+    "n2": {
+     "tag": "th",
+     "auto": true,
+     "km": 84.9,
+     "at": 1795190400000,
+     "speed": 71.07906976744187
+    },
+    "n5": {
+     "tag": "tw",
+     "auto": true,
+     "km": 12,
+     "at": 1795330800000,
+     "speed": 36
+    },
+    "n7": {
+     "tag": "tw",
+     "auto": true,
+     "km": 13.5,
+     "at": 1795417200000,
+     "speed": 37.38461538461539
+    },
+    "n8": {
+     "tag": "tw",
+     "auto": true,
+     "km": 13.1,
+     "at": 1795449600000,
+     "speed": 37.728
+    },
+    "n9": {
+     "tag": "tw",
+     "auto": true,
+     "km": 12.4,
+     "at": 1795503600000,
+     "speed": 37.2
+    },
+    "n10": {
+     "tag": "th",
+     "auto": true,
+     "km": 85,
+     "at": 1795521600000,
+     "speed": 71.16279069767442
+    }
+   }
+  },
+  "savedByLook": {
+   "tags": [
+    {
+     "id": "tw",
+     "name": "Work",
+     "color": 2,
+     "from": {
+      "n": "Home",
+      "lat": 63.4305,
+      "lon": 10.3951
+     },
+     "to": {
+      "n": "Office",
+      "lat": 63.44,
+      "lon": 10.4
+     }
+    },
+    {
+     "id": "th",
+     "name": "Cabin",
+     "color": 9
+    }
+   ],
+   "marks": {
+    "old3": {
+     "tag": "",
+     "auto": false,
+     "km": 5,
+     "at": 1795000200000,
+     "speed": 30
+    },
+    "old4": {
+     "tag": "gone",
+     "auto": false,
+     "km": 5,
+     "at": 1795000300000,
+     "speed": 30
+    },
+    "old5": {
+     "tag": "th",
+     "auto": true,
+     "km": 200,
+     "at": 1795000400000
+    },
+    "old1": {
+     "tag": "th",
+     "auto": false,
+     "km": 84,
+     "at": 1795000000000,
+     "speed": 71
+    },
+    "old2": {
+     "tag": "tw",
+     "auto": false,
+     "km": 12.4,
+     "at": 1795000100000,
+     "speed": 37.2,
+     "ends": [
+      63.4305,
+      10.3951,
+      63.44,
+      10.4
+     ]
+    },
+    "n1": {
+     "tag": "tw",
+     "auto": true,
+     "km": 12.9,
+     "at": 1795158000000,
+     "speed": 36.85714285714286
+    },
+    "n2": {
+     "tag": "th",
+     "auto": true,
+     "km": 84.9,
+     "at": 1795190400000,
+     "speed": 71.07906976744187
+    },
+    "n5": {
+     "tag": "tw",
+     "auto": true,
+     "km": 12,
+     "at": 1795330800000,
+     "speed": 36
+    },
+    "n7": {
+     "tag": "tw",
+     "auto": true,
+     "km": 13.5,
+     "at": 1795417200000,
+     "speed": 37.38461538461539
+    },
+    "n8": {
+     "tag": "tw",
+     "auto": true,
+     "km": 13.1,
+     "at": 1795449600000,
+     "speed": 37.728
+    },
+    "n9": {
+     "tag": "tw",
+     "auto": true,
+     "km": 12.4,
+     "at": 1795503600000,
+     "speed": 37.2
+    },
+    "n10": {
+     "tag": "th",
+     "auto": true,
+     "km": 85,
+     "at": 1795521600000,
+     "speed": 71.16279069767442
+    }
+   }
+  },
+  "tagOf": [
+   "Work",
+   "Cabin",
+   null,
+   null,
+   "Work",
+   null,
+   null,
+   "Work",
+   "Work",
+   "Work",
+   "Cabin"
+  ],
+  "isAuto": [
+   true,
+   true,
+   false,
+   false,
+   true,
+   false,
+   false,
+   true,
+   true,
+   true,
+   true
+  ],
+  "againByLook": 0,
+  "autoByPlace": 6,
+  "afterByPlace": {
+   "tags": [
+    {
+     "id": "tw",
+     "name": "Work",
+     "color": 2,
+     "from": {
+      "n": "Home",
+      "lat": 63.4305,
+      "lon": 10.3951
+     },
+     "to": {
+      "n": "Office",
+      "lat": 63.44,
+      "lon": 10.4
+     }
+    },
+    {
+     "id": "th",
+     "name": "Cabin",
+     "color": 9
+    }
+   ],
+   "marks": {
+    "old3": {
+     "tag": "",
+     "auto": false,
+     "km": 5,
+     "at": 1795000200000,
+     "speed": 30
+    },
+    "old4": {
+     "tag": "gone",
+     "auto": false,
+     "km": 5,
+     "at": 1795000300000,
+     "speed": 30
+    },
+    "old5": {
+     "tag": "th",
+     "auto": true,
+     "km": 200,
+     "at": 1795000400000
+    },
+    "old1": {
+     "tag": "th",
+     "auto": false,
+     "km": 84,
+     "at": 1795000000000,
+     "speed": 71
+    },
+    "old2": {
+     "tag": "tw",
+     "auto": false,
+     "km": 12.4,
+     "at": 1795000100000,
+     "speed": 37.2,
+     "ends": [
+      63.4305,
+      10.3951,
+      63.44,
+      10.4
+     ]
+    },
+    "n1": {
+     "tag": "tw",
+     "auto": true,
+     "km": 12.9,
+     "at": 1795158000000,
+     "speed": 36.85714285714286
+    },
+    "n2": {
+     "tag": "th",
+     "auto": true,
+     "km": 84.9,
+     "at": 1795190400000,
+     "speed": 71.07906976744187
+    },
+    "n5": {
+     "tag": "tw",
+     "auto": true,
+     "km": 12,
+     "at": 1795330800000,
+     "speed": 36
+    },
+    "n7": {
+     "tag": "tw",
+     "auto": true,
+     "km": 13.5,
+     "at": 1795417200000,
+     "speed": 37.38461538461539,
+     "ends": [
+      63.4306,
+      10.3953,
+      63.4399,
+      10.4002
+     ]
+    },
+    "n8": {
+     "tag": "tw",
+     "auto": true,
+     "km": 13.1,
+     "at": 1795449600000,
+     "speed": 37.728,
+     "ends": [
+      63.4401,
+      10.3999,
+      63.4304,
+      10.395
+     ]
+    },
+    "n10": {
+     "tag": "th",
+     "auto": true,
+     "km": 85,
+     "at": 1795521600000,
+     "speed": 71.16279069767442,
+     "ends": [
+      61,
+      9,
+      61.5,
+      9.5
+     ]
+    }
+   }
+  },
+  "afterSet": {
+   "tags": [
+    {
+     "id": "tw",
+     "name": "Work",
+     "color": 2,
+     "from": {
+      "n": "Home",
+      "lat": 63.4305,
+      "lon": 10.3951
+     },
+     "to": {
+      "n": "Office",
+      "lat": 63.44,
+      "lon": 10.4
+     }
+    },
+    {
+     "id": "th",
+     "name": "Cabin",
+     "color": 9
+    }
+   ],
+   "marks": {
+    "old3": {
+     "tag": "",
+     "auto": false,
+     "km": 5,
+     "at": 1795000200000,
+     "speed": 30
+    },
+    "old4": {
+     "tag": "gone",
+     "auto": false,
+     "km": 5,
+     "at": 1795000300000,
+     "speed": 30
+    },
+    "old5": {
+     "tag": "th",
+     "auto": true,
+     "km": 200,
+     "at": 1795000400000
+    },
+    "old1": {
+     "tag": "th",
+     "auto": false,
+     "km": 84,
+     "at": 1795000000000,
+     "speed": 71
+    },
+    "old2": {
+     "tag": "tw",
+     "auto": false,
+     "km": 12.4,
+     "at": 1795000100000,
+     "speed": 37.2,
+     "ends": [
+      63.4305,
+      10.3951,
+      63.44,
+      10.4
+     ]
+    },
+    "n1": {
+     "tag": "th",
+     "auto": false,
+     "km": 12.9,
+     "at": 1795158000000,
+     "speed": 36.85714285714286
+    },
+    "n2": {
+     "tag": "tw",
+     "auto": false,
+     "km": 84.9,
+     "at": 1795190400000,
+     "speed": 71.07906976744187,
+     "ends": [
+      63.4306,
+      10.3953,
+      63.4399,
+      10.4002
+     ]
+    }
+   }
+  },
+  "afterClearAuto": {
+   "tags": [
+    {
+     "id": "tw",
+     "name": "Work",
+     "color": 2,
+     "from": {
+      "n": "Home",
+      "lat": 63.4305,
+      "lon": 10.3951
+     },
+     "to": {
+      "n": "Office",
+      "lat": 63.44,
+      "lon": 10.4
+     }
+    },
+    {
+     "id": "th",
+     "name": "Cabin",
+     "color": 9
+    }
+   ],
+   "marks": {
+    "old3": {
+     "tag": "",
+     "auto": false,
+     "km": 5,
+     "at": 1795000200000,
+     "speed": 30
+    },
+    "old4": {
+     "tag": "gone",
+     "auto": false,
+     "km": 5,
+     "at": 1795000300000,
+     "speed": 30
+    },
+    "old1": {
+     "tag": "th",
+     "auto": false,
+     "km": 84,
+     "at": 1795000000000,
+     "speed": 71
+    },
+    "old2": {
+     "tag": "tw",
+     "auto": false,
+     "km": 12.4,
+     "at": 1795000100000,
+     "speed": 37.2,
+     "ends": [
+      63.4305,
+      10.3951,
+      63.44,
+      10.4
+     ]
+    },
+    "n1": {
+     "tag": "th",
+     "auto": false,
+     "km": 12.9,
+     "at": 1795158000000,
+     "speed": 36.85714285714286
+    },
+    "n2": {
+     "tag": "tw",
+     "auto": false,
+     "km": 84.9,
+     "at": 1795190400000,
+     "speed": 71.07906976744187,
+     "ends": [
+      63.4306,
+      10.3953,
+      63.4399,
+      10.4002
+     ]
+    }
+   }
+  },
+  "created": "tmwm0nk742|A very long name for a t|6|false",
+  "byName": [
+   "tw",
+   "th",
+   null
+  ],
+  "afterEditDelete": {
+   "tags": [
+    {
+     "id": "th",
+     "name": "Cabin by the lake",
+     "color": 0
+    },
+    {
+     "id": "tmwm0nk742",
+     "name": "A very long name for a t",
+     "color": 6
+    },
+    {
+     "id": "tmwm0nk743",
+     "name": "a VERY long name for a t",
+     "color": 3
+    }
+   ],
+   "marks": {
+    "old3": {
+     "tag": "",
+     "auto": false,
+     "km": 5,
+     "at": 1795000200000,
+     "speed": 30
+    },
+    "old4": {
+     "tag": "gone",
+     "auto": false,
+     "km": 5,
+     "at": 1795000300000,
+     "speed": 30
+    },
+    "old1": {
+     "tag": "th",
+     "auto": false,
+     "km": 84,
+     "at": 1795000000000,
+     "speed": 71
+    },
+    "n1": {
+     "tag": "th",
+     "auto": false,
+     "km": 12.9,
+     "at": 1795158000000,
+     "speed": 36.85714285714286
+    }
+   }
+  },
+  "speedOf": [
+   "36.85714285714286",
+   "71.07906976744187",
+   "74.4",
+   "60.0",
+   "36.0",
+   null,
+   "30.0",
+   "37.38461538461539",
+   "37.728",
+   "37.2",
+   "71.16279069767442"
+  ],
+  "km": [
+   "1.0840900823335438",
+   "20015.086796020572",
+   "1341.979036395417",
+   "15772.013526761113",
+   "0.0"
+  ],
+  "apart": [
+   "0.029836590410469106",
+   "0.024361545189558652",
+   null,
+   "0.029836590410469106",
+   "0.024361545189558652",
+   null,
+   "0.029836590410469106",
+   "0.024361545189558652",
+   "755.9845532234608"
+  ],
+  "likeness": [
+   "0.44072580645161336",
+   null,
+   null,
+   "0.46250000000000213",
+   "1.7999999999999998",
+   null,
+   null
+  ],
+  "likenessNoSpeed": null,
+  "kmTol": [
+   "0.5",
+   "0.5",
+   "0.5",
+   "1.2400000000000002",
+   "2.0",
+   "2.0",
+   "2.0"
+  ]
+ },
+ "feels": [
+  "3.6920326019561744",
+  "9.742894457416792",
+  "10.0",
+  "10.1",
+  "-23.130957371363607",
+  "0.0",
+  "-12.921692668728326",
+  "22.0"
+ ],
+ "symbols": [
+  "Clear|sun",
+  "Fair|sun",
+  "Partly cloudy|cloud",
+  "Cloudy|cloud",
+  "Fog|cloud",
+  "Thunder|rain",
+  "Sleet|snow",
+  "Snow|snow",
+  "Rain|rain",
+  "Thunder|rain",
+  "Thunder|snow",
+  "Sleet|snow",
+  "Cloudy|cloud",
+  "Cloudy|cloud"
+ ],
+ "timeFmt": {
+  "hmtrue": [
+   "00:00",
+   "00:05",
+   "07:15",
+   "11:59",
+   "12:00",
+   "12:30",
+   "13:07",
+   "23:59"
+  ],
+  "patterntrue": [
+   "HH:mm",
+   "EEE d MMM HH:mm",
+   "yyyy-MM-dd HH:mm:ss",
+   "d MMM",
+   "HH:mm · HH:mm:ss"
+  ],
+  "hmfalse": [
+   "12:00 AM",
+   "12:05 AM",
+   "7:15 AM",
+   "11:59 AM",
+   "12:00 PM",
+   "12:30 PM",
+   "1:07 PM",
+   "11:59 PM"
+  ],
+  "patternfalse": [
+   "h:mm a",
+   "EEE d MMM h:mm a",
+   "yyyy-MM-dd h:mm:ss a",
+   "d MMM",
+   "h:mm a · h:mm:ss a"
+  ]
+ },
+ "urls": [
+  "a+b%26c%3Dd%2F%C3%A9*%7E",
+  "mymap%3A%2F%2Foauth2redirect%2Fno",
+  "",
+  "%C3%86rlig+talt%3A+100+%25+%28ja%29%21",
+  "plain-text_1.2*",
+  "%E6%97%A5%E6%9C%AC%E8%AA%9E+%F0%9F%9A%97",
+  "a%2Bb+c%2520d",
+  "line%0Abreak%09tab",
+  "%27quoted%27+%22double%22+%3Ctag%3E+%7Bx%7D+%5By%5D+%7C+%5C+%5E+%60"
+ ],
+ "iso": [
+  "1970-01-01T00:00:00Z",
+  "1970-01-01T00:00:00Z",
+  "1970-01-01T00:00:00Z",
+  "1970-01-01T00:00:01Z",
+  "2026-11-25T17:42:10Z",
+  "2026-11-25T17:42:10Z",
+  "2000-02-29T00:00:00Z",
+  "2000-02-29T23:59:59Z",
+  "2024-02-29T23:59:59Z",
+  "2100-01-01T00:00:00Z",
+  "1970-01-01T23:59:59Z",
+  "2027-01-01T00:00:00Z",
+  "1969-12-31T23:59:59Z",
+  "1969-12-30T23:59:59Z",
+  "9999-12-31T23:59:59Z"
+ ],
+ "fixed4": [
+  "63.4305",
+  "10.3951",
+  "48.8566",
+  "2.3523",
+  "-0.0001",
+  "0.0001",
+  "180.0000",
+  "-33.8688",
+  "0.0000",
+  "59.9100",
+  "12.3456",
+  "12.3457",
+  "7.0000"
+ ]
+}
