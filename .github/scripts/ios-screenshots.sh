@@ -73,12 +73,13 @@ echo "Watch simulator:  $WATCH ($WATCH_NAME), paired with the iPhone: $PAIRED"
 
 # All of them start at once: starting one takes minutes.
 for device in "$PHONE" "$PAD" "$WATCH"; do
-  [ -n "$device" ] && limit 60 xcrun simctl boot "$device" > /dev/null 2>&1
+  [ -n "$device" ] && (xcrun simctl boot "$device" > /dev/null 2>&1 &)
 done
 
 ready() { # device, what it is
   [ -n "$1" ] || { stamp "no simulator for the $2"; return 1; }
-  limit 600 xcrun simctl bootstatus "$1" > /dev/null 2>&1 || stamp "the $2 simulator took too long to start; trying anyway"
+  # "-b" starts it if the first try did not get it going.
+  limit 600 xcrun simctl bootstatus "$1" -b > /dev/null 2>&1 || stamp "the $2 simulator took too long to start; trying anyway"
   stamp "the $2 simulator is up"
 }
 

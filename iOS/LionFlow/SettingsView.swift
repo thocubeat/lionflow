@@ -42,7 +42,7 @@ private struct SegRow: View {
     var body: some View {
         HStack {
             T(title).font(LfType.label).foregroundColor(c.text).frame(maxWidth: .infinity, alignment: .leading)
-            Segmented(options: options, selected: selected, onSelect: onSelect)
+            Segmented(options: options, selected: selected, onSelect: onSelect).layoutPriority(1)
         }
         .padding(.leading, 16)
         .padding(.trailing, 12)

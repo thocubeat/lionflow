@@ -74,6 +74,7 @@ struct HomeView: View {
     let wide: Bool
     let expanded: Bool
     @State private var editing = false
+    @State private var pastPicture = false
 
     /** Asks for the address of where the car stands whenever the car has moved or the saved places changed. */
     private var parkedKey: String {
@@ -87,7 +88,9 @@ struct HomeView: View {
 
     var body: some View {
         GeometryReader { geo in
-            LfScroll(onRefresh: { model.refresh() }) {
+            // The width a card has for what is in it: the column, less the page's and the card's own margins.
+            let column = wide ? (min(geo.size.width, 980) - 54) / 2 : geo.size.width - 40
+            LfScroll(onRefresh: { model.refresh() }, passAt: 300, onPassed: { pastPicture = $0 }) {
                 VStack(spacing: 0) {
                     Hero(topInset: c.isDark ? geo.safeAreaInsets.top : 0)
                     if wide {
@@ -106,11 +109,22 @@ struct HomeView: View {
                             .padding(.bottom, 20)
                     }
                 }
+                .environment(\.lfNarrowColumn, column - 44 < 285)
             }
-            // The dark top of the picture goes up behind the clock in the dark look. In the light look the clock is
-            // dark too, so there the picture starts below it.
+            // The dark top of the picture goes up behind the clock in the dark look, until the picture has been
+            // scrolled away: then the cards would show through the clock. In the light look the clock is dark too,
+            // so there the picture starts below it.
             .ignoresSafeArea(edges: c.isDark ? .top : [])
-            .overlay(StatusBarBackdrop().opacity(c.isDark ? 0 : 1), alignment: .top)
+            .overlay(
+                Group {
+                    if c.isDark {
+                        c.bg.frame(height: geo.safeAreaInsets.top).opacity(pastPicture ? 1 : 0).animation(.easeOut(duration: 0.15), value: pastPicture)
+                    } else {
+                        StatusBarBackdrop()
+                    }
+                }
+                .allowsHitTesting(false),
+                alignment: .top)
         }
         .onAppear(perform: lookUpPlace)
         .onChange(of: parkedKey) { _ in lookUpPlace() }
@@ -260,7 +274,7 @@ private struct Hero: View {
                 }
                 CarSwitcher {
                     Plain(model.prefs.carName).font(.system(size: 40, weight: .heavy)).tracking(-1).foregroundColor(onPhoto)
-                        .lineLimit(1).minimumScaleFactor(0.6).photoShadow()
+                        .fitLine(0.6).photoShadow()
                 }
                 T(ui.refreshing ? "Waking car…" : "Updated \(minutesAgo(st?.updatedAtMillis ?? ui.lastRefresh, ui.now))")
                     .font(.system(size: 13, weight: .medium)).foregroundColor(onPhoto).photoShadow()
@@ -460,36 +474,52 @@ private struct WarningsCard: View {
     }
 }
 
+/** True when the cards on Home sit in a narrow column: a small phone, or an iPad with two columns side by side. */
+private struct NarrowColumnKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    var lfNarrowColumn: Bool {
+        get { self[NarrowColumnKey.self] }
+        set { self[NarrowColumnKey.self] = newValue }
+    }
+}
+
 private struct BatteryCard: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.lf) private var c
+    @Environment(\.lfNarrowColumn) private var narrow
 
     var body: some View {
         let st = model.ui.status
         let battery = Caps.battery(st)
         let parts = fmtDistance(st?.rangeKm, model.prefs).components(separatedBy: " ")
+        // The level and the range stand side by side and are never cut short or squeezed: on a narrow card, and for
+        // a range with four figures, the letters are simply set smaller.
+        let long = (parts.first ?? "").count >= 5
+        let levelSize: CGFloat = narrow ? 52 : 64
+        let rangeSize: CGFloat = (narrow ? 28 : 34) - (long ? 6 : 0)
         LfCard(radius: 28, padding: 22, onTap: battery ? { model.setTab(.charging) } : nil) {
             HStack(alignment: .center) {
                 VStack(alignment: .leading, spacing: 0) {
                     T(st?.energyType == "Fuel" ? "Fuel" : "Battery").font(LfType.body).foregroundColor(c.muted)
-                    (Text(verbatim: wholeNumber(st?.batteryPct)).font(.system(size: 64, weight: .bold))
-                        + Text(verbatim: " %").font(.system(size: 30, weight: .bold)))
-                        .foregroundColor(c.text).lineLimit(1).minimumScaleFactor(0.5)
+                    (Text(verbatim: wholeNumber(st?.batteryPct)).font(.system(size: levelSize, weight: .bold))
+                        + Text(verbatim: " %").font(.system(size: narrow ? 24 : 30, weight: .bold)))
+                        .foregroundColor(c.text).lineLimit(1).fixedSize()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 VStack(spacing: 0) {
-                    (Text(verbatim: "≈").font(.system(size: 22, weight: .bold))
-                        + Text(verbatim: parts.first ?? "—").font(.system(size: 34, weight: .bold))
-                        + Text(verbatim: parts.count > 1 ? " " + parts.dropFirst().joined(separator: " ") : "").font(.system(size: 18, weight: .semibold)))
-                        .foregroundColor(c.onAccent).lineLimit(1)
-                        // The range is never cut short: on a narrow card the level beside it gets smaller instead.
-                        .fixedSize(horizontal: true, vertical: false)
+                    (Text(verbatim: "≈").font(.system(size: narrow ? 18 : 22, weight: .bold))
+                        + Text(verbatim: parts.first ?? "—").font(.system(size: rangeSize, weight: .bold))
+                        + Text(verbatim: parts.count > 1 ? " " + parts.dropFirst().joined(separator: " ") : "").font(.system(size: narrow ? 15 : 18, weight: .semibold)))
+                        .foregroundColor(c.onAccent).lineLimit(1).fixedSize()
                     T(st?.rangeEstimated == true ? "Range (est.)" : "Range").font(.system(size: 13, weight: .medium)).foregroundColor(c.onAccent)
+                        .lineLimit(1).fixedSize()
                 }
-                .padding(.horizontal, 18)
+                .padding(.horizontal, narrow ? 14 : 18)
                 .padding(.vertical, 12)
                 .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(c.accent))
-                .layoutPriority(1)
             }
             ProgressBar(fraction: (st?.batteryPct ?? 0) / 100, color: c.meter).padding(.top, 6)
             if battery {
@@ -541,7 +571,7 @@ private struct QuickAction: View {
         Button(action: action) {
             VStack(spacing: 8) {
                 if busy { Busy().frame(height: 28) } else { LfIcon(icon, highlighted ? c.onAccent : c.text, 28) }
-                T(label).font(.system(size: 15, weight: .semibold)).foregroundColor(highlighted ? c.onAccent : c.text).lineLimit(1).minimumScaleFactor(0.7)
+                T(label).font(.system(size: 15, weight: .semibold)).foregroundColor(highlighted ? c.onAccent : c.text).fitLine(0.7)
             }
             .padding(.vertical, 16)
             .padding(.horizontal, 4)
@@ -694,12 +724,12 @@ private struct TripsTile: View {
         LfCard(radius: 24, padding: 16, stretch: true, onTap: { model.setTab(.trips); model.loadTrips() }) {
             HStack(spacing: 8) {
                 LfIcon(LfIcons.route, c.text, 22)
-                T("Trips").font(.system(size: 18, weight: .semibold)).foregroundColor(c.text).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .leading)
+                T("Trips").font(.system(size: 18, weight: .semibold)).foregroundColor(c.text).fitLine(0.6).frame(maxWidth: .infinity, alignment: .leading)
                 LfIcon(LfIcons.chevron, c.muted, 18)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Plain(ui.trips.isEmpty && ui.tripsLoading ? "…" : fmtDistance(w.km, s)).font(.system(size: 28, weight: .bold)).foregroundColor(c.text)
-                    .lineLimit(1).minimumScaleFactor(0.7)
+                    .fitLine(0.7)
                 T("Last 7 days · \(w.trips.count) trips").font(LfType.small).foregroundColor(c.muted)
                 if w.km > 1 && w.kwh > 0 { Plain(consumption(w.km, w.kwh, s)).font(LfType.tiny).foregroundColor(c.muted) }
             }
@@ -720,11 +750,11 @@ private struct ClimateTile: View {
         LfCard(radius: 24, padding: 16, stretch: true, onTap: { model.setTab(.climate) }) {
             HStack(spacing: 8) {
                 LfIcon(LfIcons.thermo, on ? c.orangeInk : c.text, 22)
-                T("Climate").font(.system(size: 18, weight: .semibold)).foregroundColor(c.text).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .leading)
+                T("Climate").font(.system(size: 18, weight: .semibold)).foregroundColor(c.text).fitLine(0.6).frame(maxWidth: .infinity, alignment: .leading)
                 LfIcon(LfIcons.chevron, c.muted, 18)
             }
             VStack(alignment: .leading, spacing: 2) {
-                T(on ? "Pre-heating" : "Off").font(.system(size: 28, weight: .bold)).foregroundColor(c.text).lineLimit(1).minimumScaleFactor(0.6)
+                T(on ? "Pre-heating" : "Off").font(.system(size: 28, weight: .bold)).foregroundColor(c.text).fitLine(0.6)
                 T("Outside \(fmtTemp(st?.outsideTempC ?? ui.weather?.tempC, model.prefs))").font(LfType.small).foregroundColor(c.muted)
                 if let next = nextSchedule(st) { T("Next: \(next)").font(LfType.tiny).foregroundColor(c.muted) }
             }

@@ -120,7 +120,7 @@ struct BrandGrid: View {
                                 .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).strokeBorder(c.line, lineWidth: 1))
                                 .overlay(
                                     Plain(b.display).font(.system(size: 22, weight: .semibold)).foregroundColor(c.text)
-                                        .lineLimit(1).minimumScaleFactor(0.6).padding(.horizontal, 10)
+                                        .fitLine(0.6).padding(.horizontal, 10)
                                 )
                                 .contentShape(Rectangle())
                         }

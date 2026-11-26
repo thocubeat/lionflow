@@ -33,8 +33,9 @@ private struct Stat: View {
     var size: CGFloat = 24
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Plain(value).font(.system(size: size, weight: .semibold)).foregroundColor(c.text).lineLimit(1).minimumScaleFactor(0.6)
-            T(label).font(LfType.tiny).foregroundColor(c.muted)
+            Plain(value).font(.system(size: size, weight: .semibold)).foregroundColor(c.text).fitLine(0.6)
+            // As many lines as the label needs: never cut short to match a shorter neighbour.
+            T(label).font(LfType.tiny).foregroundColor(c.muted).fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -208,7 +209,7 @@ private struct TripRow: View {
                     } else {
                         T("Trip").font(LfType.label).foregroundColor(c.text)
                     }
-                    T(bits.joined(separator: " · ")).font(LfType.small).foregroundColor(c.muted)
+                    T(bits.joined(separator: " · ")).font(LfType.small).foregroundColor(c.muted).fitLine(0.75)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -667,7 +668,7 @@ struct SheetTop: View {
         HStack(spacing: 14) {
             LfIcon(icon, c.text2, 22).frame(width: 48, height: 48).background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(c.raised))
             VStack(alignment: .leading, spacing: 0) {
-                T(title).font(.system(size: 24, weight: .semibold)).foregroundColor(c.text).lineLimit(1).minimumScaleFactor(0.7)
+                T(title).font(.system(size: 24, weight: .semibold)).foregroundColor(c.text).fitLine(0.7)
                 T(subtitle).font(LfType.small).foregroundColor(c.muted)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

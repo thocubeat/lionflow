@@ -13,6 +13,12 @@ extension View {
         if #available(iOS 16.0, *) { self.scrollContentBackground(.hidden) } else { self }
     }
 
+    /// One line that is set smaller (down to `smallest` of its size) when it is too long for its place. It keeps its
+    /// full height: without that, a row of things side by side can squeeze it smaller than it has to be.
+    func fitLine(_ smallest: CGFloat) -> some View {
+        lineLimit(1).minimumScaleFactor(smallest).fixedSize(horizontal: false, vertical: true)
+    }
+
     /** Makes anything a button without the system's own button look. */
     func tap(_ action: @escaping () -> Void) -> some View {
         Button(action: action) { self.contentShape(Rectangle()) }.buttonStyle(LfPress())
@@ -235,7 +241,9 @@ struct Segmented: View {
             ForEach(options, id: \.0) { option in
                 let active = option.0 == selected
                 Button(action: { onSelect(option.0) }) {
+                    // The words of a choice are never cut short: what stands beside the control gives way instead.
                     T(option.1).font(.system(size: 14, weight: .semibold)).foregroundColor(active ? c.text : c.muted).lineLimit(1)
+                        .fixedSize(horizontal: !fill, vertical: true)
                         .padding(.horizontal, 12)
                         .frame(maxWidth: fill ? .infinity : nil, minHeight: 38)
                         .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(active ? c.card : Color.clear).softShadow(c, active ? 3 : 0))
@@ -457,8 +465,12 @@ struct Busy: View {
 /// every iPhone and iPad the app supports (the system's own pull-to-refresh came to scrolling pages with iOS 16).
 struct LfScroll<Content: View>: View {
     var onRefresh: (() -> Void)? = nil
+    /** Told when the page has been scrolled further up than `passAt` points, and when it is back again. */
+    var passAt: CGFloat = 0
+    var onPassed: ((Bool) -> Void)? = nil
     @ViewBuilder var content: () -> Content
     @State private var armed = true
+    @State private var passed = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -470,6 +482,13 @@ struct LfScroll<Content: View>: View {
         }
         .coordinateSpace(name: "lf-scroll")
         .onPreferenceChange(PullOffset.self) { y in
+            if let onPassed = onPassed {
+                let now = -y > passAt
+                if now != passed {
+                    passed = now
+                    onPassed(now)
+                }
+            }
             guard let onRefresh = onRefresh else { return }
             if y > 76 && armed {
                 armed = false

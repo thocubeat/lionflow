@@ -1,8 +1,9 @@
-# Runs the iPhone and iPad app on old systems in the simulator, and takes the same pictures as the main iOS workflow.
-# The app is built for iOS 15 and newer (an iPhone 6s from 2015 runs iOS 15). The newest Xcode only offers
-# simulators back to iOS 16, so the app is built once with the newest Xcode and then also run on machines with an
-# older Xcode, which can still get iOS 15. The pictures go to branches named "ios-previews-old-...".
-# An old system has to be downloaded first (several GB), so this runs by hand, or when this file changes.
+# Runs the iPhone and iPad app on the oldest system the simulator can still get, and takes the same pictures as the
+# main iOS workflow. The app is built for iOS 15 and newer (an iPhone 6s from 2015 runs iOS 15), but Apple no longer
+# offers iOS 15 for the simulator: asked for in November 2026, Xcode 26.6 and Xcode 16.4 both answered "not available
+# for download". iOS 16.0 is the oldest there is, so that is what this runs on (as an iPhone 8 and an iPad from 2017).
+# The pictures go to the branch "ios-previews-old-ios16-macos-26".
+# The old system has to be downloaded first (several GB), so this runs by hand, or when this file changes.
 name: iOS on old systems
 
 on:
@@ -54,14 +55,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # The newest Xcode: back to iOS 16.
+          # iOS 15 is asked for first, in case it is offered again one day.
           - machine: macos-26
-            versions: "16.0 16.1 16.2 16.4"
-          # Older Xcodes: back to iOS 15.
-          - machine: macos-15
-            versions: "15.0 15.2 15.4 15.5"
-          - machine: macos-14
-            versions: "15.0 15.2 15.4 15.5"
+            versions: "15.0 15.5 16.0 16.1 16.2 16.4"
     runs-on: ${{ matrix.machine }}
     timeout-minutes: 75
     steps:

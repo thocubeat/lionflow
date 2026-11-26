@@ -265,7 +265,7 @@ jobs:
           for f in tour/*.png; do sips -Z 1400 "$f" > /dev/null 2>&1; done
           work="$RUNNER_TEMP/tour"
           rm -rf "$work" && mkdir -p "$work" && cp tour/*.png "$work/"
-          grep -E "Test Case .*(passed|failed)|XCTAssert|Executed [0-9]+ tests" tour.log | cut -c1-500 > "$work/result.txt" 2>/dev/null || true
+          grep -E "Test Case .*(passed|failed)|: error: |Executed [0-9]+ tests" tour.log | cut -c1-500 > "$work/result.txt" 2>/dev/null || true
           echo "A walk through the app at commit ${GITHUB_SHA} (${GITHUB_REF_NAME}), made by the iOS workflow. result.txt says how it went." > "$work/README.md"
           cd "$work"
           git init -q -b ios-previews-tour

@@ -76,7 +76,7 @@ struct ClimateView: View {
                 HStack(spacing: 0) {
                     ForEach(Array(w.hours.prefix(6).enumerated()), id: \.offset) { _, h in
                         VStack(spacing: 4) {
-                            Plain(TimeFmt.format(h.timeMillis, "HH:mm")).font(.system(size: 11)).foregroundColor(c.muted).lineLimit(1).minimumScaleFactor(0.7)
+                            Plain(TimeFmt.format(h.timeMillis, "HH:mm")).font(.system(size: 11)).foregroundColor(c.muted).fitLine(0.7)
                             WeatherIcon(kind: WeatherApi.kind(h.symbol), size: 18)
                             Plain(fmtTemp(h.tempC, s, unit: false)).font(.system(size: 13, weight: .semibold)).foregroundColor(c.text)
                         }

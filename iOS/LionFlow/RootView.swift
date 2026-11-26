@@ -259,7 +259,7 @@ private struct PhoneNavLabel: View {
                 .frame(width: 52, height: 32)
                 .background(Capsule().fill(active ? c.accent : Color.clear))
             T(label).font(.system(size: 12, weight: active ? .semibold : .medium)).foregroundColor(active ? c.accentInk : c.text2)
-                .lineLimit(1).minimumScaleFactor(0.8)
+                .fitLine(0.8)
         }
         .padding(.vertical, 2)
         .frame(maxWidth: .infinity)
@@ -281,7 +281,7 @@ private struct RailItem: View {
                     .frame(width: 56, height: 32)
                     .background(Capsule().fill(active ? c.accent : Color.clear))
                 T(item.label).font(.system(size: 12, weight: active ? .semibold : .medium)).foregroundColor(active ? c.text : c.muted)
-                    .lineLimit(1).minimumScaleFactor(0.8)
+                    .fitLine(0.8)
             }
             .padding(.vertical, 4)
             .frame(width: 72)

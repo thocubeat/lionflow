@@ -58,14 +58,35 @@ final class TourTests: XCTestCase {
         app.staticTexts.matching(NSPredicate(format: "label CONTAINS[c] %@", text))
     }
 
-    /** Scrolls down until the button can be tapped, and taps it. False (and a failed test) when it never shows up. */
+    /** Moves the page a little: up for a negative number, down for a positive one (in parts of the screen's height). */
+    private func nudge(_ part: CGFloat) {
+        let from = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.55))
+        let to = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.55 + part))
+        from.press(forDuration: 0.05, thenDragTo: to)
+        Thread.sleep(forTimeInterval: 0.4)
+    }
+
+    /// Scrolls until the button stands well inside the screen, and taps it. (A tap right at the top would land on
+    /// the clock instead, which sends the page back to its start.) False, and a failed test, when it never shows up.
     @discardableResult
-    private func tap(_ text: String, scrolls: Int = 8) -> Bool {
+    private func tap(_ text: String, scrolls: Int = 12) -> Bool {
         let found = buttons(text).firstMatch
+        _ = found.waitForExistence(timeout: 5)
+        let screen = app.frame
         var tries = 0
-        while !(found.exists && found.isHittable) && tries < scrolls {
-            if tries == 0 && found.waitForExistence(timeout: 4) && found.isHittable { break }
-            app.swipeUp(velocity: .slow)
+        while tries < scrolls {
+            if found.exists && found.isHittable {
+                let y = found.frame.midY
+                if y < screen.height * 0.16 {
+                    nudge(0.25)
+                } else if y > screen.height * 0.80 {
+                    nudge(-0.25)
+                } else {
+                    break
+                }
+            } else {
+                nudge(-0.4)
+            }
             tries += 1
         }
         guard found.exists && found.isHittable else {
@@ -180,7 +201,7 @@ final class TourTests: XCTestCase {
 
     func test04SheetsAndEditorsOpen() {
         demo("Home")
-        if tap("Car data") {
+        if tap("Every value the car reports") {
             see("All car data")
             page("car-data", swipes: 3)
         }
@@ -188,6 +209,8 @@ final class TourTests: XCTestCase {
         if tap("Customize this screen") { page("home-editor", swipes: 1) }
         demo("Charging")
         if tap("Places & prices") { page("places", swipes: 2) }
+        demo("Charging")
+        if tap("peak") { page("charging-session", swipes: 1) }
         demo("Climate")
         if tap("Ready at") { page("schedule-editor", swipes: 1) }
         demo("Trips")
@@ -196,6 +219,10 @@ final class TourTests: XCTestCase {
         if tap("Month") { page("trips-month", swipes: 1) }
         demo("Service")
         if tap("tap to change") { page("service-interval", swipes: 0) }
+        demo("Service")
+        if tap("Add") { page("service-history", swipes: 0) }
+        demo("Settings")
+        if tap("Edit", scrolls: 3) { page("settings-name", swipes: 0) }
         demo("Settings")
         if tap("Choose the cards") { page("settings-home-editor", swipes: 1) }
         demo("Settings")
@@ -249,27 +276,30 @@ final class TourTests: XCTestCase {
     // MARK: The first screens
 
     func test07FirstScreensAndStartingTheDemo() {
+        // The first screen: pick a brand, look at the sign-in screen, and go back.
         launch("-signedout")
         Thread.sleep(forTimeInterval: 2)
         snap("first-screen")
-        see("Peugeot")
+        see("Choose your car brand")
         if tap("Peugeot", scrolls: 2) {
             snap("sign-in")
-            see("Sign in")
-            if tap("Try without an account", scrolls: 3) {
-                snap("demo-choice")
-                if tap("Start the demo", scrolls: 3) {
-                    see("Demo car", seconds: 12)
-                    snap("demo-started")
-                }
+            see("Remember me")
+            if tap("Change brand", scrolls: 3) { see("Choose your car brand") }
+        }
+        // Trying it without an account: choose a sample car, and it opens.
+        if tap("Try without an account", scrolls: 6) {
+            snap("demo-choice")
+            if tap("Start the demo", scrolls: 6) {
+                see("Demo car", seconds: 12)
+                snap("demo-started")
             }
         }
         // And out again: Settings, at the bottom.
         demo("Settings")
-        if tap("Exit demo", scrolls: 12) {
+        if tap("Exit demo", scrolls: 20) {
             Thread.sleep(forTimeInterval: 1.5)
             snap("after-exit-demo")
-            see("Peugeot")
+            see("Choose your car brand")
         }
     }
 }
