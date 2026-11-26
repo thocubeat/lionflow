@@ -1,0 +1,10 @@
+Test Case '-[LionFlowTour.TourTests test01EveryTabOfTheElectricCar]' passed (122.090 seconds).
+Test Case '-[LionFlowTour.TourTests test03CommandsChangeTheSampleCar]' passed (45.647 seconds).
+Test Case '-[LionFlowTour.TourTests test04SheetsAndEditorsOpen]' passed (387.646 seconds).
+Test Case '-[LionFlowTour.TourTests test08NothingShowsThroughTheClock]' passed (157.876 seconds).
+Test Case '-[LionFlowTour.TourTests test09PullingHomeDownReadsTheCarAgain]' passed (132.548 seconds).
+Test Case '-[LionFlowTour.TourTests test10PullingAnotherTabDownReadsTheCarAgain]' passed (146.462 seconds).
+Test Case '-[LionFlowTour.TourTests test12UpdateAndSignatureNotes]' passed (62.627 seconds).
+	 Executed 7 tests, with 0 failures (0 unexpected) in 1054.896 (1054.911) seconds
+	 Executed 7 tests, with 0 failures (0 unexpected) in 1054.896 (1054.916) seconds
+	 Executed 7 tests, with 0 failures (0 unexpected) in 1054.896 (1054.920) seconds
