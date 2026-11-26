@@ -573,7 +573,9 @@ final class RemoteControl: @unchecked Sendable {
     /** immediate = start now; delayed = wait for the scheduled start time (that is: stop now). */
     func charging(_ startNow: Bool, _ hour: Int, _ minute: Int, _ t: Tracker = Tracker()) async -> CommandResult {
         let program = JSONObject().put("hour", hour).put("minute", minute)
-        return await send("/VehCharge", JSONObject().put("program", program).put("type", startNow ? "immediate" : "delayed"), t)
+        let r = await send("/VehCharge", JSONObject().put("program", program).put("type", startNow ? "immediate" : "delayed"), t)
+        if case .failed = r {} else { ChargePower.rememberStartMode(immediate: startNow) }
+        return r
     }
 
     func forget() {

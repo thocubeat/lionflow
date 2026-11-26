@@ -84,7 +84,13 @@ struct RootView: View {
                 updates.checkIfDue()
             } else if phase == .background {
                 model.onBackground()
+                AppHolder.shared.widgets.update()
+                BackgroundRefresh.schedule()
             }
+        }
+        // The widget: tapping it opens the app, its ↻ button opens it and reads the car.
+        .onOpenURL { url in
+            if url.scheme == "lionflow" && url.host == "refresh" && model.ui.phase == .ready { model.refreshNow() }
         }
     }
 }

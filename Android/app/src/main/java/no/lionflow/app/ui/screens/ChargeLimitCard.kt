@@ -219,7 +219,8 @@ private fun WindowEstimate(s: AppSettings, st: no.lionflow.app.model.VehicleStat
     val perMin = kw * 0.9 / no.lionflow.app.model.ChargePower.usableKwh(st) * 100 / 60.0   // ~10 % lost on the way into the battery
     val end = (pct + perMin * minutes).coerceAtMost(cap)
     fun hm(m: Int) = no.lionflow.app.ui.l10n.TimeFmt.hm((m / 60) % 24, m % 60)
-    val reachAt = if (pct < cap && pct + perMin * minutes >= cap) ((if (inside) now else from) + ((cap - pct) / perMin).toInt()) % 1440 else null
+    // Without LionFlow's limit the car stops at its own daily limit, and the car doesn't say what % that is.
+    val reachAt = if (s.chargeLimitOn && pct < cap && pct + perMin * minutes >= cap) ((if (inside) now else from) + ((cap - pct) / perMin).toInt()) % 1440 else null
     val speed = String.format(java.util.Locale.US, "%.1f kW", kw)
     Column(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(c.raisedBlue).padding(horizontal = 14.dp, vertical = 10.dp),

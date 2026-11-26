@@ -114,6 +114,39 @@ final class StateTests: XCTestCase {
         XCTAssertTrue(ChargePower.history()[0].hasSuffix("level=43 residual=31.0 status=Stopped type=null plugged=true preheat=false"), ChargePower.history()[0])
     }
 
+    /// The car's level can drop 5 points or more with the same energy in the battery; LionFlow keeps the old number
+    /// for a while, but never while the car is plugged in: there the car's own number decides where charging stops.
+    func testLevelFixStopsWhenPluggedIn() {
+        _ = ChargePower.record(status(pct: 89, residual: 68.5))
+        now += 60_000
+        var st = ChargePower.record(status(pct: 79, residual: 68.5))
+        XCTAssertEqual(st.batteryPct, 89)
+        XCTAssertTrue(ChargePower.history()[0].contains("level=89 (car says 79) residual"), ChargePower.history()[0])
+        now += 60_000
+        st = ChargePower.record(status(pct: 79, plugged: true, residual: 68.5))
+        XCTAssertEqual(st.batteryPct, 79)
+        XCTAssertTrue(ChargePower.history()[0].contains("level=79 residual"), ChargePower.history()[0])
+        // Unplugged again: the old number doesn't come back.
+        now += 60_000
+        st = ChargePower.record(status(pct: 79, residual: 68.4))
+        XCTAssertEqual(st.batteryPct, 79)
+    }
+
+    /// The car reports its scheduled start time also when it is set to charge right away: after LionFlow's
+    /// "Turn off" the time isn't shown as a scheduled start any more.
+    func testScheduledStartIsHiddenAfterTurningItOff() {
+        var st = status(pct: 50, plugged: true)
+        st.nextDelayedHour = 2
+        st.nextDelayedMinute = 0
+        XCTAssertEqual(ChargePower.scheduledStart(st)?.hour, 2)
+        ChargePower.rememberStartMode(immediate: true)
+        XCTAssertNil(ChargePower.scheduledStart(st))
+        ChargePower.rememberStartMode(immediate: false)
+        XCTAssertEqual(ChargePower.scheduledStart(st)?.minute, 0)
+        st.nextDelayedHour = nil
+        XCTAssertNil(ChargePower.scheduledStart(st))
+    }
+
     func testBatterySizeFallsBackSensibly() {
         XCTAssertEqual(ChargePower.usableKwh(status(pct: 50)), 73.0)
         XCTAssertEqual(ChargePower.usableKwh(status(pct: 50, residual: 30, capacity: nil)), 60.0)

@@ -38,14 +38,44 @@ def read_app(ipa):
                 for k, v in inner.items():
                     if k.startswith("NS") and k.endswith("UsageDescription") and isinstance(v, str):
                         privacy[k] = v
-        return info, privacy
+        # The entitlements of the app and of its extensions (the widget): the build is signed ad hoc only to carry
+        # them, so the tool that signs it for real knows to set up the shared folder (App Group) for the widget.
+        entitlements = set()
+        for n in z.namelist():
+            if n.endswith("/Info.plist") and n.startswith(names[0].rsplit("/", 1)[0] + "/"):
+                try:
+                    exe = plistlib.loads(z.read(n)).get("CFBundleExecutable")
+                except Exception:
+                    continue
+                if exe and n.rsplit("/", 1)[0] + "/" + exe in z.namelist():
+                    entitlements |= signed_entitlements(z.read(n.rsplit("/", 1)[0] + "/" + exe))
+        return info, privacy, sorted(entitlements)
+
+
+def signed_entitlements(binary):
+    """The keys of the entitlements in a signed Mach-O file (the code signature's 0xfade7171 blob)."""
+    keys = set()
+    at = 0
+    while True:
+        at = binary.find(b"\xfa\xde\x71\x71", at)
+        if at < 0:
+            return keys
+        size = int.from_bytes(binary[at + 4:at + 8], "big")
+        blob = binary[at + 8:at + size]
+        at += 4
+        if not blob.startswith(b"<?xml"):
+            continue
+        try:
+            keys |= set(plistlib.loads(blob).keys())
+        except Exception:
+            pass
 
 
 def main():
     if len(sys.argv) != 5:
         sys.exit(__doc__)
     ipa, url, notes, out = sys.argv[1:]
-    info, privacy = read_app(ipa)
+    info, privacy, entitlements = read_app(ipa)
     data = open(ipa, "rb").read()
     version = info["CFBundleShortVersionString"]
     build = str(info["CFBundleVersion"])
@@ -84,8 +114,7 @@ def main():
                 "minOSVersion": info.get("MinimumOSVersion", "15.0"),
             }],
             "appPermissions": {
-                # The file is not signed, so it carries no entitlements: the tool that signs it adds its own.
-                "entitlements": [],
+                "entitlements": entitlements,
                 "privacy": privacy,
             },
         }],
@@ -94,7 +123,7 @@ def main():
     with open(out, "w", encoding="utf-8") as f:
         json.dump(source, f, ensure_ascii=False, indent=2)
         f.write("\n")
-    print(f"{out}: LionFlow {version} ({build}), {len(data)} bytes, {len(privacy)} permissions, from {url}")
+    print(f"{out}: LionFlow {version} ({build}), {len(data)} bytes, {len(privacy)} permissions, entitlements {entitlements}, from {url}")
 
 
 if __name__ == "__main__":

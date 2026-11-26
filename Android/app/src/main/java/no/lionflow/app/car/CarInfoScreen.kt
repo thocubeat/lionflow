@@ -86,7 +86,7 @@ internal class CarInfoScreen(ctx: CarContext, ui: CarUi) : DrawnScreen(ctx, ui) 
                 add("Full in", st.remainingMinutes?.let { carDuration(it.toDouble()) })
                 add("Charging mode", st.chargingMode?.let { tr(it) })
             }
-            if (st.nextDelayedHour != null) add("Scheduled charging", String.format(Locale.US, "%02d:%02d", st.nextDelayedHour, st.nextDelayedMinute ?: 0))
+            no.lionflow.app.model.ChargePower.scheduledStart(st)?.let { (h, m) -> add("Scheduled charging", String.format(Locale.US, "%02d:%02d", h, m)) }
         }
         add("Odometer", st.odometerKm?.let { fmtDistance(it, s) })
         add("Next service", listOfNotNull(st.kmToService?.let { fmtDistance(it, s) }, st.daysToService?.let { tr("{0} days").replace("{0}", "${it.roundToInt()}") }).joinToString(" · ").ifEmpty { null })

@@ -80,17 +80,32 @@ enum ChargePower {
         return String(rest)
     }
 
-    private static func remember(_ p: KeyValueStore, _ st: VehicleStatus) {
+    private static func remember(_ p: KeyValueStore, _ st: VehicleStatus, carLevel: Double? = nil) {
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = timeZone
         let c = cal.dateComponents([.day, .month, .hour, .minute], from: Date(timeIntervalSince1970: Double(st.updatedAtMillis ?? clock()) / 1000))
         let t = String(format: "%02d.%02d %02d:%02d", c.day ?? 0, c.month ?? 0, c.hour ?? 0, c.minute ?? 0)
         func text<T>(_ v: T?) -> String { v.map { "\($0)" } ?? "null" }
-        let line = "\(t) level=\(text(st.batteryPct.map { JSONValue.javaInt($0) })) residual=\(text(st.residualKwh.map { Fmt.fixed($0, 1) })) " +
+        let car = (carLevel.map { JSONValue.javaInt($0) }).flatMap { c in c != st.batteryPct.map({ JSONValue.javaInt($0) }) ? " (car says \(c))" : nil } ?? ""
+        let line = "\(t) level=\(text(st.batteryPct.map { JSONValue.javaInt($0) }))\(car) residual=\(text(st.residualKwh.map { Fmt.fixed($0, 1) })) " +
             "status=\(text(st.chargingStatus)) type=\(text(st.chargeType)) plugged=\(st.plugged) preheat=\(st.preconditioningOn)"
         let old = history()
         if let first = old.first, afterTwoSpaces(first) == afterTwoSpaces(line) { return }
         p.set(k("hist"), ([line] + old).prefix(30).joined(separator: "\n"))
+    }
+
+    /// The car reports its scheduled start time even when it is set to charge right away (the API has no on/off for it),
+    /// so LionFlow remembers what it last sent. Nil when there is no scheduled start, or LionFlow turned it off.
+    static func scheduledStart(_ st: VehicleStatus) -> (hour: Int, minute: Int)? {
+        guard let h = st.nextDelayedHour else { return nil }
+        lock.lock(); defer { lock.unlock() }
+        if prefs?.string(k("startMode")) == "immediate" { return nil }
+        return (h, st.nextDelayedMinute ?? 0)
+    }
+
+    static func rememberStartMode(immediate: Bool) {
+        lock.lock(); defer { lock.unlock() }
+        prefs?.set(k("startMode"), immediate ? "immediate" : "delayed")
     }
 
     private static func doubles(_ text: String?) -> [Double] {
@@ -112,7 +127,9 @@ enum ChargePower {
         var out = st
         if anchor.count == 3 {
             let est = anchor[0] + (res - anchor[1]) / cap * 100
-            if Double(now) - anchor[2] > 3 * 86_400_000 || est - level <= 2 || est > 100.5 { anchor = [] }
+            // Never while plugged in: the car's own level decides where it stops charging, and showing more than the
+            // car says made a car that stopped at its 80 % daily limit look like it went on to 89 %.
+            if st.plugged || Double(now) - anchor[2] > 86_400_000 || est - level <= 2 || est > 100.5 { anchor = [] }
             else { out.batteryPct = Double(est.roundToLong) }
         }
         p.set(k("lvl"), "\(JSONValue.javaDouble(level)),\(JSONValue.javaDouble(res))")
@@ -129,7 +146,7 @@ enum ChargePower {
         ChargeLog.observe(st)
         CarTrips.observe(st)
         guard let p = prefs else { return st }
-        remember(p, st)
+        remember(p, st, carLevel: raw.batteryPct)
         if !st.isCharging {
             p.set(k("s"), nil)
             return st

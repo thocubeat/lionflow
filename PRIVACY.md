@@ -33,6 +33,7 @@ The app for iPhone and iPad (in `iOS/`) handles the same data in the same way, w
 - **The app's signature:** the app reads the date its own signature runs out from its own files, to warn you two days before. That date stays on the phone.
 - **Not there, so nothing is sent for it:** the trip planner, route recording, voice search and the active-device count.
 - **Apple Watch:** the watch asks the iPhone app for the car's status over Apple's own link between the two. The sign-in stays on the iPhone.
+- **Home-screen widget:** the app leaves what the widget shows (battery, range, charging, temperatures, the name of the place the car is at) in a folder on the phone that only the app and its widget can open. No sign-in and no position are put there.
 - **Your phone's own backup:** settings, the charging log, places, trip tags and service history are stored like any app's data, so they are in your iPhone's backup (iCloud or a computer) if you have turned that on. The developer has no access to it.
 - **Deleting everything:** Settings → **Sign out** in LionFlow, or delete the app.
 

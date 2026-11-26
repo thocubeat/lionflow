@@ -69,11 +69,12 @@ struct ChargingView: View {
         if let r = st?.chargingRateKmh, r > 0 { rate = fmtDistance(r, s) + "/h" }
         let kind = st?.chargingMode == "Quick" ? "Fast (DC)" : (st?.chargingMode == "Slow" ? "AC" : "—")
         var start = "Not set"
-        if let h = st?.nextDelayedHour { start = TimeFmt.hm(h, st?.nextDelayedMinute ?? 0) }
+        let sched = st.flatMap { ChargePower.scheduledStart($0) }
+        if let t = sched { start = TimeFmt.hm(t.hour, t.minute) }
         var health = "—"
         if let h = st?.batteryHealthPct { health = pct(h) + " %" }
         // The car waits for the scheduled time; it is turned off here.
-        let canTurnOff = st?.nextDelayedHour != nil && model.remoteReady && ui.commandInProgress == nil
+        let canTurnOff = sched != nil && model.remoteReady && ui.commandInProgress == nil
         return LfCard {
             DetailRow(label: "Charging power", value: power)
             LfDivider()

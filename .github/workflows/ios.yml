@@ -109,9 +109,20 @@ jobs:
         run: |
           app=build/Build/Products/Release-iphoneos/LionFlow.app
           test -d "$app/Watch/LionFlowWatch.app"
+          test -d "$app/PlugIns/LionFlowWidget.appex"
+          # Signed "ad hoc" (no Apple ID) only so the files carry their entitlements: the App Group that the app and
+          # its widget share. SideStore and AltStore read them and set the group up when they sign it for real.
+          id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Info.plist")"
+          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0"><dict><key>com.apple.security.application-groups</key><array><string>group.%s</string></array></dict></plist>\n' "$id" > group.entitlements
+          sign() { codesign --force --sign - --timestamp=none "$@"; }
           rm -rf Payload && mkdir Payload && cp -R "$app" Payload/
+          sign Payload/LionFlow.app/Watch/LionFlowWatch.app
+          sign --entitlements group.entitlements Payload/LionFlow.app/PlugIns/LionFlowWidget.appex
+          sign --entitlements group.entitlements Payload/LionFlow.app
           zip -qry LionFlow-with-Watch.ipa Payload
           rm -rf Payload/LionFlow.app/Watch
+          sign --entitlements group.entitlements Payload/LionFlow.app
+          codesign -d --entitlements :- Payload/LionFlow.app/PlugIns/LionFlowWidget.appex | grep -q "group.$id"
           zip -qry LionFlow.ipa Payload
           # The same file under its version's name: the source points at this one, so what SideStore downloads is
           # always the build the source describes, also while a newer one is being uploaded.

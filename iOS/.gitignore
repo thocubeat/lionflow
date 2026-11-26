@@ -10,3 +10,6 @@ xcuserdata/
 Watch/Info.plist
 build-sim/
 shots/
+Widget/Info.plist
+LionFlow/LionFlow.entitlements
+Widget/LionFlowWidget.entitlements

@@ -56,6 +56,18 @@ targets:
           - mailto
         NSLocationWhenInUseUsageDescription: LionFlow shows where you are on the map, to find chargers near you and the way to your car. Your position is not sent to LionFlow or anyone else.
         NSFaceIDUsageDescription: LionFlow can ask for Face ID before it unlocks your car or opens the app.
+        # The widget's buttons open the app with lionflow://refresh.
+        CFBundleURLTypes:
+          - CFBundleURLName: no.lionflow.app.widget
+            CFBundleURLSchemes: [lionflow]
+        # Now and then iOS starts the app in the background to read the car for the widget.
+        UIBackgroundModes: [fetch]
+        BGTaskSchedulerPermittedIdentifiers: [no.lionflow.app.refresh]
+    # The App Group the app shares with its widget (sideloading tools rename it: see Core/WidgetSnapshot.swift).
+    entitlements:
+      path: LionFlow/LionFlow.entitlements
+      properties:
+        com.apple.security.application-groups: [group.$(LF_BUNDLE_ID)]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: $(LF_BUNDLE_ID)
@@ -66,6 +78,8 @@ targets:
     dependencies:
       # The Apple Watch app travels inside the iPhone app.
       - target: LionFlowWatch
+      # So does the home-screen widget.
+      - target: LionFlowWidget
 
   # LionFlow on the Apple Watch. It has no sign-in of its own: it asks the iPhone app (see Core/WatchLink.swift).
   LionFlowWatch:
@@ -92,6 +106,35 @@ targets:
         GENERATE_INFOPLIST_FILE: "NO"
         SWIFT_EMIT_LOC_STRINGS: "NO"
         SKIP_INSTALL: "YES"
+
+  # The home-screen widget. It shows what the app last read (see Core/WidgetSnapshot.swift and Widget/).
+  LionFlowWidget:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: Widget
+      - path: Core/WidgetSnapshot.swift
+    info:
+      path: Widget/Info.plist
+      properties:
+        CFBundleDisplayName: LionFlow
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Widget/LionFlowWidget.entitlements
+      properties:
+        com.apple.security.application-groups: [group.$(LF_BUNDLE_ID)]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(LF_BUNDLE_ID).widget
+        TARGETED_DEVICE_FAMILY: "1,2"
+        GENERATE_INFOPLIST_FILE: "NO"
+        SWIFT_EMIT_LOC_STRINGS: "NO"
+        SKIP_INSTALL: "YES"
+        APPLICATION_EXTENSION_API_ONLY: "YES"
 
   # A walk through the whole app in the simulator (see UITests/TourTests.swift). Not part of the app.
   LionFlowTour:

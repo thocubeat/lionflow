@@ -881,6 +881,13 @@ final class AppModel: ObservableObject {
         }
     }
 
+    /** For the background refresh (the home-screen widget): reads the car once and waits until that is done. */
+    func refreshInBackground() async {
+        if isDemo || ui.phase != .ready || ui.refreshing { return }
+        ui.refreshing = true
+        await readCar()
+    }
+
     func refresh() {
         if ui.refreshing { return }
         if isDemo {

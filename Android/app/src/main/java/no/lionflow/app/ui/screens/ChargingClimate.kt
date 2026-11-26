@@ -87,9 +87,10 @@ fun ChargingScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean)
             Divider()
             DetailRow("Type", when (st?.chargingMode) { "Quick" -> "Fast (DC)"; "Slow" -> "AC"; else -> "—" })
             Divider()
-            DetailRow("Scheduled start", st?.nextDelayedHour?.let { no.lionflow.app.ui.l10n.TimeFmt.hm(it, st?.nextDelayedMinute ?: 0) } ?: "Not set",
+            val sched = st?.let { no.lionflow.app.model.ChargePower.scheduledStart(it) }
+            DetailRow("Scheduled start", sched?.let { no.lionflow.app.ui.l10n.TimeFmt.hm(it.first, it.second) } ?: "Not set",
                 // The car waits for this time; turned off here unless LionFlow's own charging times use it.
-                action = if (st?.nextDelayedHour != null && vm.remoteReady && !s.chargeWindowOn && ui.commandInProgress == null) "Turn off" else null) {
+                action = if (sched != null && vm.remoteReady && !s.chargeWindowOn && ui.commandInProgress == null) "Turn off" else null) {
                 confirm(if (st?.plugged == true) "Turn off scheduled start? Charging starts now." else "Turn off scheduled start?") { vm.clearScheduledStart() }
             }
             Divider()

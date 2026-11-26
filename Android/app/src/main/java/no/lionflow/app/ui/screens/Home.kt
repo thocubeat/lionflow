@@ -680,7 +680,7 @@ private fun HomeMain(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolea
 
 fun chargingLine(st: no.lionflow.app.model.VehicleStatus?): String {
     if (st == null) return "Waiting for data…"
-    val next = if (st.nextDelayedHour != null) no.lionflow.app.ui.l10n.TimeFmt.hm(st.nextDelayedHour, st.nextDelayedMinute ?: 0) else null
+    val next = no.lionflow.app.model.ChargePower.scheduledStart(st)?.let { no.lionflow.app.ui.l10n.TimeFmt.hm(it.first, it.second) }
     return when {
         st.isCharging -> "Charging" + (no.lionflow.app.model.ChargePower.label(st)?.let { " at $it" } ?: "") + (no.lionflow.app.model.ChargePower.leftText(st) ?: "")
         st.plugged && next != null -> "Plugged in · charging from $next"

@@ -434,6 +434,7 @@ class RemoteControl(private val api: StellantisApi, private val secure: SecureSt
         send("/VehCharge", JSONObject()
             .put("program", JSONObject().put("hour", hour).put("minute", minute))
             .put("type", if (startNow) "immediate" else "delayed"), t)
+            .also { if (it !is CommandResult.Failed) no.lionflow.app.model.ChargePower.rememberStartMode(startNow) }
 
     fun forget() {
         disconnectQuietly()

@@ -211,6 +211,8 @@ final class AppHolder: ObservableObject {
     /** New builds and the signature on this copy (the app can't renew or update itself: see IOSRelease). */
     let updates = AppUpdates()
     private var watch: WatchBridge?
+    /** The home-screen widget: what it shows comes from here. */
+    private(set) var widgets: WidgetBridge!
 
     private init() {
         // Text boxes with several lines draw their own background unless told not to (before iOS 16).
@@ -248,6 +250,8 @@ final class AppHolder: ObservableObject {
         let link = WatchLink(services)
         link.switchToNextCar = { await MainActor.run { model.switchToNextCar() } }
         watch = WatchBridge(link)
+        widgets = WidgetBridge(model)
+        BackgroundRefresh.register(model, widgets)
     }
 
     /// For the pictures taken when the app is built: "-demo electric|hybrid|fuel" opens the sample car, "-brand opel"

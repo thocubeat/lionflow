@@ -5,7 +5,7 @@ import UIKit
 
 func chargingLine(_ st: VehicleStatus?) -> String {
     guard let st = st else { return "Waiting for data…" }
-    let next = st.nextDelayedHour.map { TimeFmt.hm($0, st.nextDelayedMinute ?? 0) }
+    let next = ChargePower.scheduledStart(st).map { TimeFmt.hm($0.hour, $0.minute) }
     if st.isCharging {
         let power = ChargePower.label(st).map { " at \($0)" } ?? ""
         return "Charging" + power + (ChargePower.leftText(st) ?? "")

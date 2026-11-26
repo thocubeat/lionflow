@@ -63,11 +63,26 @@ object ChargePower {
      * Returns the status to use.
      */
     /** The last car reports, one line each, for the log (to see how the battery level moved). */
+    /**
+     * The car reports its scheduled start time even when it is set to charge right away (the API has no on/off for it),
+     * so LionFlow remembers what it last sent. Null when there is no scheduled start, or LionFlow turned it off.
+     */
+    fun scheduledStart(st: VehicleStatus): Pair<Int, Int>? {
+        val h = st.nextDelayedHour ?: return null
+        if (prefs?.getString(k("startMode"), "") == "immediate") return null
+        return h to (st.nextDelayedMinute ?: 0)
+    }
+
+    fun rememberStartMode(immediate: Boolean) {
+        prefs?.edit()?.putString(k("startMode"), if (immediate) "immediate" else "delayed")?.apply()
+    }
+
     fun history(): List<String> = prefs?.getString(k("hist"), "")?.split("\n")?.filter { it.isNotBlank() }.orEmpty()
 
-    private fun remember(p: android.content.SharedPreferences, st: VehicleStatus) {
+    private fun remember(p: android.content.SharedPreferences, st: VehicleStatus, carLevel: Double? = st.batteryPct) {
         val t = java.text.SimpleDateFormat("dd.MM HH:mm", java.util.Locale.US).format(java.util.Date(st.updatedAtMillis ?: System.currentTimeMillis()))
-        val line = "$t level=${st.batteryPct?.toInt()} residual=${st.residualKwh?.let { String.format(java.util.Locale.US, "%.1f", it) }} " +
+        val car = if (carLevel != null && carLevel.toInt() != st.batteryPct?.toInt()) " (car says ${carLevel.toInt()})" else ""
+        val line = "$t level=${st.batteryPct?.toInt()}$car residual=${st.residualKwh?.let { String.format(java.util.Locale.US, "%.1f", it) }} " +
             "status=${st.chargingStatus} type=${st.chargeType} plugged=${st.plugged} preheat=${st.preconditioningOn}"
         val old = history()
         if (old.firstOrNull()?.substringAfter(" ")?.substringAfter(" ") == line.substringAfter(" ").substringAfter(" ")) return
@@ -92,7 +107,9 @@ object ChargePower {
         var out = st
         if (anchor.size == 3) {
             val est = anchor[0] + (res - anchor[1]) / cap * 100
-            if (now - anchor[2] > 3 * 86_400_000L || est - level <= 2 || est > 100.5) anchor = emptyList()
+            // Never while plugged in: the car's own level decides where it stops charging, and showing more than the
+            // car says made a car that stopped at its 80 % daily limit look like it went on to 89 %.
+            if (st.plugged || now - anchor[2] > 86_400_000L || est - level <= 2 || est > 100.5) anchor = emptyList()
             else out = st.copy(batteryPct = Math.round(est).toDouble())
         }
         p.edit().putString(k("lvl"), "$level,$res").putString(k("lvlAnchor"), anchor.joinToString(",")).apply()
@@ -104,7 +121,7 @@ object ChargePower {
         try { ChargeLog.observe(st) } catch (_: Exception) { }
         try { CarTrips.observe(st) } catch (_: Exception) { }
         val p = prefs ?: return st
-        remember(p, st)
+        remember(p, st, raw.batteryPct)
         if (!st.isCharging) { p.edit().remove(k("s")).apply(); return st }
         val t = st.energyAtMillis ?: st.updatedAtMillis ?: return st
         val e = energyIn(st) ?: return st
