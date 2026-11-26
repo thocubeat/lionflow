@@ -1,0 +1,69 @@
+# The Xcode project is made from this file with XcodeGen (https://github.com/yonaskolb/XcodeGen):
+#   brew install xcodegen && xcodegen        (in this folder), then open LionFlow.xcodeproj
+name: LionFlow
+options:
+  bundleIdPrefix: no.lionflow
+  deploymentTarget:
+    iOS: "15.0"
+    watchOS: "8.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: "NO"
+    DEAD_CODE_STRIPPING: "YES"
+targets:
+  LionFlow:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: Core
+      - path: LionFlow
+      - path: l10n-ios.tsv
+        buildPhase: resources
+      # The texts, sign-in settings and prices are the Android app's own files: one copy for both apps.
+      - path: ../Android/app/src/main/assets/l10n.tsv
+        buildPhase: resources
+      - path: ../Android/app/src/main/assets/stellantis_configs.json
+        buildPhase: resources
+      - path: ../Android/app/src/main/assets/charge_prices.json
+        buildPhase: resources
+    info:
+      path: LionFlow/Info.plist
+      properties:
+        CFBundleDisplayName: LionFlow
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIApplicationSupportsIndirectInputEvents: true
+        ITSAppUsesNonExemptEncryption: false
+        NSLocationWhenInUseUsageDescription: LionFlow shows where you are on the map, to find chargers near you and the way to your car. Your position is not sent to LionFlow or anyone else.
+        NSFaceIDUsageDescription: LionFlow can ask for Face ID before it unlocks your car or opens the app.
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: no.lionflow.app
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: "NO"
+        SWIFT_EMIT_LOC_STRINGS: "NO"
+schemes:
+  LionFlow:
+    build:
+      targets:
+        LionFlow: all
+    run:
+      config: Debug

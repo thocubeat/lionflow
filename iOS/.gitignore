@@ -1,0 +1,9 @@
+# Made by XcodeGen from project.yml
+LionFlow.xcodeproj/
+LionFlow/Info.plist
+.build/
+build/
+DerivedData/
+*.ipa
+.swiftpm/
+xcuserdata/

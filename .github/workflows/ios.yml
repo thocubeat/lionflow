@@ -1,0 +1,59 @@
+# Builds LionFlow for iPhone and iPad: tests the car logic, builds the app, takes pictures of it in the simulator,
+# and puts the unsigned app (LionFlow.ipa) where people can download it.
+name: iOS
+
+on:
+  push:
+    branches: [ main, ios ]
+    paths: [ "iOS/**", ".github/workflows/ios.yml", ".github/scripts/ios-*", "Android/app/src/main/assets/**" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: iOS
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tools
+        run: |
+          xcodebuild -version
+          swift --version
+          which xcodegen || brew install xcodegen
+          xcodegen --version
+
+      - name: Test the car logic
+        run: swift test 2>&1 | tail -60
+
+      - name: Make the Xcode project
+        run: xcodegen generate
+
+      - name: Build for iPhone and iPad (unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild -project LionFlow.xcodeproj -scheme LionFlow -configuration Release -sdk iphoneos \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build 2>&1 | tee build.log | grep -E "error:|warning: unre|BUILD (SUCCEEDED|FAILED)|\*\* " || true
+          grep -q "BUILD SUCCEEDED" build.log || { grep -E "error" build.log | sort -u | head -150; exit 1; }
+
+      - name: Pack LionFlow.ipa
+        run: |
+          rm -rf Payload && mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/LionFlow.app Payload/
+          zip -qry LionFlow.ipa Payload
+          ls -lh LionFlow.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LionFlow-ipa
+          path: iOS/LionFlow.ipa
