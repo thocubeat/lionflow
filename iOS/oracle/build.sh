@@ -26,9 +26,12 @@ echo "3/4 Compile"
 echo "4/4 Run"
 java -Duser.timezone=UTC -Duser.language=en -Duser.country=US -cp "$WORK/oracle.jar:$WORK/json" OracleKt \
   "$ROOT/iOS/CoreTests/Fixtures" "$ROOT/Android/app/src/main/assets/l10n.tsv"
-# The later parts (Oracle2.kt, Oracle3.kt) never write over a file that is there: delete the ones to make again first
-# (random, demo, vehicles, configs, misc and otp _expected.json).
+# The later parts (Oracle2.kt, Oracle3.kt, Oracle4.kt) never write over a file that is there: delete the ones to make
+# again first (random, demo, vehicles, configs, misc, otp and import _expected.json).
 java -Duser.timezone=UTC -Duser.language=en -Duser.country=US -cp "$WORK/oracle.jar:$WORK/json" Oracle2Kt \
   "$ROOT/iOS/CoreTests/Fixtures" "$ROOT/Android/app/src/main/assets"
 java -Duser.timezone=UTC -Duser.language=en -Duser.country=US -cp "$WORK/oracle.jar:$WORK/json" Oracle3Kt \
+  "$ROOT/iOS/CoreTests/Fixtures"
+# Trip files are read with the clock set to Norwegian time, so summer and winter time are part of the test.
+java -Duser.timezone=Europe/Oslo -Duser.language=en -Duser.country=US -cp "$WORK/oracle.jar:$WORK/json" Oracle4Kt \
   "$ROOT/iOS/CoreTests/Fixtures"

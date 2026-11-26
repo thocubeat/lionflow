@@ -15,7 +15,7 @@ def between(text, start, end, rel):
     return text[a:b]
 
 # Plain Kotlin: as it is.
-for rel in ['model/VehicleStatus.kt', 'model/FuelStats.kt', 'model/HybridSplit.kt', 'model/Brand.kt', 'data/HomeLayout.kt']:
+for rel in ['model/VehicleStatus.kt', 'model/FuelStats.kt', 'model/HybridSplit.kt', 'model/Brand.kt', 'data/HomeLayout.kt', 'model/TripImport.kt']:
     write(os.path.basename(rel), read(rel))
 
 # The small JSON helpers at the end of Http.kt.
