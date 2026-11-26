@@ -92,6 +92,21 @@ targets:
         GENERATE_INFOPLIST_FILE: "NO"
         SWIFT_EMIT_LOC_STRINGS: "NO"
         SKIP_INSTALL: "YES"
+
+  # A walk through the whole app in the simulator (see UITests/TourTests.swift). Not part of the app.
+  LionFlowTour:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: UITests
+    dependencies:
+      - target: LionFlow
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(LF_BUNDLE_ID).tour
+        GENERATE_INFOPLIST_FILE: "YES"
+        TEST_TARGET_NAME: LionFlow
 schemes:
   LionFlow:
     build:
@@ -99,6 +114,15 @@ schemes:
         LionFlow: all
     run:
       config: Debug
+  LionFlowTour:
+    build:
+      targets:
+        LionFlow: all
+        LionFlowTour: [test]
+    test:
+      config: Debug
+      targets:
+        - LionFlowTour
   LionFlowWatch:
     build:
       targets:

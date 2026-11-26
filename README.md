@@ -2,11 +2,11 @@
 
 ![Downloads](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/thocubeat/lionflow/stats/downloads.json) ![Active users (last 24h)](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/thocubeat/lionflow/stats/devices.json)
 
-**[⬇ Download the latest version (APK)](https://github.com/thocubeat/lionflow/releases/latest/download/LionFlow.apk)** · [All releases](https://github.com/thocubeat/lionflow/releases)
+**[⬇ Download the latest version (APK)](https://github.com/thocubeat/lionflow/releases/latest/download/LionFlow.apk)** · [All releases](https://github.com/thocubeat/lionflow/releases) · [iPhone and iPad (preview)](#iphone-ipad-and-apple-watch-preview)
 
 ## What is LionFlow?
 
-LionFlow is a free, open-source Android app for your own connected Peugeot, Citroën, DS, Opel or Vauxhall. It's an unofficial alternative to the MyPeugeot, MyCitroën, MyDS, myOpel and MyVauxhall apps. It signs in with your normal account for your car's brand and talks to the same Stellantis servers, so it shows the same car data and sends the same remote commands. The difference is how it's built and what it does with that data.
+LionFlow is a free, open-source Android app (with an iPhone and iPad version on the way) for your own connected Peugeot, Citroën, DS, Opel or Vauxhall. It's an unofficial alternative to the MyPeugeot, MyCitroën, MyDS, myOpel and MyVauxhall apps. It signs in with your normal account for your car's brand and talks to the same Stellantis servers, so it shows the same car data and sends the same remote commands. The difference is how it's built and what it does with that data.
 
 **Subscriptions (decided by the carmaker, not by LionFlow)**
 Status, battery, range, trips and service data come with your brand account. Charging control and pre-heating on electric and plug-in hybrid cars need the brand's e-Remote Control service (included in the Connect ONE pack on many new cars, otherwise Connect PLUS or a separate subscription). Lock, unlock, lights and horn need the Remote Control service (Connect PLUS). What is included, and for how long, depends on model, country and order date. Activate it in the brand's own app first; LionFlow can't do that for you. The app shows this for your brand before sign-in and next to the functions that need it.
@@ -98,6 +98,61 @@ The watch app doesn't update itself. Install a new version the same way when you
 - Tokens, the remote-control state and your security code are encrypted with an Android Keystore key (AES-256-GCM).
 - Your password is only typed on Peugeot's own page. The app never sees it.
 - There is no backend and no analytics. The app talks directly to Peugeot, OpenFreeMap, OpenStreetMap (Overpass), Photon and OSRM (trip planner), MET Norway, GitHub (updates) and — only if you choose it — NOBIL.
+
+
+## iPhone, iPad and Apple Watch (preview)
+
+LionFlow is also being built for iPhone and iPad (iOS and iPadOS 15 or newer, so an iPhone 6s from 2015 or an iPad Air 2 from 2014 is new enough), with a small Apple Watch app. The code is in [`iOS/`](iOS), written in Swift from the Android app, part by part.
+
+**Where it stands.** The car logic is checked against the Android app's own answers, value by value, every time the code changes, and the app is built and looked at in the iPhone, iPad and Apple Watch simulators (the pictures are on the [`ios-previews`](https://github.com/thocubeat/lionflow/tree/ios-previews) branch). It has **not yet been tried on a real iPhone, with a real account and a real car**. So treat it as a preview, expect rough edges, and please [tell me what you find](https://github.com/thocubeat/lionflow/issues).
+
+**What it has:** sign-in on the brand's own page, status, the Home screen you arrange yourself, charging with the charging log, places and prices, pre-heating and its schedules, trips with fuel and hybrid statistics, tags and CSV export/import, service, the charger map (Apple Maps), car data, several cars and accounts, remote control (lock, lights, horn, pre-heating, charging) confirmed with Face ID, Touch ID or your security code, the demo mode, all six languages, and iPad layouts.
+
+**What it doesn't have (yet):** CarPlay (Apple has to approve each app for it), the trip planner, drive recording over Bluetooth, the home-screen widget, the in-app updater, and everything the Android app does on its own while it is closed: notifications, LionFlow's own charge limit, charging times and the smart pre-heating schedule. iOS gives an app that is not open very little time to work. The car's own daily charge limit, start/stop charging and the pre-heating schedules stored in the car all work.
+
+### Install on iPhone or iPad (outside the App Store)
+
+LionFlow isn't in the App Store. You install the app file yourself and sign it with your own Apple ID, which Apple allows for personal use. A normal, free Apple ID is enough, with Apple's limits for those:
+
+- the app works for **7 days**, then it has to be signed again ("refreshed"). Your sign-in and data stay.
+- at most **3** apps installed this way at a time.
+- on iOS 16 and newer you turn on **Developer Mode** once (Settings → Privacy & Security → Developer Mode).
+
+**Download:** [`LionFlow.ipa`](https://github.com/thocubeat/lionflow/releases/download/ios-latest/LionFlow.ipa) (always the newest build).
+
+Then use one of these free tools. Each has its own guide, which is kept more up to date than this page:
+
+| Tool | You need | Signing again after 7 days |
+|---|---|---|
+| [Sideloadly](https://sideloadly.io) | a Windows PC or a Mac, and a cable | on the computer: by cable, or by itself over Wi-Fi when you turn that on |
+| [SideStore](https://sidestore.io) | a computer for the first set-up only | on the phone itself |
+| [AltStore](https://altstore.io) | a Windows PC or a Mac on the same Wi-Fi | by itself, when the phone and the computer are on the same Wi-Fi |
+
+With **Sideloadly**, the shortest way:
+
+1. Install Sideloadly on the computer and connect the iPhone or iPad with a cable (tap **Trust** on the phone).
+2. Drag `LionFlow.ipa` into Sideloadly, type your Apple ID, and press **Start**.
+3. On the phone: Settings → General → **VPN & Device Management** → your Apple ID → **Trust**. On iOS 16 or newer, also turn on Developer Mode (see above).
+4. Open LionFlow and sign in as described under *First sign-in* above. After you have signed in on the brand's page, you come back to LionFlow by yourself.
+
+To update, install the new `LionFlow.ipa` the same way, with the same Apple ID. The app doesn't update itself.
+
+**With a Mac and Xcode** you can build it yourself, which is also the only way to get the Apple Watch app (see below):
+
+```
+git clone https://github.com/thocubeat/lionflow.git
+cd lionflow/iOS
+brew install xcodegen && xcodegen
+open LionFlow.xcodeproj
+```
+
+In `iOS/project.yml`, change `LF_BUNDLE_ID` to a name of your own (for example `com.yourname.lionflow`) and run `xcodegen` again. In Xcode, pick your Apple ID under *Signing & Capabilities* for both targets, choose your iPhone at the top, and press Run.
+
+### Apple Watch
+
+The watch app shows battery or fuel level and range, kilometres driven today and yesterday, and where the car is. It can lock or unlock, flash the lights and start pre-heating, and asks before each. Like the Wear OS app it has no sign-in of its own: it asks LionFlow on the iPhone. Choose what it shows under Settings → Home screens → Watch.
+
+The tools above can't put a watch app on the watch with a free Apple ID (they install the iPhone app only), so for now the watch app needs a Mac: build with Xcode as above, then choose the **LionFlowWatch** scheme and your watch at the top, and press Run. `LionFlow-with-Watch.ipa` on the [download page](https://github.com/thocubeat/lionflow/releases/tag/ios-latest) is the same app with the watch app inside, for tools that can install it.
 
 
 ## Disclaimer

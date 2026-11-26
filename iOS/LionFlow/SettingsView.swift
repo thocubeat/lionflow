@@ -340,7 +340,7 @@ struct SettingsView: View {
         SectionTitle("App")
         GroupCard {
             LinkRow(title: "New versions", subtitle: "You have \(model.services.version). Newer ones are on LionFlow's page on GitHub", icon: LfIcons.download) {
-                platform.openUrl("https://github.com/thocubeat/lionflow/releases")
+                platform.openUrl("https://github.com/thocubeat/lionflow/releases/tag/ios-latest")
             }
             LinkRow(title: "Send feedback", subtitle: "Ideas, problems or bugs, straight to the developer", icon: "envelope.fill", last: true) { sheet = .feedback }
         }

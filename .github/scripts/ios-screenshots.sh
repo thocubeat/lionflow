@@ -56,6 +56,15 @@ for key, udid in (("PHONE_NAME", phone), ("WATCH_NAME", watch), ("PAD_NAME", pad
     print(f'{key}="{name[1]}, {name[2].rsplit(".", 1)[-1]}"')
 PY
 )"
+# Another workflow can name the devices itself (the run on the oldest iOS does).
+if [ -n "${PHONE_UDID:-}${PAD_UDID:-}" ]; then
+  PHONE="${PHONE_UDID:-}"; PHONE_NAME="chosen by the workflow"
+  PAD="${PAD_UDID:-}"; PAD_NAME="chosen by the workflow"
+  PAIRED="no"
+fi
+if [ "${SKIP_WATCH:-}" = "1" ]; then WATCH=""; WATCH_NAME="left out"; fi
+# Three simulators at once is more than the build machine has memory for: the iPad can be left to another job.
+if [ "${SKIP_PAD:-}" = "1" ]; then PAD=""; PAD_NAME="left out"; fi
 echo "iPhone simulator: $PHONE ($PHONE_NAME)"
 echo "iPad simulator:   $PAD ($PAD_NAME)"
 echo "Watch simulator:  $WATCH ($WATCH_NAME), paired with the iPhone: $PAIRED"

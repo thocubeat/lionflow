@@ -54,7 +54,9 @@ final class KeychainSecrets: SecretBackend {
         if status == errSecItemNotFound {
             var add = q
             add[kSecValueData as String] = data
-            add[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+            // Readable while the phone is locked (the watch can ask about the car then), and never part of a backup
+            // or moved to another phone: on a new phone you sign in again.
+            add[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
             SecItemAdd(add as CFDictionary, nil)
         }
     }

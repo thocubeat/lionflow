@@ -44,6 +44,14 @@ size worked out from the gauge, the average since new from the car's fuel counte
 Public License v3.0. The "All car data" screen, the notes on Home and the extra values read from the car's status
 (heading, privacy mode, fog lights, alarm) came from the same project.
 
+## The iPhone, iPad and Apple Watch app
+The app in `iOS/` is the Android app's own code written again in Swift, file by file, so the notices above apply to it as
+well: `iOS/Core/Otp.swift` is a port of the one-time-password code from psa_car_controller (GPL-3.0), and
+`iOS/Core/StellantisApi.swift`, `RemoteControl.swift`, `Mqtt.swift` and `VehicleStatus.swift` follow
+homeassistant-stellantis-vehicles (MIT). The fuel statistics in `iOS/Core/Stats.swift` are a port of the Android file named
+above, and so follow lionCar's method too; no code was taken from lionCar itself. The iPhone app uses no third-party
+libraries, only Apple's own frameworks.
+
 ## Libraries
 - AndroidX, Jetpack Compose, OkHttp, WorkManager — Apache License 2.0
 - MapLibre Native for Android — BSD 2-Clause
@@ -54,4 +62,5 @@ Public License v3.0. The "All car data" screen, the notes on Home and the extra 
 - Map data © OpenStreetMap contributors (ODbL), tiles by OpenFreeMap
 - Weather data from MET Norway (NLOD / CC BY 4.0)
 - Charging stations from OpenStreetMap via the Overpass API (ODbL, default), or from NOBIL (CC BY 3.0) with your own free API key
+- On iPhone and iPad the map is Apple Maps (MapKit), with charging stations from OpenStreetMap as above
 - Trip planner: address search by Photon (komoot, data © OpenStreetMap contributors), routes by OSRM (Project OSRM / FOSSGIS servers, data © OpenStreetMap contributors)

@@ -1,0 +1,98 @@
+# Runs the iPhone and iPad app on the oldest iOS it is built for (iOS 15, which an iPhone 6s from 2015 runs), in the
+# simulator, and takes the same pictures as the main iOS workflow. They go to the branch "ios-previews-ios15".
+# The old system has to be downloaded first (several GB), so this runs by hand, or when this file changes.
+name: iOS on the oldest system
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, ios ]
+    paths: [ ".github/workflows/ios-old.yml" ]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ios-old-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  old:
+    runs-on: macos-26
+    timeout-minutes: 75
+    defaults:
+      run:
+        working-directory: iOS
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: What this machine has
+        run: |
+          xcodebuild -version
+          which xcodegen || brew install xcodegen
+          echo "--- systems installed for the simulator"
+          xcrun simctl list runtimes
+          echo "--- old devices it knows"
+          xcrun simctl list devicetypes | grep -E "iPhone (6s|7|8|SE)|iPad (Air 2|mini 4|\(5th|\(6th|Pro \(9)" || true
+
+      # The oldest one Apple still offers for this Xcode, tried from iOS 15 upwards.
+      - name: Get the oldest iOS for the simulator
+        run: |
+          for version in 15.0 15.2 15.4 15.5 16.0 16.4; do
+            echo "::group::iOS $version"
+            if perl -e 'alarm shift; exec @ARGV' 1800 xcodebuild -downloadPlatform iOS -buildVersion "$version" 2>&1 | tail -n 5; then
+              if xcrun simctl list runtimes | grep -q "iOS $version"; then echo "::endgroup::"; echo "got iOS $version"; echo "OLD_IOS=$version" >> "$GITHUB_ENV"; break; fi
+            fi
+            echo "::endgroup::"
+          done
+          xcrun simctl list runtimes
+
+      - name: Make an old iPhone and an old iPad
+        run: |
+          [ -n "${OLD_IOS:-}" ] || { echo "No old iOS could be downloaded: nothing to run the app on."; exit 1; }
+          runtime="$(xcrun simctl list runtimes | grep "iOS $OLD_IOS" | sed -E 's/.* (com\.apple\.CoreSimulator\.SimRuntime\.[A-Za-z0-9.-]+).*/\1/' | head -n 1)"
+          echo "system: $runtime"
+          make() { # name, device types to try, oldest first
+            local name="$1"; shift
+            for type in "$@"; do
+              if udid="$(xcrun simctl create "$name" "$type" "$runtime" 2>/dev/null)"; then echo "$name: $type ($udid)" >&2; echo "$udid"; return 0; fi
+            done
+            echo "$name: no device of this kind runs iOS $OLD_IOS here" >&2
+          }
+          echo "PHONE_UDID=$(make old-phone 'iPhone 6s' 'iPhone SE (1st generation)' 'iPhone 7' 'iPhone 8' 'iPhone SE (2nd generation)' 'iPhone 11')" >> "$GITHUB_ENV"
+          echo "PAD_UDID=$(make old-pad 'iPad Air 2' 'iPad mini 4' 'iPad (5th generation)' 'iPad (6th generation)' 'iPad Pro (9.7-inch)' 'iPad (9th generation)')" >> "$GITHUB_ENV"
+
+      - name: Build for the simulator
+        run: |
+          xcodegen generate
+          set -o pipefail
+          xcodebuild -project LionFlow.xcodeproj -scheme LionFlow -configuration Debug -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build-sim CODE_SIGNING_ALLOWED=NO ARCHS=arm64 ONLY_ACTIVE_ARCH=NO \
+            build 2>&1 | tee sim.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" sim.log || { grep -E "error" sim.log | sort -u | head -80; exit 1; }
+
+      - name: Take pictures on the old system
+        env:
+          SKIP_WATCH: "1"
+        run: |
+          [ -n "${PHONE_UDID:-}${PAD_UDID:-}" ] || { echo "no old device to run on"; exit 1; }
+          ../.github/scripts/ios-screenshots.sh "$PWD/build-sim/Build/Products/Debug-iphonesimulator/LionFlow.app" "$PWD/shots"
+          # A crash would leave a report behind: there should be none.
+          ls ~/Library/Logs/DiagnosticReports/ 2>/dev/null | grep -i lionflow || echo "no crash reports"
+
+      - name: Publish the pictures
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ -d shots ] && [ -n "$(ls shots 2>/dev/null)" ] || { echo "no pictures"; exit 0; }
+          work="$RUNNER_TEMP/previews"
+          rm -rf "$work" && mkdir -p "$work" && cp shots/*.png "$work/"
+          echo "Pictures of commit ${GITHUB_SHA} (${GITHUB_REF_NAME}) on iOS ${OLD_IOS:-?}, made by the workflow \"iOS on the oldest system\"." > "$work/README.md"
+          cd "$work"
+          git init -q -b ios-previews-ios15
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Pictures of ${GITHUB_SHA} on iOS ${OLD_IOS:-?}"
+          git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ios-previews-ios15

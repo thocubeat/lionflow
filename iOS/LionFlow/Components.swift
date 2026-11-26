@@ -499,6 +499,16 @@ struct ScreenColumn<Content: View>: View {
                 .padding(20)
                 .frame(maxWidth: wide ? maxWidth : .infinity)
         }
+        .overlay(StatusBarBackdrop(), alignment: .top)
+    }
+}
+
+/** The page's own colour behind the clock at the top, so what is scrolled up doesn't show through it. */
+struct StatusBarBackdrop: View {
+    @Environment(\.lf) private var c
+
+    var body: some View {
+        c.bg.ignoresSafeArea(edges: .top).frame(height: 0)
     }
 }
 

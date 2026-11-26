@@ -53,6 +53,13 @@ jobs:
           tail -n 5 test.log
           exit $status
 
+      # The simulator pictures use a sample car, so they never talk to the carmaker. This asks the real servers for
+      # their greeting, under the rules iOS sets for encrypted connections.
+      - name: Check that an iPhone can reach the servers
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: ../.github/scripts/ios-servers.sh
+
       # An icon name the oldest supported system doesn't know would show as an empty space: checked here.
       - name: Check that every icon exists on iOS 15
         if: ${{ !cancelled() }}
@@ -72,6 +79,7 @@ jobs:
           set -o pipefail
           xcodebuild -project LionFlow.xcodeproj -scheme LionFlow -configuration Release -destination 'generic/platform=iOS' \
             -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
             build 2>&1 | tee build.log | grep -E "error:|warning: unre|BUILD (SUCCEEDED|FAILED)|\*\* " || true
           grep -q "BUILD SUCCEEDED" build.log || { grep -E "error" build.log | sort -u | head -150; exit 1; }
           # Would Xcode rather have a newer oldest-supported system than the one asked for?
@@ -113,7 +121,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' build/Build/Products/Release-iphoneos/LionFlow.app/Info.plist)"
+          plist=build/Build/Products/Release-iphoneos/LionFlow.app/Info.plist
+          version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist") ($(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$plist"))"
           {
             echo "LionFlow for iPhone and iPad, version ${version}, built $(date -u +%Y-%m-%d) from ${GITHUB_SHA:0:7}."
             echo
@@ -146,6 +155,9 @@ jobs:
 
       - name: Take pictures in the simulator
         if: ${{ !cancelled() && steps.simulator.outcome == 'success' }}
+        env:
+          # The iPad is looked at by the walk-through job below.
+          SKIP_PAD: "1"
         run: |
           ../.github/scripts/ios-screenshots.sh "$PWD/build-sim/Build/Products/Debug-iphonesimulator/LionFlow.app" "$PWD/shots" \
             "$PWD/build-sim/Build/Products/Debug-watchsimulator/LionFlowWatch.app"
@@ -166,3 +178,90 @@ jobs:
           git add -A
           git commit -q -m "Pictures of ${GITHUB_SHA}"
           git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ios-previews
+
+  # A walk through the whole app in the simulator, tapping and scrolling the way a person would: every tab from top
+  # to bottom, the sheets and editors, commands to the sample car, the first screens. It fails when a screen doesn't
+  # open or the app stops, and its pictures go to the branch "ios-previews-tour".
+  tour:
+    runs-on: macos-26
+    timeout-minutes: 50
+    defaults:
+      run:
+        working-directory: iOS
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make the Xcode project
+        run: |
+          which xcodegen || brew install xcodegen
+          xcodegen generate
+
+      - name: Build the app and the walk-through
+        run: |
+          device="$(xcrun simctl list devices available | grep -E "^[[:space:]]+iPhone" | grep -v -E "mini| SE " | tail -n 1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')"
+          echo "simulator: $(xcrun simctl list devices available | grep "$device" | sed -E 's/^[[:space:]]+//')"
+          echo "TOUR_DEVICE=$device" >> "$GITHUB_ENV"
+          xcrun simctl boot "$device" > /dev/null 2>&1 || true
+          pad="$(xcrun simctl list devices available | grep -E "^[[:space:]]+iPad" | grep -v "mini" | tail -n 1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')"
+          echo "and: $(xcrun simctl list devices available | grep "$pad" | sed -E 's/^[[:space:]]+//')"
+          echo "TOUR_PAD=$pad" >> "$GITHUB_ENV"
+          xcrun simctl boot "$pad" > /dev/null 2>&1 || true
+          set -o pipefail
+          xcodebuild build-for-testing -project LionFlow.xcodeproj -scheme LionFlowTour -destination "platform=iOS Simulator,id=$device" \
+            -derivedDataPath build-tour 2>&1 | tee tour-build.log | grep -E "error:|\*\* TEST BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "TEST BUILD SUCCEEDED" tour-build.log || { grep -E "error" tour-build.log | sort -u | head -80; exit 1; }
+
+      - name: Walk through the app
+        run: |
+          xcrun simctl bootstatus "$TOUR_DEVICE" > /dev/null 2>&1
+          # The map may ask where the phone is: answered in advance, so the question doesn't stand in the way.
+          xcrun simctl install "$TOUR_DEVICE" build-tour/Build/Products/Debug-iphonesimulator/LionFlow.app
+          xcrun simctl privacy "$TOUR_DEVICE" grant location no.lionflow.app || true
+          xcrun simctl status_bar "$TOUR_DEVICE" override --time "9:41" --batteryState charged --batteryLevel 100 || true
+          mkdir -p tour
+          set +e
+          TEST_RUNNER_TOUR_OUT="$PWD/tour" xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
+            -destination "platform=iOS Simulator,id=$TOUR_DEVICE" -derivedDataPath build-tour > tour.log 2>&1
+          status=$?
+          grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST" tour.log | cut -c1-500 | head -150
+          ls tour | wc -l
+          exit $status
+
+      # The same pages and sheets on an iPad, where the screens are laid out differently.
+      - name: Walk through the app on an iPad
+        if: ${{ !cancelled() }}
+        run: |
+          xcrun simctl bootstatus "$TOUR_PAD" > /dev/null 2>&1
+          xcrun simctl install "$TOUR_PAD" build-tour/Build/Products/Debug-iphonesimulator/LionFlow.app
+          xcrun simctl privacy "$TOUR_PAD" grant location no.lionflow.app || true
+          xcrun simctl status_bar "$TOUR_PAD" override --time "9:41" --batteryState charged --batteryLevel 100 || true
+          mkdir -p tour-pad
+          set +e
+          TEST_RUNNER_TOUR_OUT="$PWD/tour-pad" xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
+            -destination "platform=iOS Simulator,id=$TOUR_PAD" -derivedDataPath build-tour \
+            -only-testing:LionFlowTour/TourTests/test01EveryTabOfTheElectricCar -only-testing:LionFlowTour/TourTests/test03CommandsChangeTheSampleCar \
+            -only-testing:LionFlowTour/TourTests/test04SheetsAndEditorsOpen > tour-pad.log 2>&1
+          status=$?
+          grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST" tour-pad.log | cut -c1-500 | head -80
+          for f in tour-pad/*.png; do [ -f "$f" ] && mv "$f" "tour/pad-$(basename "$f")"; done
+          cat tour-pad.log >> tour.log
+          exit $status
+
+      - name: Publish the pictures
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ -d tour ] && [ -n "$(ls tour 2>/dev/null)" ] || { echo "no pictures"; exit 0; }
+          for f in tour/*.png; do sips -Z 1400 "$f" > /dev/null 2>&1; done
+          work="$RUNNER_TEMP/tour"
+          rm -rf "$work" && mkdir -p "$work" && cp tour/*.png "$work/"
+          grep -E "Test Case .*(passed|failed)|XCTAssert|Executed [0-9]+ tests" tour.log | cut -c1-500 > "$work/result.txt" 2>/dev/null || true
+          echo "A walk through the app at commit ${GITHUB_SHA} (${GITHUB_REF_NAME}), made by the iOS workflow. result.txt says how it went." > "$work/README.md"
+          cd "$work"
+          git init -q -b ios-previews-tour
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "A walk through the app at ${GITHUB_SHA}"
+          git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ios-previews-tour

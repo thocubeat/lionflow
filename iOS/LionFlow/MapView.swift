@@ -27,6 +27,12 @@ private final class CarPin: NSObject, MKAnnotation {
     }
 }
 
+/** The height of the card at the bottom of the map. */
+private struct CardHeight: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = max(value, nextValue()) }
+}
+
 private struct CarMap: UIViewRepresentable {
     let car: CLLocationCoordinate2D?
     let carName: String
@@ -34,6 +40,8 @@ private struct CarMap: UIViewRepresentable {
     let showsUser: Bool
     let dark: Bool
     let focus: MapFocus?
+    /** How much of the bottom of the map the card on top of it covers. */
+    let covered: CGFloat
     let onSelect: (Charger?) -> Void
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
@@ -54,6 +62,9 @@ private struct CarMap: UIViewRepresentable {
         coordinator.parent = self
         map.overrideUserInterfaceStyle = dark ? .dark : .light
         map.showsUserLocation = showsUser
+        // Apple's logo and legal link, the compass and the scale stay clear of the app's own buttons and card.
+        let margins = UIEdgeInsets(top: 68, left: 4, bottom: covered, right: 4)
+        if map.layoutMargins != margins { map.layoutMargins = margins }
 
         // The car.
         let carPin = map.annotations.compactMap { $0 as? CarPin }.first
@@ -137,6 +148,7 @@ struct MapView: View {
     @State private var filter = "all"
     @State private var focus: MapFocus?
     @State private var serial = 0
+    @State private var cardHeight: CGFloat = 96
 
     private func go(_ lat: Double, _ lon: Double, _ span: Double) {
         serial += 1
@@ -176,7 +188,7 @@ struct MapView: View {
         var car: CLLocationCoordinate2D? = nil
         if let lat = st?.lat, let lon = st?.lon { car = CLLocationCoordinate2D(latitude: lat, longitude: lon) }
         return ZStack {
-            CarMap(car: car, carName: model.prefs.carName, chargers: chargers, showsUser: platform.locationAllowed, dark: c.isDark, focus: focus) { selected = $0 }
+            CarMap(car: car, carName: model.prefs.carName, chargers: chargers, showsUser: platform.locationAllowed, dark: c.isDark, focus: focus, covered: cardHeight + 20) { selected = $0 }
                 .ignoresSafeArea(edges: .top)
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .top, spacing: 8) {
@@ -201,8 +213,12 @@ struct MapView: View {
                 }
                 Spacer(minLength: 0)
                 bottomCard(st)
+                    .background(GeometryReader { g in Color.clear.preference(key: CardHeight.self, value: g.size.height) })
             }
             .padding(12)
+            .onPreferenceChange(CardHeight.self) { h in
+                if abs(h - cardHeight) > 1 { cardHeight = h }
+            }
         }
         .onAppear(perform: start)
         .onChange(of: ui.status?.lat) { _ in if focus == nil { start() } }
@@ -252,8 +268,8 @@ struct MapView: View {
                 .accessibilityLabel(Text(verbatim: tr("Close")))
         }
         HStack(spacing: 10) {
-            PrimaryButton("Navigate", icon: "location.fill") { platform.openUrl("http://maps.apple.com/?daddr=\(place)&dirflg=d") }
-            SecondaryButton("Open in Maps", fill: false) { platform.openUrl("http://maps.apple.com/?ll=\(place)&q=\(name)") }
+            PrimaryButton("Navigate", icon: "location.fill") { platform.openUrl("https://maps.apple.com/?daddr=\(place)&dirflg=d") }
+            SecondaryButton("Open in Maps", fill: false) { platform.openUrl("https://maps.apple.com/?ll=\(place)&q=\(name)") }
         }
     }
 

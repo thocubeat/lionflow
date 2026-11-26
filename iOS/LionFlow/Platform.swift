@@ -232,7 +232,9 @@ final class AppHolder: ObservableObject {
             defaults: .standard, secrets: KeychainSecrets(),
             log: DefaultsStore("log"), demo: DefaultsStore("demo"), demoLog: DefaultsStore("demolog"),
             cacheDir: cache, filesDir: support)
-        services.version = (bundle.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0"
+        // "0.1.0 (57)": the number in brackets counts the builds, and is what tells two builds of a version apart.
+        let build = (bundle.infoDictionary?["CFBundleVersion"] as? String) ?? ""
+        services.version = ((bundle.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0") + (build.isEmpty ? "" : " (\(build))")
         services.system = Platform.systemName
         let platform = Platform()
         services.lastKnownLocation = { platform.lastKnownLocation() }

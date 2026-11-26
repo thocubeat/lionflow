@@ -89,7 +89,7 @@ struct HomeView: View {
         GeometryReader { geo in
             LfScroll(onRefresh: { model.refresh() }) {
                 VStack(spacing: 0) {
-                    Hero(topInset: geo.safeAreaInsets.top)
+                    Hero(topInset: c.isDark ? geo.safeAreaInsets.top : 0)
                     if wide {
                         HStack(alignment: .top, spacing: 14) {
                             VStack(spacing: 14) { notes; cards(left: true) }.frame(maxWidth: .infinity)
@@ -107,7 +107,10 @@ struct HomeView: View {
                     }
                 }
             }
-            .ignoresSafeArea(edges: .top)
+            // The dark top of the picture goes up behind the clock in the dark look. In the light look the clock is
+            // dark too, so there the picture starts below it.
+            .ignoresSafeArea(edges: c.isDark ? .top : [])
+            .overlay(StatusBarBackdrop().opacity(c.isDark ? 0 : 1), alignment: .top)
         }
         .onAppear(perform: lookUpPlace)
         .onChange(of: parkedKey) { _ in lookUpPlace() }
