@@ -108,8 +108,8 @@ LionFlow is also being built for iPhone and iPad (iOS and iPadOS 15 or newer, so
 
 - the car logic gives the same answers as the Android app's own code, value by value;
 - the app builds for iPhone, iPad and Apple Watch, and every icon it uses exists on iOS 15;
-- a walk through the whole app in the iPhone and iPad simulators with a sample car, tapping and scrolling the way a person would: every tab from top to bottom, the sheets and editors, commands to the car, the first screens ([pictures](https://github.com/thocubeat/lionflow/tree/ios-previews-tour));
-- the same screens on iOS 16, the oldest system the simulator can still get, as an iPhone 8 and an iPad from 2017 (iOS 15 itself is no longer offered for the simulator);
+- a walk through the whole app in the iPhone and iPad simulators with a sample car, tapping and scrolling the way a person would: every tab from top to bottom, the sheets and editors, commands to the car, pulling a page down to read the car again, the first screens ([pictures](https://github.com/thocubeat/lionflow/tree/ios-previews-tour));
+- most of that walk-through again on iOS 16, the oldest system the simulator can still get, as an iPhone 8, and the main screens as an iPad from 2017 ([pictures](https://github.com/thocubeat/lionflow/tree/ios-previews-old-ios16-macos-26)). iOS 15 itself is no longer offered for the simulator, so nothing has been run on it;
 - the carmaker's servers accept the kind of encrypted connection iOS insists on.
 
 **What it has:** sign-in on the brand's own page, status, the Home screen you arrange yourself, charging with the charging log, places and prices, pre-heating and its schedules, trips with fuel and hybrid statistics, tags and CSV export/import, service, the charger map (Apple Maps), car data, several cars and accounts, remote control (lock, lights, horn, pre-heating, charging) confirmed with Face ID, Touch ID or your security code, the demo mode, all six languages, and iPad layouts.
