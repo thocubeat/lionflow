@@ -1,0 +1,1621 @@
+[
+ {
+  "name": "ev charging",
+  "status": {
+   "updatedAt": "2026-11-25T17:42:10Z",
+   "lastPosition": {
+    "type": "Feature",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      10.3951,
+      63.4305,
+      12
+     ]
+    },
+    "properties": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "type": "Acquire",
+     "signalQuality": 9,
+     "heading": 287
+    }
+   },
+   "preconditioning": {
+    "airConditioning": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "status": "Disabled",
+     "programs": [
+      {
+       "enabled": true,
+       "slot": 1,
+       "recurrence": "Daily",
+       "start": "PT7H10M",
+       "occurence": {
+        "day": [
+         "Mon",
+         "Tue",
+         "Wed",
+         "Thu",
+         "Fri"
+        ]
+       }
+      },
+      {
+       "enabled": false,
+       "slot": 2,
+       "recurrence": "Daily",
+       "start": "PT16H0M",
+       "occurence": {
+        "day": [
+         "Sat"
+        ]
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 3,
+       "recurrence": "Daily",
+       "start": "PT45M",
+       "occurence": {
+        "day": []
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 4,
+       "recurrence": "Daily",
+       "start": "garbage"
+      }
+     ]
+    }
+   },
+   "energies": [
+    {
+     "createdAt": "2026-11-25T17:41:55Z",
+     "type": "Electric",
+     "level": 64,
+     "autonomy": 275,
+     "updatedAt": "2026-11-25T17:41:55.250Z",
+     "extension": {
+      "electric": {
+       "battery": {
+        "load": {
+         "createdAt": "2026-11-25T17:41:55Z",
+         "capacity": 73000,
+         "residual": 46720
+        },
+        "health": {
+         "createdAt": "2026-11-20T10:00:00Z",
+         "capacity": 98,
+         "resistance": 100
+        }
+       },
+       "charging": {
+        "plugged": true,
+        "status": "InProgress",
+        "remainingTime": "PT2H25M",
+        "chargingRate": 48,
+        "chargingMode": "Slow",
+        "nextDelayedTime": "PT1H0M",
+        "type": "Partial"
+       }
+      }
+     }
+    }
+   ],
+   "createdAt": "2026-11-25T17:42:10Z",
+   "battery": {
+    "voltage": 93,
+    "createdAt": "2026-11-25T17:42:10Z"
+   },
+   "kinetic": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "moving": false,
+    "speed": 0
+   },
+   "privacy": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "state": "None"
+   },
+   "service": {
+    "type": "Electric",
+    "updatedAt": "2026-11-25T17:42:10Z"
+   },
+   "environment": {
+    "air": {
+     "temp": 4.5
+    },
+    "luminosity": {
+     "day": false
+    }
+   },
+   "odometer": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "mileage": 13412.4
+   },
+   "ignition": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "type": "Stop"
+   },
+   "doorsState": {
+    "lockedStates": [
+     "Locked"
+    ],
+    "opening": [
+     {
+      "identifier": "Driver",
+      "state": "Closed"
+     },
+     {
+      "identifier": "RearLeft",
+      "state": "Open"
+     },
+     {
+      "identifier": "Trunk",
+      "state": "Open"
+     }
+    ]
+   },
+   "lightingSystem": {
+    "fog": [
+     {
+      "direction": "Front",
+      "position": "Left",
+      "status": "On"
+     },
+     {
+      "direction": "Rear",
+      "status": "Off"
+     },
+     {
+      "direction": "Rear",
+      "status": "On"
+     }
+    ]
+   },
+   "alarm": {
+    "status": {
+     "activation": "Active",
+     "updatedAt": "2026-11-25T17:42:10Z"
+    }
+   },
+   "_links": {
+    "self": {
+     "href": "https://example/status"
+    }
+   }
+  },
+  "maintenance": {
+   "daysBeforeMaintenance": 270,
+   "mileageBeforeMaintenance": 11588
+  },
+  "mildHybrid": false,
+  "requireChargingEvidence": false
+ },
+ {
+  "name": "ev driving, odd values",
+  "status": {
+   "updatedAt": "2026-06-01T08:00:00+02:00",
+   "lastPosition": {
+    "type": "Feature",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      10.3951,
+      63.4305,
+      12
+     ]
+    },
+    "properties": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "type": "Acquire",
+     "signalQuality": 9,
+     "heading": 400
+    }
+   },
+   "preconditioning": {
+    "airConditioning": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "status": "Disabled",
+     "programs": [
+      {
+       "enabled": true,
+       "slot": 1,
+       "recurrence": "Daily",
+       "start": "PT7H10M",
+       "occurence": {
+        "day": [
+         "Mon",
+         "Tue",
+         "Wed",
+         "Thu",
+         "Fri"
+        ]
+       }
+      },
+      {
+       "enabled": false,
+       "slot": 2,
+       "recurrence": "Daily",
+       "start": "PT16H0M",
+       "occurence": {
+        "day": [
+         "Sat"
+        ]
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 3,
+       "recurrence": "Daily",
+       "start": "PT45M",
+       "occurence": {
+        "day": []
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 4,
+       "recurrence": "Daily",
+       "start": "garbage"
+      }
+     ]
+    }
+   },
+   "energies": [
+    {
+     "createdAt": "2026-11-25T17:41:55Z",
+     "type": "Electric",
+     "level": 64,
+     "autonomy": 275,
+     "updatedAt": "2026-06-01T08:00:00.000+02:00",
+     "extension": {
+      "electric": {
+       "battery": {
+        "load": {
+         "capacity": 20000,
+         "residual": 900
+        },
+        "health": {
+         "resistance": 96
+        }
+       },
+       "charging": {
+        "plugged": false,
+        "status": "Disconnected",
+        "remainingTime": "PT0S",
+        "chargingRate": 0,
+        "chargingMode": "No",
+        "nextDelayedTime": "PT21H30M",
+        "type": "Full"
+       }
+      }
+     }
+    }
+   ],
+   "createdAt": "2026-11-25T17:42:10Z",
+   "battery": {
+    "voltage": 93,
+    "createdAt": "2026-11-25T17:42:10Z"
+   },
+   "kinetic": {
+    "moving": true,
+    "speed": 62
+   },
+   "privacy": {
+    "state": "Geolocation"
+   },
+   "service": {
+    "type": "Electric",
+    "updatedAt": "2026-11-25T17:42:10Z"
+   },
+   "environment": {
+    "air": {
+     "temp": 4.5
+    },
+    "luminosity": {
+     "day": false
+    }
+   },
+   "odometer": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "mileage": 13412.4
+   },
+   "ignition": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "type": "Stop"
+   },
+   "doorsState": {
+    "lockedStates": [
+     "Unlocked"
+    ],
+    "opening": []
+   },
+   "lightingSystem": {
+    "fog": []
+   },
+   "alarm": {
+    "status": {
+     "activation": "Deactive"
+    }
+   },
+   "_links": {
+    "self": {
+     "href": "https://example/status"
+    }
+   },
+   "maintenance": {
+    "daysBeforeMaintenance": "35",
+    "mileageBeforeMaintenance": 1200.5
+   }
+  },
+  "maintenance": null,
+  "mildHybrid": false,
+  "requireChargingEvidence": false
+ },
+ {
+  "name": "phev full gauge but empty (DS7 quirk)",
+  "status": {
+   "updatedAt": "2026-11-25T17:42:10Z",
+   "lastPosition": {
+    "type": "Feature",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      10.3951,
+      63.4305,
+      12
+     ]
+    },
+    "properties": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "type": "Acquire",
+     "signalQuality": 9,
+     "heading": 287
+    }
+   },
+   "preconditioning": {
+    "airConditioning": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "status": "Disabled",
+     "programs": [
+      {
+       "enabled": true,
+       "slot": 1,
+       "recurrence": "Daily",
+       "start": "PT7H10M",
+       "occurence": {
+        "day": [
+         "Mon",
+         "Tue",
+         "Wed",
+         "Thu",
+         "Fri"
+        ]
+       }
+      },
+      {
+       "enabled": false,
+       "slot": 2,
+       "recurrence": "Daily",
+       "start": "PT16H0M",
+       "occurence": {
+        "day": [
+         "Sat"
+        ]
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 3,
+       "recurrence": "Daily",
+       "start": "PT45M",
+       "occurence": {
+        "day": []
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 4,
+       "recurrence": "Daily",
+       "start": "garbage"
+      }
+     ]
+    }
+   },
+   "energies": [
+    {
+     "type": "Fuel",
+     "level": 58,
+     "autonomy": 530,
+     "updatedAt": "2026-11-25T17:41:55Z",
+     "extension": {
+      "fuel": {
+       "consumptions": {
+        "total": 48283.2
+       }
+      }
+     }
+    },
+    {
+     "type": "Electric",
+     "level": 100,
+     "autonomy": 0,
+     "updatedAt": "2026-11-25T17:41:55Z",
+     "extension": {
+      "electric": {
+       "battery": {
+        "load": {
+         "capacity": 12400,
+         "residual": 0
+        }
+       },
+       "charging": {
+        "plugged": false,
+        "status": "Disconnected",
+        "type": "Partial"
+       }
+      }
+     }
+    }
+   ],
+   "createdAt": "2026-11-25T17:42:10Z",
+   "battery": {
+    "voltage": 93,
+    "createdAt": "2026-11-25T17:42:10Z"
+   },
+   "kinetic": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "moving": false,
+    "speed": 0
+   },
+   "privacy": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "state": "None"
+   },
+   "service": {
+    "type": "Hybrid"
+   },
+   "environment": {
+    "air": {
+     "temp": 4.5
+    },
+    "luminosity": {
+     "day": false
+    }
+   },
+   "odometer": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "mileage": 13412.4
+   },
+   "ignition": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "type": "Stop"
+   },
+   "doorsState": {
+    "lockedStates": [
+     "Locked"
+    ],
+    "opening": [
+     {
+      "identifier": "Driver",
+      "state": "Closed"
+     },
+     {
+      "identifier": "RearLeft",
+      "state": "Open"
+     },
+     {
+      "identifier": "Trunk",
+      "state": "Open"
+     }
+    ]
+   },
+   "lightingSystem": {
+    "fog": [
+     {
+      "direction": "Front",
+      "position": "Left",
+      "status": "On"
+     },
+     {
+      "direction": "Rear",
+      "status": "Off"
+     },
+     {
+      "direction": "Rear",
+      "status": "On"
+     }
+    ]
+   },
+   "alarm": {
+    "status": {
+     "activation": "Active",
+     "updatedAt": "2026-11-25T17:42:10Z"
+    }
+   },
+   "_links": {
+    "self": {
+     "href": "https://example/status"
+    }
+   }
+  },
+  "maintenance": null,
+  "mildHybrid": false,
+  "requireChargingEvidence": false
+ },
+ {
+  "name": "phev without battery level",
+  "status": {
+   "updatedAt": "2026-11-25T17:42:10Z",
+   "lastPosition": {
+    "type": "Feature",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      10.3951,
+      63.4305,
+      12
+     ]
+    },
+    "properties": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "type": "Acquire",
+     "signalQuality": 9,
+     "heading": 287
+    }
+   },
+   "preconditioning": {
+    "airConditioning": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "status": "Disabled",
+     "programs": [
+      {
+       "enabled": true,
+       "slot": 1,
+       "recurrence": "Daily",
+       "start": "PT7H10M",
+       "occurence": {
+        "day": [
+         "Mon",
+         "Tue",
+         "Wed",
+         "Thu",
+         "Fri"
+        ]
+       }
+      },
+      {
+       "enabled": false,
+       "slot": 2,
+       "recurrence": "Daily",
+       "start": "PT16H0M",
+       "occurence": {
+        "day": [
+         "Sat"
+        ]
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 3,
+       "recurrence": "Daily",
+       "start": "PT45M",
+       "occurence": {
+        "day": []
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 4,
+       "recurrence": "Daily",
+       "start": "garbage"
+      }
+     ]
+    }
+   },
+   "energies": [
+    {
+     "type": "Fuel",
+     "level": 58,
+     "autonomy": 530,
+     "updatedAt": "2026-11-25T17:41:55Z",
+     "extension": {
+      "fuel": {
+       "consumptions": {
+        "total": 48283.2
+       }
+      }
+     }
+    },
+    {
+     "type": "Electric",
+     "autonomy": null,
+     "updatedAt": null,
+     "extension": {
+      "electric": {
+       "charging": {
+        "plugged": false,
+        "status": "Disconnected"
+       }
+      }
+     }
+    }
+   ],
+   "createdAt": "2026-11-25T17:42:10Z",
+   "battery": {
+    "voltage": 93,
+    "createdAt": "2026-11-25T17:42:10Z"
+   },
+   "kinetic": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "moving": false,
+    "speed": 0
+   },
+   "privacy": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "state": "None"
+   },
+   "service": {
+    "type": "Hybrid"
+   },
+   "environment": {
+    "air": {
+     "temp": 4.5
+    },
+    "luminosity": {
+     "day": false
+    }
+   },
+   "odometer": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "mileage": 13412.4
+   },
+   "ignition": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "type": "Stop"
+   },
+   "doorsState": {
+    "lockedStates": [
+     "Locked"
+    ],
+    "opening": [
+     {
+      "identifier": "Driver",
+      "state": "Closed"
+     },
+     {
+      "identifier": "RearLeft",
+      "state": "Open"
+     },
+     {
+      "identifier": "Trunk",
+      "state": "Open"
+     }
+    ]
+   },
+   "lightingSystem": {
+    "fog": [
+     {
+      "direction": "Front",
+      "position": "Left",
+      "status": "On"
+     },
+     {
+      "direction": "Rear",
+      "status": "Off"
+     },
+     {
+      "direction": "Rear",
+      "status": "On"
+     }
+    ]
+   },
+   "alarm": {
+    "status": {
+     "activation": "Active",
+     "updatedAt": "2026-11-25T17:42:10Z"
+    }
+   },
+   "_links": {
+    "self": {
+     "href": "https://example/status"
+    }
+   }
+  },
+  "maintenance": null,
+  "mildHybrid": false,
+  "requireChargingEvidence": false
+ },
+ {
+  "name": "phev plugged, finished",
+  "status": {
+   "updatedAt": "2026-11-25T17:42:10Z",
+   "lastPosition": {
+    "type": "Feature",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      10.3951,
+      63.4305,
+      12
+     ]
+    },
+    "properties": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "type": "Acquire",
+     "signalQuality": 9,
+     "heading": 287
+    }
+   },
+   "preconditioning": {
+    "airConditioning": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "status": "Disabled",
+     "programs": [
+      {
+       "enabled": true,
+       "slot": 1,
+       "recurrence": "Daily",
+       "start": "PT7H10M",
+       "occurence": {
+        "day": [
+         "Mon",
+         "Tue",
+         "Wed",
+         "Thu",
+         "Fri"
+        ]
+       }
+      },
+      {
+       "enabled": false,
+       "slot": 2,
+       "recurrence": "Daily",
+       "start": "PT16H0M",
+       "occurence": {
+        "day": [
+         "Sat"
+        ]
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 3,
+       "recurrence": "Daily",
+       "start": "PT45M",
+       "occurence": {
+        "day": []
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 4,
+       "recurrence": "Daily",
+       "start": "garbage"
+      }
+     ]
+    }
+   },
+   "energies": [
+    {
+     "type": "Fuel",
+     "level": 58,
+     "autonomy": 530,
+     "updatedAt": "2026-11-25T17:41:55Z",
+     "extension": {
+      "fuel": {
+       "consumptions": {
+        "total": 48283.2
+       }
+      }
+     }
+    },
+    {
+     "type": "Electric",
+     "level": 41,
+     "autonomy": 22,
+     "updatedAt": "2026-11-25T17:41:55Z",
+     "extension": {
+      "electric": {
+       "battery": {
+        "load": {
+         "capacity": 12400,
+         "residual": 0
+        }
+       },
+       "charging": {
+        "plugged": true,
+        "status": "Finished",
+        "chargingMode": "Slow",
+        "remainingTime": "PT0M"
+       }
+      }
+     }
+    }
+   ],
+   "createdAt": "2026-11-25T17:42:10Z",
+   "battery": {
+    "voltage": 93,
+    "createdAt": "2026-11-25T17:42:10Z"
+   },
+   "kinetic": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "moving": false,
+    "speed": 0
+   },
+   "privacy": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "state": "None"
+   },
+   "service": {
+    "type": "Hybrid"
+   },
+   "environment": {
+    "air": {
+     "temp": 4.5
+    },
+    "luminosity": {
+     "day": false
+    }
+   },
+   "odometer": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "mileage": 13412.4
+   },
+   "ignition": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "type": "Stop"
+   },
+   "doorsState": {
+    "lockedStates": [
+     "Locked"
+    ],
+    "opening": [
+     {
+      "identifier": "Driver",
+      "state": "Closed"
+     },
+     {
+      "identifier": "RearLeft",
+      "state": "Open"
+     },
+     {
+      "identifier": "Trunk",
+      "state": "Open"
+     }
+    ]
+   },
+   "lightingSystem": {
+    "fog": [
+     {
+      "direction": "Front",
+      "position": "Left",
+      "status": "On"
+     },
+     {
+      "direction": "Rear",
+      "status": "Off"
+     },
+     {
+      "direction": "Rear",
+      "status": "On"
+     }
+    ]
+   },
+   "alarm": {
+    "status": {
+     "activation": "Active",
+     "updatedAt": "2026-11-25T17:42:10Z"
+    }
+   },
+   "_links": {
+    "self": {
+     "href": "https://example/status"
+    }
+   }
+  },
+  "maintenance": {
+   "daysBeforeMaintenance": -12,
+   "mileageBeforeMaintenance": 0
+  },
+  "mildHybrid": false,
+  "requireChargingEvidence": false
+ },
+ {
+  "name": "phev needs charging evidence: has it",
+  "status": {
+   "updatedAt": "2026-11-25T17:42:10Z",
+   "lastPosition": {
+    "type": "Feature",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      10.3951,
+      63.4305,
+      12
+     ]
+    },
+    "properties": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "type": "Acquire",
+     "signalQuality": 9,
+     "heading": 287
+    }
+   },
+   "preconditioning": {
+    "airConditioning": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "status": "Disabled",
+     "programs": [
+      {
+       "enabled": true,
+       "slot": 1,
+       "recurrence": "Daily",
+       "start": "PT7H10M",
+       "occurence": {
+        "day": [
+         "Mon",
+         "Tue",
+         "Wed",
+         "Thu",
+         "Fri"
+        ]
+       }
+      },
+      {
+       "enabled": false,
+       "slot": 2,
+       "recurrence": "Daily",
+       "start": "PT16H0M",
+       "occurence": {
+        "day": [
+         "Sat"
+        ]
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 3,
+       "recurrence": "Daily",
+       "start": "PT45M",
+       "occurence": {
+        "day": []
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 4,
+       "recurrence": "Daily",
+       "start": "garbage"
+      }
+     ]
+    }
+   },
+   "energies": [
+    {
+     "type": "Fuel",
+     "level": 58,
+     "autonomy": 530,
+     "updatedAt": "2026-11-25T17:41:55Z",
+     "extension": {
+      "fuel": {
+       "consumptions": {
+        "total": 48283.2
+       }
+      }
+     }
+    },
+    {
+     "type": "Electric",
+     "level": 41,
+     "autonomy": 22,
+     "updatedAt": "2026-11-25T17:41:55Z",
+     "extension": {
+      "electric": {
+       "battery": {
+        "load": {
+         "capacity": 12400,
+         "residual": 0
+        }
+       },
+       "charging": {
+        "plugged": true,
+        "status": "Finished",
+        "chargingMode": "Slow",
+        "remainingTime": "PT0M"
+       }
+      }
+     }
+    }
+   ],
+   "createdAt": "2026-11-25T17:42:10Z",
+   "battery": {
+    "voltage": 93,
+    "createdAt": "2026-11-25T17:42:10Z"
+   },
+   "kinetic": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "moving": false,
+    "speed": 0
+   },
+   "privacy": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "state": "None"
+   },
+   "service": {
+    "type": "Hybrid"
+   },
+   "environment": {
+    "air": {
+     "temp": 4.5
+    },
+    "luminosity": {
+     "day": false
+    }
+   },
+   "odometer": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "mileage": 13412.4
+   },
+   "ignition": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "type": "Stop"
+   },
+   "doorsState": {
+    "lockedStates": [
+     "Locked"
+    ],
+    "opening": [
+     {
+      "identifier": "Driver",
+      "state": "Closed"
+     },
+     {
+      "identifier": "RearLeft",
+      "state": "Open"
+     },
+     {
+      "identifier": "Trunk",
+      "state": "Open"
+     }
+    ]
+   },
+   "lightingSystem": {
+    "fog": [
+     {
+      "direction": "Front",
+      "position": "Left",
+      "status": "On"
+     },
+     {
+      "direction": "Rear",
+      "status": "Off"
+     },
+     {
+      "direction": "Rear",
+      "status": "On"
+     }
+    ]
+   },
+   "alarm": {
+    "status": {
+     "activation": "Active",
+     "updatedAt": "2026-11-25T17:42:10Z"
+    }
+   },
+   "_links": {
+    "self": {
+     "href": "https://example/status"
+    }
+   }
+  },
+  "maintenance": null,
+  "mildHybrid": false,
+  "requireChargingEvidence": true
+ },
+ {
+  "name": "hybrid needs charging evidence: none",
+  "status": {
+   "updatedAt": "2026-11-25T17:42:10Z",
+   "lastPosition": {
+    "type": "Feature",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      10.3951,
+      63.4305,
+      12
+     ]
+    },
+    "properties": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "type": "Acquire",
+     "signalQuality": 9,
+     "heading": 287
+    }
+   },
+   "preconditioning": {
+    "airConditioning": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "status": "Disabled",
+     "programs": [
+      {
+       "enabled": true,
+       "slot": 1,
+       "recurrence": "Daily",
+       "start": "PT7H10M",
+       "occurence": {
+        "day": [
+         "Mon",
+         "Tue",
+         "Wed",
+         "Thu",
+         "Fri"
+        ]
+       }
+      },
+      {
+       "enabled": false,
+       "slot": 2,
+       "recurrence": "Daily",
+       "start": "PT16H0M",
+       "occurence": {
+        "day": [
+         "Sat"
+        ]
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 3,
+       "recurrence": "Daily",
+       "start": "PT45M",
+       "occurence": {
+        "day": []
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 4,
+       "recurrence": "Daily",
+       "start": "garbage"
+      }
+     ]
+    }
+   },
+   "energies": [
+    {
+     "type": "Fuel",
+     "level": 58,
+     "autonomy": 530,
+     "updatedAt": "2026-11-25T17:41:55Z",
+     "extension": {
+      "fuel": {
+       "consumptions": {
+        "total": 48283.2
+       }
+      }
+     }
+    },
+    {
+     "type": "Electric",
+     "level": 41,
+     "autonomy": 22,
+     "updatedAt": "2026-11-25T17:41:55Z",
+     "extension": {
+      "electric": {
+       "battery": {
+        "load": {
+         "capacity": 12400,
+         "residual": 0
+        }
+       },
+       "charging": {
+        "plugged": false,
+        "status": "Disconnected"
+       }
+      }
+     }
+    }
+   ],
+   "createdAt": "2026-11-25T17:42:10Z",
+   "battery": {
+    "voltage": 93,
+    "createdAt": "2026-11-25T17:42:10Z"
+   },
+   "kinetic": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "moving": false,
+    "speed": 0
+   },
+   "privacy": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "state": "None"
+   },
+   "service": {
+    "type": "Hybrid"
+   },
+   "environment": {
+    "air": {
+     "temp": 4.5
+    },
+    "luminosity": {
+     "day": false
+    }
+   },
+   "odometer": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "mileage": 13412.4
+   },
+   "ignition": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "type": "Stop"
+   },
+   "doorsState": {
+    "lockedStates": [
+     "Locked"
+    ],
+    "opening": [
+     {
+      "identifier": "Driver",
+      "state": "Closed"
+     },
+     {
+      "identifier": "RearLeft",
+      "state": "Open"
+     },
+     {
+      "identifier": "Trunk",
+      "state": "Open"
+     }
+    ]
+   },
+   "lightingSystem": {
+    "fog": [
+     {
+      "direction": "Front",
+      "position": "Left",
+      "status": "On"
+     },
+     {
+      "direction": "Rear",
+      "status": "Off"
+     },
+     {
+      "direction": "Rear",
+      "status": "On"
+     }
+    ]
+   },
+   "alarm": {
+    "status": {
+     "activation": "Active",
+     "updatedAt": "2026-11-25T17:42:10Z"
+    }
+   },
+   "_links": {
+    "self": {
+     "href": "https://example/status"
+    }
+   }
+  },
+  "maintenance": null,
+  "mildHybrid": false,
+  "requireChargingEvidence": true
+ },
+ {
+  "name": "mild hybrid",
+  "status": {
+   "updatedAt": "2026-11-25T17:42:10Z",
+   "lastPosition": {
+    "type": "Feature",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      10.3951,
+      63.4305,
+      12
+     ]
+    },
+    "properties": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "type": "Acquire",
+     "signalQuality": 9,
+     "heading": 287
+    }
+   },
+   "preconditioning": {
+    "airConditioning": {
+     "updatedAt": "2026-11-25T17:40:00Z",
+     "status": "Disabled",
+     "programs": [
+      {
+       "enabled": true,
+       "slot": 1,
+       "recurrence": "Daily",
+       "start": "PT7H10M",
+       "occurence": {
+        "day": [
+         "Mon",
+         "Tue",
+         "Wed",
+         "Thu",
+         "Fri"
+        ]
+       }
+      },
+      {
+       "enabled": false,
+       "slot": 2,
+       "recurrence": "Daily",
+       "start": "PT16H0M",
+       "occurence": {
+        "day": [
+         "Sat"
+        ]
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 3,
+       "recurrence": "Daily",
+       "start": "PT45M",
+       "occurence": {
+        "day": []
+       }
+      },
+      {
+       "enabled": true,
+       "slot": 4,
+       "recurrence": "Daily",
+       "start": "garbage"
+      }
+     ]
+    }
+   },
+   "energies": [
+    {
+     "type": "Fuel",
+     "level": 58,
+     "autonomy": 530,
+     "updatedAt": "2026-11-25T17:41:55Z",
+     "extension": {
+      "fuel": {
+       "consumptions": {
+        "total": 48283.2
+       }
+      }
+     }
+    },
+    {
+     "type": "Electric",
+     "level": 41,
+     "autonomy": 22,
+     "updatedAt": "2026-11-25T17:41:55Z",
+     "extension": {
+      "electric": {
+       "battery": {
+        "load": {
+         "capacity": 12400,
+         "residual": 0
+        }
+       },
+       "charging": {
+        "plugged": true,
+        "status": "Finished",
+        "chargingMode": "Slow",
+        "remainingTime": "PT0M"
+       }
+      }
+     }
+    }
+   ],
+   "createdAt": "2026-11-25T17:42:10Z",
+   "battery": {
+    "voltage": 93,
+    "createdAt": "2026-11-25T17:42:10Z"
+   },
+   "kinetic": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "moving": false,
+    "speed": 0
+   },
+   "privacy": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "state": "None"
+   },
+   "service": {
+    "type": "Hybrid"
+   },
+   "environment": {
+    "air": {
+     "temp": 4.5
+    },
+    "luminosity": {
+     "day": false
+    }
+   },
+   "odometer": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "mileage": 13412.4
+   },
+   "ignition": {
+    "createdAt": "2026-11-25T17:42:10Z",
+    "type": "Stop"
+   },
+   "doorsState": {
+    "lockedStates": [
+     "Locked"
+    ],
+    "opening": [
+     {
+      "identifier": "Driver",
+      "state": "Closed"
+     },
+     {
+      "identifier": "RearLeft",
+      "state": "Open"
+     },
+     {
+      "identifier": "Trunk",
+      "state": "Open"
+     }
+    ]
+   },
+   "lightingSystem": {
+    "fog": [
+     {
+      "direction": "Front",
+      "position": "Left",
+      "status": "On"
+     },
+     {
+      "direction": "Rear",
+      "status": "Off"
+     },
+     {
+      "direction": "Rear",
+      "status": "On"
+     }
+    ]
+   },
+   "alarm": {
+    "status": {
+     "activation": "Active",
+     "updatedAt": "2026-11-25T17:42:10Z"
+    }
+   },
+   "_links": {
+    "self": {
+     "href": "https://example/status"
+    }
+   }
+  },
+  "maintenance": null,
+  "mildHybrid": true,
+  "requireChargingEvidence": false
+ },
+ {
+  "name": "fuel only",
+  "status": {
+   "updatedAt": "2026-11-25T06:00:00Z",
+   "energies": [
+    {
+     "type": "Fuel",
+     "level": 37.5,
+     "autonomy": 410,
+     "extension": {
+      "fuel": {
+       "consumptions": {
+        "total": 0
+       }
+      }
+     }
+    }
+   ],
+   "odometer": {
+    "mileage": "84211"
+   },
+   "doorsState": {
+    "lockedStates": [
+     "SuperLocked",
+     "Locked"
+    ],
+    "opening": [
+     {
+      "identifier": "Driver",
+      "state": "Closed"
+     }
+    ]
+   },
+   "lastPosition": {
+    "geometry": {
+     "coordinates": [
+      "10.1",
+      null
+     ]
+    }
+   },
+   "kinetic": {
+    "moving": "false"
+   },
+   "ignition": {
+    "type": null
+   },
+   "environment": {
+    "air": {
+     "temp": null
+    }
+   }
+  },
+  "maintenance": {
+   "daysBeforeMaintenance": null
+  },
+  "mildHybrid": false,
+  "requireChargingEvidence": false
+ },
+ {
+  "name": "empty",
+  "status": {},
+  "maintenance": null,
+  "mildHybrid": false,
+  "requireChargingEvidence": false
+ },
+ {
+  "name": "nulls everywhere",
+  "status": {
+   "updatedAt": null,
+   "energies": null,
+   "doorsState": null,
+   "lastPosition": {
+    "geometry": null
+   },
+   "preconditioning": {
+    "airConditioning": {
+     "status": "Enabled",
+     "programs": null
+    }
+   },
+   "odometer": {
+    "mileage": null
+   },
+   "privacy": {
+    "state": "Full"
+   },
+   "alarm": {
+    "status": {}
+   }
+  },
+  "maintenance": null,
+  "mildHybrid": false,
+  "requireChargingEvidence": false
+ },
+ {
+  "name": "no zone in time",
+  "status": {
+   "updatedAt": "2026-11-25T06:00:00",
+   "energies": [
+    {
+     "type": "Electric",
+     "level": "80",
+     "autonomy": "312.6",
+     "updatedAt": "2026-11-25 06:00",
+     "extension": {
+      "electric": {
+       "charging": {
+        "plugged": "TRUE",
+        "status": "Stopped",
+        "remainingTime": "PT12H",
+        "nextDelayedTime": "7:30"
+       }
+      }
+     }
+    }
+   ]
+  },
+  "maintenance": null,
+  "mildHybrid": false,
+  "requireChargingEvidence": false
+ }
+]

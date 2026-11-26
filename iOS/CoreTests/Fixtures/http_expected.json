@@ -1,0 +1,62 @@
+[
+ [
+  503,
+  "<html><body><h1>503 Service Temporarily Unavailable<\/h1><\/body><\/html>",
+  "api.groupe-psa.com",
+  "Peugeot error 503 (temporarily unavailable)"
+ ],
+ [
+  400,
+  "{\"error\":\"invalid_grant\",\"error_description\":\"grant is invalid\"}",
+  "idpcvs.peugeot.com",
+  "Peugeot error 400 (request rejected): grant is invalid · invalid_grant"
+ ],
+ [
+  404,
+  "{\"code\":40400,\"uuid\":\"x\",\"message\":\"NOT_FOUND\"}",
+  "api-cert.groupe-psa.com",
+  "Peugeot error 404 (not found): NOT_FOUND · 40400"
+ ],
+ [
+  404,
+  "{\"code\":404,\"message\":\"\"}",
+  "api.met.no",
+  "MET weather error 404 (not found)"
+ ],
+ [
+  429,
+  "",
+  "nobil.no",
+  "NOBIL error 429 (too many requests — wait a little)"
+ ],
+ [
+  500,
+  "{\"errors\":[{\"code\":\"E12\",\"message\":\"\"}],\"error\":null}",
+  "example.org",
+  "example.org error 500 (internal server error): E12 · null"
+ ],
+ [
+  418,
+  "  <p>I am   a\n teapot<\/p> plain  text xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "mwa.mpsa.com",
+  "Peugeot error 418 (error): I am a teapot plain text xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+ ],
+ [
+  401,
+  "{\"message\":\"Unauthorized\",\"error\":\"Unauthorized\",\"code\":\"401\"}",
+  "stellantis.example",
+  "Peugeot error 401 (not signed in / session expired): Unauthorized"
+ ],
+ [
+  409,
+  "[1,2]",
+  "example.org",
+  "example.org error 409 (conflict): [1,2]"
+ ],
+ [
+  502,
+  "{\"message\":\"up \\/ down\"}",
+  "example.org",
+  "example.org error 502 (bad gateway): up / down"
+ ]
+]

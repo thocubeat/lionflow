@@ -34,7 +34,7 @@ enum JSONValue: Equatable {
         switch self {
         case .double(let d): return d
         case .int(let i): return Double(i)
-        case .string(let s): return Double(s.trimmingCharacters(in: .whitespaces))
+        case .string(let s): return JSONValue.javaParseDouble(s)
         default: return nil
         }
     }
@@ -43,7 +43,7 @@ enum JSONValue: Equatable {
         switch self {
         case .int(let i): return i
         case .double(let d): return JSONValue.javaLong(d)
-        case .string(let s): return Double(s.trimmingCharacters(in: .whitespaces)).map { JSONValue.javaLong($0) }
+        case .string(let s): return JSONValue.javaParseDouble(s).map { JSONValue.javaLong($0) }
         default: return nil
         }
     }
@@ -53,7 +53,7 @@ enum JSONValue: Equatable {
         switch self {
         case .int(let i): return Int(Int32(truncatingIfNeeded: i))
         case .double(let d): return JSONValue.javaInt(d)
-        case .string(let s): return Double(s.trimmingCharacters(in: .whitespaces)).map { JSONValue.javaInt($0) }
+        case .string(let s): return JSONValue.javaParseDouble(s).map { JSONValue.javaInt($0) }
         default: return nil
         }
     }
@@ -66,6 +66,60 @@ enum JSONValue: Equatable {
             return l == "true" ? true : (l == "false" ? false : nil)
         default: return nil
         }
+    }
+
+    /// Java's `Double.parseDouble`: what Android takes as a number when it is written as text. Spaces around it are
+    /// fine, "1e3", ".5", "7." and "NaN" are numbers, "0x10" and "12abc" are not.
+    static func javaParseDouble(_ text: String) -> Double? {
+        let all = Array(text.utf8)
+        var lo = 0
+        var hi = all.count
+        while lo < hi && all[lo] <= 0x20 { lo += 1 }
+        while hi > lo && all[hi - 1] <= 0x20 { hi -= 1 }
+        if lo >= hi { return nil }
+        var b = Array(all[lo..<hi])
+        var negative = false
+        if b[0] == 0x2B || b[0] == 0x2D {
+            negative = b[0] == 0x2D
+            b.removeFirst()
+        }
+        let rest = String(decoding: b, as: UTF8.self)
+        if rest == "NaN" { return Double.nan }
+        if rest == "Infinity" { return negative ? -Double.infinity : Double.infinity }
+        // Java allows a trailing f, F, d or D.
+        if let last = b.last, last == 0x66 || last == 0x46 || last == 0x64 || last == 0x44 { b.removeLast() }
+        func isDigit(_ c: UInt8) -> Bool { c >= 0x30 && c <= 0x39 }
+        func isHexDigit(_ c: UInt8) -> Bool { isDigit(c) || (c >= 0x61 && c <= 0x66) || (c >= 0x41 && c <= 0x46) }
+        let hex = b.count >= 2 && b[0] == 0x30 && (b[1] == 0x78 || b[1] == 0x58)
+        var p = hex ? 2 : 0
+        var whole = ""
+        var frac = ""
+        while p < b.count && (hex ? isHexDigit(b[p]) : isDigit(b[p])) { whole.append(Character(Unicode.Scalar(b[p]))); p += 1 }
+        if p < b.count && b[p] == 0x2E {
+            p += 1
+            while p < b.count && (hex ? isHexDigit(b[p]) : isDigit(b[p])) { frac.append(Character(Unicode.Scalar(b[p]))); p += 1 }
+        }
+        if whole.isEmpty && frac.isEmpty { return nil }
+        var exponent = ""
+        let marks: [UInt8] = hex ? [0x70, 0x50] : [0x65, 0x45]
+        if p < b.count && marks.contains(b[p]) {
+            p += 1
+            if p < b.count && (b[p] == 0x2B || b[p] == 0x2D) {
+                if b[p] == 0x2D { exponent = "-" }
+                p += 1
+            }
+            let start = p
+            while p < b.count && isDigit(b[p]) { exponent.append(Character(Unicode.Scalar(b[p]))); p += 1 }
+            if p == start { return nil }
+        } else if hex {
+            return nil      // a hexadecimal number needs its "p" exponent
+        }
+        if p != b.count { return nil }
+        var clean = negative ? "-" : ""
+        clean += hex ? "0x" : ""
+        clean += (whole.isEmpty ? "0" : whole) + "." + (frac.isEmpty ? "0" : frac)
+        if !exponent.isEmpty { clean += (hex ? "p" : "e") + exponent }
+        return Double(clean)
     }
 
     /** Java's `(long) d`: NaN is 0, and values outside the range stop at the ends. */
@@ -268,6 +322,9 @@ final class JSONArray: Equatable, CustomStringConvertible {
     func optBoolean(_ i: Int, _ fallback: Bool = false) -> Bool { opt(i)?.asBool ?? fallback }
     func optJSONObject(_ i: Int) -> JSONObject? { if case .object(let o)? = opt(i) { return o }; return nil }
     func optJSONArray(_ i: Int) -> JSONArray? { if case .array(let a)? = opt(i) { return a }; return nil }
+
+    /** Every item as text, the way `optString` gives it. */
+    func strings() -> [String] { items.map { $0.javaString } }
 
     /** The objects in the array, skipping anything else. */
     func objects() -> [JSONObject] { (0..<items.count).compactMap { optJSONObject($0) } }

@@ -32,8 +32,15 @@ jobs:
           which xcodegen || brew install xcodegen
           xcodegen --version
 
+      # The logic is checked against the Android app's own answers (iOS/CoreTests/Fixtures, made by iOS/oracle).
       - name: Test the car logic
-        run: swift test 2>&1 | tail -60
+        run: |
+          set +e
+          swift test > test.log 2>&1
+          status=$?
+          grep -E "error:|Executed [0-9]+ tests|Test Suite '.*' (passed|failed)" test.log | cut -c1-700 | head -200
+          tail -n 5 test.log
+          exit $status
 
       - name: Make the Xcode project
         run: xcodegen generate

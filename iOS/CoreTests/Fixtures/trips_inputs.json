@@ -1,0 +1,1628 @@
+[
+ {
+  "id": "t1",
+  "startedAt": "2026-09-03T06:10:00Z",
+  "distance": 12.4,
+  "duration": 1260,
+  "stoppedAt": "2026-09-03T06:31:00Z",
+  "energyConsumptions": [
+   {
+    "type": "Electric",
+    "consumption": 2150,
+    "avgConsumption": 17340
+   }
+  ]
+ },
+ {
+  "id": "t2",
+  "startedAt": "2026-09-03T15:02:11Z",
+  "distance": 96.8,
+  "duration": 4310,
+  "stoppedAt": "2026-09-03T16:14:01Z",
+  "energyConsumptions": [
+   {
+    "type": "Electric",
+    "consumption": 7300,
+    "avgConsumption": 18200
+   },
+   {
+    "type": "Fuel",
+    "consumption": 352,
+    "avgConsumption": 6.2
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 22
+   },
+   {
+    "type": "Electric",
+    "level": 90
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 14
+   },
+   {
+    "type": "Electric",
+    "level": 3
+   }
+  ]
+ },
+ {
+  "id": "t3",
+  "startedAt": "2026-09-04T07:00:00+02:00",
+  "distance": 41.0,
+  "duration": 2400,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 2.6,
+    "avgConsumption": 63
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 96
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 90.5
+   }
+  ]
+ },
+ {
+  "id": "t4",
+  "startedAt": "2026-09-20T07:00:00Z",
+  "distance": 230.2,
+  "duration": 9300,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 12800,
+    "avgConsumption": 5560
+   }
+  ],
+  "startEnergies": [
+   {
+    "level": 90
+   }
+  ],
+  "endEnergies": [
+   {
+    "level": 62
+   }
+  ]
+ },
+ {
+  "id": "t5",
+  "startedAt": "2026-10-01T10:00:00Z",
+  "distance": 0.3,
+  "duration": 45,
+  "kinetic": {
+   "avgSpeed": 24
+  },
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 40
+   }
+  ]
+ },
+ {
+  "id": "t6",
+  "startedAt": "2026-10-02T10:00:00Z",
+  "distance": 18.0,
+  "duration": 30,
+  "kinetic": {
+   "avgSpeed": 31.5
+  },
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 0,
+    "avgConsumption": 0.058
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Electric",
+    "level": 50
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 140
+   }
+  ]
+ },
+ {
+  "id": 7,
+  "createdAt": "2026-10-09T18:30:00.500Z",
+  "distance": "55.5",
+  "duration": "3000",
+  "energyConsumptions": [
+   {
+    "type": "Electric",
+    "consumption": "9100"
+   }
+  ]
+ },
+ {
+  "id": "t8",
+  "distance": null,
+  "duration": null
+ },
+ {
+  "id": "t9",
+  "startedAt": "2026-10-10T08:00:00Z",
+  "stoppedAt": "bad",
+  "distance": 64,
+  "duration": 3100,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 4.4
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 61
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 52
+   }
+  ]
+ },
+ {
+  "id": "t10",
+  "startedAt": "2026-10-12T20:00:00Z",
+  "distance": 68.7,
+  "duration": 3806,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 3500.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 52.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 44.6
+   }
+  ]
+ },
+ {
+  "id": "t11",
+  "startedAt": "2026-10-13T05:00:00Z",
+  "distance": 3.9,
+  "duration": 418,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 260.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 44.6
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 44.0
+   }
+  ]
+ },
+ {
+  "id": "t12",
+  "startedAt": "2026-10-13T10:00:00Z",
+  "distance": 26.7,
+  "duration": 1786,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1.77
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 44.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 40.2
+   }
+  ]
+ },
+ {
+  "id": "t13",
+  "startedAt": "2026-10-13T15:00:00Z",
+  "distance": 135.4,
+  "duration": 10048,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 7010.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 40.2
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 25.3
+   }
+  ]
+ },
+ {
+  "id": "t14",
+  "startedAt": "2026-10-14T00:00:00Z",
+  "distance": 5.6,
+  "duration": 597,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 0.37
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 25.3
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 24.5
+   }
+  ]
+ },
+ {
+  "id": "t15",
+  "startedAt": "2026-10-15T07:00:00Z",
+  "distance": 20.0,
+  "duration": 843,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 126.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 24.5
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 21.8
+   }
+  ]
+ },
+ {
+  "id": "t16",
+  "startedAt": "2026-10-15T21:00:00Z",
+  "distance": 9.2,
+  "duration": 538,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 61.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 21.8
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 20.5
+   }
+  ]
+ },
+ {
+  "id": "t17",
+  "startedAt": "2026-10-16T23:00:00Z",
+  "distance": 27.5,
+  "duration": 1959,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 147.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 20.5
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 17.4
+   }
+  ]
+ },
+ {
+  "id": "t18",
+  "startedAt": "2026-10-18T01:00:00Z",
+  "distance": 197.6,
+  "duration": 14112,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1447.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 97.5
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 66.7
+   }
+  ]
+ },
+ {
+  "id": "t19",
+  "startedAt": "2026-10-19T08:00:00Z",
+  "distance": 15.4,
+  "duration": 948,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1200.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 66.7
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 64.1
+   }
+  ]
+ },
+ {
+  "id": "t20",
+  "startedAt": "2026-10-19T13:00:00Z",
+  "distance": 176.5,
+  "duration": 13497,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1311.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 64.1
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 36.2
+   }
+  ]
+ },
+ {
+  "id": "t21",
+  "startedAt": "2026-10-20T03:00:00Z",
+  "distance": 3.6,
+  "duration": 300,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 23.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 36.2
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 35.7
+   }
+  ]
+ },
+ {
+  "id": "t22",
+  "startedAt": "2026-10-20T12:00:00Z",
+  "distance": 12.9,
+  "duration": 815,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 650.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 35.7
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 34.3
+   }
+  ]
+ },
+ {
+  "id": "t23",
+  "startedAt": "2026-10-21T02:00:00Z",
+  "distance": 23.5,
+  "duration": 948,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1660.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 34.3
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 30.8
+   }
+  ]
+ },
+ {
+  "id": "t24",
+  "startedAt": "2026-10-22T04:00:00Z",
+  "distance": 26.9,
+  "duration": 3151,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1860.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 30.8
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 26.8
+   }
+  ]
+ },
+ {
+  "id": "t25",
+  "startedAt": "2026-10-22T13:00:00Z",
+  "distance": 3.1,
+  "duration": 227,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 0.21
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 26.8
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 26.4
+   }
+  ]
+ },
+ {
+  "id": "t26",
+  "startedAt": "2026-10-23T20:00:00Z",
+  "distance": 19.4,
+  "duration": 909,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1490.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 26.4
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 23.2
+   }
+  ]
+ },
+ {
+  "id": "t27",
+  "startedAt": "2026-10-25T03:00:00Z",
+  "distance": 78.6,
+  "duration": 6828,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 4.78
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 23.2
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 13.0
+   }
+  ]
+ },
+ {
+  "id": "t28",
+  "startedAt": "2026-10-26T05:00:00Z",
+  "distance": 7.1,
+  "duration": 294,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 470.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 92.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 91.0
+   }
+  ]
+ },
+ {
+  "id": "t29",
+  "startedAt": "2026-10-26T10:00:00Z",
+  "distance": 127.7,
+  "duration": 9041,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 716.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 91.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 75.8
+   }
+  ]
+ },
+ {
+  "id": "t30",
+  "startedAt": "2026-10-27T12:00:00Z",
+  "distance": 24.2,
+  "duration": 1788,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1.53
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 75.8
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 72.5
+   }
+  ]
+ },
+ {
+  "id": "t31",
+  "startedAt": "2026-10-27T17:00:00Z",
+  "distance": 146.2,
+  "duration": 16769,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 7770.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 72.5
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 56.0
+   }
+  ]
+ },
+ {
+  "id": "t32",
+  "startedAt": "2026-10-28T07:00:00Z",
+  "distance": 64.9,
+  "duration": 3407,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 3.73
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 56.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 48.1
+   }
+  ]
+ },
+ {
+  "id": "t33",
+  "startedAt": "2026-10-28T21:00:00Z",
+  "distance": 16.0,
+  "duration": 750,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 104.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 48.1
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 45.9
+   }
+  ]
+ },
+ {
+  "id": "t34",
+  "startedAt": "2026-10-29T06:00:00Z",
+  "distance": 18.3,
+  "duration": 832,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1350.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 45.9
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 43.0
+   }
+  ]
+ },
+ {
+  "id": "t35",
+  "startedAt": "2026-10-29T15:00:00Z",
+  "distance": 8.0,
+  "duration": 493,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 0.59
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 43.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 41.7
+   }
+  ]
+ },
+ {
+  "id": "t36",
+  "startedAt": "2026-10-30T22:00:00Z",
+  "distance": 14.2,
+  "duration": 985,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1.12
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 41.7
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 39.3
+   }
+  ]
+ },
+ {
+  "id": "t37",
+  "startedAt": "2026-10-31T03:00:00Z",
+  "distance": 96.8,
+  "duration": 5231,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 7.7
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 39.3
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 22.9
+   }
+  ]
+ },
+ {
+  "id": "t38",
+  "startedAt": "2026-11-01T05:00:00Z",
+  "distance": 175.8,
+  "duration": 11871,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 9110.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 22.9
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 3.5
+   }
+  ]
+ },
+ {
+  "id": "t39",
+  "startedAt": "2026-11-01T14:00:00Z",
+  "distance": 7.5,
+  "duration": 467,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 380.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 100.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 99.2
+   }
+  ]
+ },
+ {
+  "id": "t40",
+  "startedAt": "2026-11-01T19:00:00Z",
+  "distance": 21.1,
+  "duration": 1311,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1410.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 99.2
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 96.2
+   }
+  ]
+ },
+ {
+  "id": "t41",
+  "startedAt": "2026-11-02T04:00:00Z",
+  "distance": 17.9,
+  "duration": 1024,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 0.95
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 96.2
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 94.2
+   }
+  ]
+ },
+ {
+  "id": "t42",
+  "startedAt": "2026-11-02T09:00:00Z",
+  "distance": 78.5,
+  "duration": 5043,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 6.11
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 94.2
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 81.2
+   }
+  ]
+ },
+ {
+  "id": "t43",
+  "startedAt": "2026-11-02T18:00:00Z",
+  "distance": 150.2,
+  "duration": 8629,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 8.78
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 81.2
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 62.5
+   }
+  ]
+ },
+ {
+  "id": "t44",
+  "startedAt": "2026-11-02T23:00:00Z",
+  "distance": 142.5,
+  "duration": 8409,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 10560.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 62.5
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 40.0
+   }
+  ]
+ },
+ {
+  "id": "t45",
+  "startedAt": "2026-11-03T08:00:00Z",
+  "distance": 16.1,
+  "duration": 871,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1.17
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 40.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 37.5
+   }
+  ]
+ },
+ {
+  "id": "t46",
+  "startedAt": "2026-11-03T17:00:00Z",
+  "distance": 6.5,
+  "duration": 382,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 380.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 37.5
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 36.7
+   }
+  ]
+ },
+ {
+  "id": "t47",
+  "startedAt": "2026-11-04T19:00:00Z",
+  "distance": 22.6,
+  "duration": 2500,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1.22
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 36.7
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 34.1
+   }
+  ]
+ },
+ {
+  "id": "t48",
+  "startedAt": "2026-11-06T02:00:00Z",
+  "distance": 14.3,
+  "duration": 771,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 890.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 34.1
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 32.2
+   }
+  ]
+ },
+ {
+  "id": "t49",
+  "startedAt": "2026-11-07T09:00:00Z",
+  "distance": 141.4,
+  "duration": 8418,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 10.44
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 32.2
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 10.0
+   }
+  ]
+ },
+ {
+  "id": "t50",
+  "startedAt": "2026-11-08T16:00:00Z",
+  "distance": 106.7,
+  "duration": 4777,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 8.17
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 95.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 77.6
+   }
+  ]
+ },
+ {
+  "id": "t51",
+  "startedAt": "2026-11-09T18:00:00Z",
+  "distance": 6.0,
+  "duration": 505,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 37.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 77.6
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 76.8
+   }
+  ]
+ },
+ {
+  "id": "t52",
+  "startedAt": "2026-11-09T23:00:00Z",
+  "distance": 188.9,
+  "duration": 15049,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 11.28
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 76.8
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 52.8
+   }
+  ]
+ },
+ {
+  "id": "t53",
+  "startedAt": "2026-11-11T01:00:00Z",
+  "distance": 26.8,
+  "duration": 1376,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1.43
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 52.8
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 49.8
+   }
+  ]
+ },
+ {
+  "id": "t54",
+  "startedAt": "2026-11-11T10:00:00Z",
+  "distance": 27.9,
+  "duration": 2045,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1510.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 49.8
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 46.6
+   }
+  ]
+ },
+ {
+  "id": "t55",
+  "startedAt": "2026-11-12T00:00:00Z",
+  "distance": 3.5,
+  "duration": 206,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 21.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 46.6
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 46.2
+   }
+  ]
+ },
+ {
+  "id": "t56",
+  "startedAt": "2026-11-13T07:00:00Z",
+  "distance": 27.0,
+  "duration": 2678,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 214.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 46.2
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 41.6
+   }
+  ]
+ },
+ {
+  "id": "t57",
+  "startedAt": "2026-11-13T21:00:00Z",
+  "distance": 4.0,
+  "duration": 177,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 300.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 41.6
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 41.0
+   }
+  ]
+ },
+ {
+  "id": "t58",
+  "startedAt": "2026-11-14T11:00:00Z",
+  "distance": 16.4,
+  "duration": 1669,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1.15
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 41.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 38.6
+   }
+  ]
+ },
+ {
+  "id": "t59",
+  "startedAt": "2026-11-14T20:00:00Z",
+  "distance": 228.9,
+  "duration": 18057,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 11640.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 38.6
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 13.8
+   }
+  ]
+ },
+ {
+  "id": "t60",
+  "startedAt": "2026-11-15T05:00:00Z",
+  "distance": 24.6,
+  "duration": 1034,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 196.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 100.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 95.8
+   }
+  ]
+ },
+ {
+  "id": "t61",
+  "startedAt": "2026-11-16T12:00:00Z",
+  "distance": 6.2,
+  "duration": 488,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 0.49
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 95.8
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 94.8
+   }
+  ]
+ },
+ {
+  "id": "t62",
+  "startedAt": "2026-11-16T21:00:00Z",
+  "distance": 26.3,
+  "duration": 1577,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1.51
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 94.8
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 91.6
+   }
+  ]
+ },
+ {
+  "id": "t63",
+  "startedAt": "2026-11-17T11:00:00Z",
+  "distance": 11.7,
+  "duration": 698,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 0.57
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 91.6
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 90.4
+   }
+  ]
+ },
+ {
+  "id": "t64",
+  "startedAt": "2026-11-18T18:00:00Z",
+  "distance": 79.1,
+  "duration": 4769,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 489.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 90.4
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 80.0
+   }
+  ]
+ },
+ {
+  "id": "t65",
+  "startedAt": "2026-11-20T01:00:00Z",
+  "distance": 10.7,
+  "duration": 532,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 800.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 80.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 78.3
+   }
+  ]
+ },
+ {
+  "id": "t66",
+  "startedAt": "2026-11-20T10:00:00Z",
+  "distance": 13.1,
+  "duration": 698,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 63.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 78.3
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 77.0
+   }
+  ]
+ },
+ {
+  "id": "t67",
+  "startedAt": "2026-11-21T12:00:00Z",
+  "distance": 211.4,
+  "duration": 16221,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 14.68
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 77.0
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 45.8
+   }
+  ]
+ },
+ {
+  "id": "t68",
+  "startedAt": "2026-11-22T02:00:00Z",
+  "distance": 4.1,
+  "duration": 168,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 230.0
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 45.8
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 45.3
+   }
+  ]
+ },
+ {
+  "id": "t69",
+  "startedAt": "2026-11-22T16:00:00Z",
+  "distance": 27.1,
+  "duration": 1946,
+  "energyConsumptions": [
+   {
+    "type": "Fuel",
+    "consumption": 1.46
+   }
+  ],
+  "startEnergies": [
+   {
+    "type": "Fuel",
+    "level": 45.3
+   }
+  ],
+  "endEnergies": [
+   {
+    "type": "Fuel",
+    "level": 42.2
+   }
+  ]
+ }
+]
