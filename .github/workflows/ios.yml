@@ -197,6 +197,7 @@ jobs:
           xcodegen generate
 
       - name: Build the app and the walk-through
+        id: tourbuild
         run: |
           device="$(xcrun simctl list devices available | grep -E "^[[:space:]]+iPhone" | grep -v -E "mini| SE " | tail -n 1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')"
           echo "simulator: $(xcrun simctl list devices available | grep "$device" | sed -E 's/^[[:space:]]+//')"
@@ -205,40 +206,48 @@ jobs:
           pad="$(xcrun simctl list devices available | grep -E "^[[:space:]]+iPad" | grep -v "mini" | tail -n 1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')"
           echo "and: $(xcrun simctl list devices available | grep "$pad" | sed -E 's/^[[:space:]]+//')"
           echo "TOUR_PAD=$pad" >> "$GITHUB_ENV"
-          xcrun simctl boot "$pad" > /dev/null 2>&1 || true
           set -o pipefail
-          xcodebuild build-for-testing -project LionFlow.xcodeproj -scheme LionFlowTour -destination "platform=iOS Simulator,id=$device" \
-            -derivedDataPath build-tour 2>&1 | tee tour-build.log | grep -E "error:|\*\* TEST BUILD (SUCCEEDED|FAILED)" || true
-          grep -q "TEST BUILD SUCCEEDED" tour-build.log || { grep -E "error" tour-build.log | sort -u | head -80; exit 1; }
+          xcodebuild build-for-testing -project LionFlow.xcodeproj -scheme LionFlowTour -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build-tour ARCHS=arm64 ONLY_ACTIVE_ARCH=NO \
+            2>&1 | tee tour-build.log | grep -E "error:|\*\* TEST BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "TEST BUILD SUCCEEDED" tour-build.log || { grep -E -A 30 "error" tour-build.log | head -120; exit 1; }
 
       - name: Walk through the app
         run: |
-          xcrun simctl bootstatus "$TOUR_DEVICE" > /dev/null 2>&1
+          perl -e 'alarm shift; exec @ARGV' 600 xcrun simctl bootstatus "$TOUR_DEVICE" > /dev/null 2>&1 || echo "the simulator took long to start"
           # The map may ask where the phone is: answered in advance, so the question doesn't stand in the way.
           xcrun simctl install "$TOUR_DEVICE" build-tour/Build/Products/Debug-iphonesimulator/LionFlow.app
           xcrun simctl privacy "$TOUR_DEVICE" grant location no.lionflow.app || true
           xcrun simctl status_bar "$TOUR_DEVICE" override --time "9:41" --batteryState charged --batteryLevel 100 || true
           mkdir -p tour
           set +e
-          TEST_RUNNER_TOUR_OUT="$PWD/tour" xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
-            -destination "platform=iOS Simulator,id=$TOUR_DEVICE" -derivedDataPath build-tour > tour.log 2>&1
+          TEST_RUNNER_TOUR_OUT="$PWD/tour" perl -e 'alarm shift; exec @ARGV' 1500 xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
+            -destination "platform=iOS Simulator,id=$TOUR_DEVICE" -destination-timeout 180 -derivedDataPath build-tour > tour.log 2>&1
           status=$?
           grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST" tour.log | cut -c1-500 | head -150
+          # When the test could not start at all, say why, and which simulators this walk-through can run on.
+          if ! grep -q "Executed [0-9]* tests" tour.log; then
+            grep -E -A 30 "error" tour.log | head -80
+            xcodebuild -project LionFlow.xcodeproj -scheme LionFlowTour -showdestinations 2>&1 | head -60
+          fi
           ls tour | wc -l
           exit $status
 
       # The same pages and sheets on an iPad, where the screens are laid out differently.
       - name: Walk through the app on an iPad
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.tourbuild.outcome == 'success' }}
         run: |
-          xcrun simctl bootstatus "$TOUR_PAD" > /dev/null 2>&1
+          # One simulator at a time: two make the machine too slow for a test that waits for things to appear.
+          xcrun simctl shutdown "$TOUR_DEVICE" > /dev/null 2>&1 || true
+          xcrun simctl boot "$TOUR_PAD" > /dev/null 2>&1 || true
+          perl -e 'alarm shift; exec @ARGV' 600 xcrun simctl bootstatus "$TOUR_PAD" > /dev/null 2>&1 || echo "the simulator took long to start"
           xcrun simctl install "$TOUR_PAD" build-tour/Build/Products/Debug-iphonesimulator/LionFlow.app
           xcrun simctl privacy "$TOUR_PAD" grant location no.lionflow.app || true
           xcrun simctl status_bar "$TOUR_PAD" override --time "9:41" --batteryState charged --batteryLevel 100 || true
           mkdir -p tour-pad
           set +e
-          TEST_RUNNER_TOUR_OUT="$PWD/tour-pad" xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
-            -destination "platform=iOS Simulator,id=$TOUR_PAD" -derivedDataPath build-tour \
+          TEST_RUNNER_TOUR_OUT="$PWD/tour-pad" perl -e 'alarm shift; exec @ARGV' 900 xcodebuild test-without-building -project LionFlow.xcodeproj -scheme LionFlowTour \
+            -destination "platform=iOS Simulator,id=$TOUR_PAD" -destination-timeout 180 -derivedDataPath build-tour \
             -only-testing:LionFlowTour/TourTests/test01EveryTabOfTheElectricCar -only-testing:LionFlowTour/TourTests/test03CommandsChangeTheSampleCar \
             -only-testing:LionFlowTour/TourTests/test04SheetsAndEditorsOpen > tour-pad.log 2>&1
           status=$?

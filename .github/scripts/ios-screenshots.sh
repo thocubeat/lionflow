@@ -15,7 +15,9 @@ stamp() { echo "[$(date +%H:%M:%S)] $*"; }
 
 # Which simulators: an iPhone with an Apple Watch paired to it (the newest pair there is), and the newest iPad.
 # Without a pair: the newest iPhone and the newest watch on their own.
-eval "$(python3 - <<'PY'
+# (The program goes into a file first: the old bash on a Mac garbles one that is written inside "$( )".)
+PICK="$(mktemp)"
+cat > "$PICK" <<'PY'
 import json, re, subprocess
 
 def run(*args):
@@ -55,7 +57,7 @@ for key, udid in (("PHONE_NAME", phone), ("WATCH_NAME", watch), ("PAD_NAME", pad
     name = devices.get(udid, ((), "none", ""))
     print(f'{key}="{name[1]}, {name[2].rsplit(".", 1)[-1]}"')
 PY
-)"
+eval "$(python3 "$PICK")"
 # Another workflow can name the devices itself (the run on the oldest iOS does).
 if [ -n "${PHONE_UDID:-}${PAD_UDID:-}" ]; then
   PHONE="${PHONE_UDID:-}"; PHONE_NAME="chosen by the workflow"
@@ -103,7 +105,16 @@ run() { # device, prefix
   local device="$1" prefix="$2"
   ready "$device" "$prefix" || return 0
   limit 180 xcrun simctl install "$device" "$APP" || { stamp "could not install the app on the $prefix simulator"; return 1; }
-  # The map may ask where the phone is: answered in advance, so no question covers the picture.
+  # A simulator that has only just started can refuse apps for a while (an old system on its first start, for
+  # minutes): try until the app starts. The app asks where the phone is: answered in advance each time, so the
+  # question doesn't cover the pictures.
+  local try
+  for try in 1 2 3 4 5 6 7 8; do
+    limit 30 xcrun simctl privacy "$device" grant location "$BUNDLE" > /dev/null 2>&1
+    limit 90 xcrun simctl launch "$device" "$BUNDLE" -signedout > /dev/null 2>&1 && break
+    stamp "the $prefix simulator does not start apps yet (try $try)"
+    sleep 15
+  done
   limit 30 xcrun simctl privacy "$device" grant location "$BUNDLE" > /dev/null 2>&1
   limit 30 xcrun simctl status_bar "$device" override --time "9:41" --batteryState charged --batteryLevel 100 > /dev/null 2>&1
   WAIT=9 shoot "$device" "$prefix-01-brand" -signedout
@@ -142,6 +153,12 @@ watch_run() {
     limit 60 xcrun simctl launch "$PHONE" "$BUNDLE" -signedout > /dev/null
     sleep 6
     watch_shot watch-asks-phone 25
+    sleep 35
+    snap "$WATCH" watch-asks-phone-a-minute-later
+    stamp "what the watch app wrote down:"
+    limit 90 xcrun simctl spawn "$WATCH" log show --last 3m --style compact --predicate 'eventMessage CONTAINS "LionFlow watch"' 2>/dev/null | tail -n 12
+    stamp "what the phone app wrote down:"
+    limit 90 xcrun simctl spawn "$PHONE" log show --last 3m --style compact --predicate 'eventMessage CONTAINS "LionFlow phone"' 2>/dev/null | tail -n 12
   else
     stamp "no iPhone and watch paired with each other: the watch could not ask the phone"
   fi

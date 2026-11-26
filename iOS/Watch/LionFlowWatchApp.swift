@@ -48,18 +48,23 @@ final class PhoneLink: NSObject, ObservableObject, WCSessionDelegate {
     private func send(_ path: String, _ payload: String) -> Bool {
         let session = WCSession.default
         guard session.activationState == .activated, session.isReachable else { return false }
-        session.sendMessage(["path": path, "data": payload], replyHandler: nil) { [weak self] _ in
+        session.sendMessage(["path": path, "data": payload], replyHandler: nil) { [weak self] error in
+            NSLog("LionFlow watch: the question did not reach the phone (%@)", error.localizedDescription)
             Task { @MainActor in self?.model.sendFailed() }
         }
         return true
     }
 
+    // What is written to the system's log here is only about the link to the phone, never about the car.
     nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        NSLog("LionFlow watch: link to the phone is %@, phone within reach: %@%@", activationState == .activated ? "up" : "not up",
+              session.isReachable ? "yes" : "no", error.map { " (" + $0.localizedDescription + ")" } ?? "")
         Task { @MainActor in self.model.refresh() }
     }
 
     /** The phone came within reach: ask again if the watch is still waiting for its first answer. */
     nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
+        NSLog("LionFlow watch: phone within reach: %@", session.isReachable ? "yes" : "no")
         guard session.isReachable else { return }
         Task { @MainActor in
             if self.model.state == nil && !self.model.busy { self.model.refresh() }
@@ -68,6 +73,7 @@ final class PhoneLink: NSObject, ObservableObject, WCSessionDelegate {
 
     nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         guard let path = message["path"] as? String, let data = message["data"] as? String else { return }
+        NSLog("LionFlow watch: an answer from the phone (%@)", path)
         Task { @MainActor in self.model.receive(path, data) }
     }
 

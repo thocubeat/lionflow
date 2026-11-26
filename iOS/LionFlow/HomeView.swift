@@ -474,7 +474,7 @@ private struct BatteryCard: View {
                     T(st?.energyType == "Fuel" ? "Fuel" : "Battery").font(LfType.body).foregroundColor(c.muted)
                     (Text(verbatim: wholeNumber(st?.batteryPct)).font(.system(size: 64, weight: .bold))
                         + Text(verbatim: " %").font(.system(size: 30, weight: .bold)))
-                        .foregroundColor(c.text).lineLimit(1).minimumScaleFactor(0.7)
+                        .foregroundColor(c.text).lineLimit(1).minimumScaleFactor(0.5)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 VStack(spacing: 0) {
@@ -482,11 +482,14 @@ private struct BatteryCard: View {
                         + Text(verbatim: parts.first ?? "—").font(.system(size: 34, weight: .bold))
                         + Text(verbatim: parts.count > 1 ? " " + parts.dropFirst().joined(separator: " ") : "").font(.system(size: 18, weight: .semibold)))
                         .foregroundColor(c.onAccent).lineLimit(1)
+                        // The range is never cut short: on a narrow card the level beside it gets smaller instead.
+                        .fixedSize(horizontal: true, vertical: false)
                     T(st?.rangeEstimated == true ? "Range (est.)" : "Range").font(.system(size: 13, weight: .medium)).foregroundColor(c.onAccent)
                 }
                 .padding(.horizontal, 18)
                 .padding(.vertical, 12)
                 .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(c.accent))
+                .layoutPriority(1)
             }
             ProgressBar(fraction: (st?.batteryPct ?? 0) / 100, color: c.meter).padding(.top, 6)
             if battery {
@@ -691,7 +694,7 @@ private struct TripsTile: View {
         LfCard(radius: 24, padding: 16, stretch: true, onTap: { model.setTab(.trips); model.loadTrips() }) {
             HStack(spacing: 8) {
                 LfIcon(LfIcons.route, c.text, 22)
-                T("Trips").font(.system(size: 18, weight: .semibold)).foregroundColor(c.text).frame(maxWidth: .infinity, alignment: .leading)
+                T("Trips").font(.system(size: 18, weight: .semibold)).foregroundColor(c.text).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .leading)
                 LfIcon(LfIcons.chevron, c.muted, 18)
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -717,7 +720,7 @@ private struct ClimateTile: View {
         LfCard(radius: 24, padding: 16, stretch: true, onTap: { model.setTab(.climate) }) {
             HStack(spacing: 8) {
                 LfIcon(LfIcons.thermo, on ? c.orangeInk : c.text, 22)
-                T("Climate").font(.system(size: 18, weight: .semibold)).foregroundColor(c.text).frame(maxWidth: .infinity, alignment: .leading)
+                T("Climate").font(.system(size: 18, weight: .semibold)).foregroundColor(c.text).lineLimit(1).minimumScaleFactor(0.6).frame(maxWidth: .infinity, alignment: .leading)
                 LfIcon(LfIcons.chevron, c.muted, 18)
             }
             VStack(alignment: .leading, spacing: 2) {
