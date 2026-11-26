@@ -31,6 +31,7 @@ jobs:
           swift --version
           which xcodegen || brew install xcodegen
           xcodegen --version
+          xcodebuild -showsdks | grep -i -E "iphone|watch" || true
 
       # A message server on this machine, so the remote-control tests can send commands through a real one.
       - name: Start a local MQTT server
@@ -52,40 +53,102 @@ jobs:
           tail -n 5 test.log
           exit $status
 
+      # An icon name the oldest supported system doesn't know would show as an empty space: checked here.
+      - name: Check that every icon exists on iOS 15
+        if: ${{ !cancelled() }}
+        run: python3 ../.github/scripts/ios-symbols.py .
+
+      # The steps below also run when a test above failed: one run then shows everything that is wrong.
       - name: Make the Xcode project
+        if: ${{ !cancelled() }}
         run: xcodegen generate
 
-      - name: Build for iPhone and iPad (unsigned)
+      # The iPhone/iPad app, with the Apple Watch app inside it. Not signed: whoever installs it signs it with
+      # their own Apple ID (see the README).
+      - name: Build for iPhone, iPad and Apple Watch (unsigned)
+        id: device
+        if: ${{ !cancelled() }}
         run: |
           set -o pipefail
-          xcodebuild -project LionFlow.xcodeproj -scheme LionFlow -configuration Release -sdk iphoneos \
+          xcodebuild -project LionFlow.xcodeproj -scheme LionFlow -configuration Release -destination 'generic/platform=iOS' \
             -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             build 2>&1 | tee build.log | grep -E "error:|warning: unre|BUILD (SUCCEEDED|FAILED)|\*\* " || true
           grep -q "BUILD SUCCEEDED" build.log || { grep -E "error" build.log | sort -u | head -150; exit 1; }
+          # Would Xcode rather have a newer oldest-supported system than the one asked for?
+          grep -E "deployment target|DEPLOYMENT_TARGET" build.log | grep -i -E "warning|range" | sort -u | head -10 || true
+          app=build/Build/Products/Release-iphoneos/LionFlow.app
+          echo "oldest iOS it runs on: $(/usr/libexec/PlistBuddy -c 'Print :MinimumOSVersion' "$app/Info.plist")"
+          echo "iPhone app is built for: $(lipo -archs "$app/LionFlow")"
+          ls "$app/Watch" && watch="$app/Watch/LionFlowWatch.app" && \
+            echo "oldest watchOS it runs on: $(/usr/libexec/PlistBuddy -c 'Print :MinimumOSVersion' "$watch/Info.plist")" && \
+            echo "watch app is built for: $(lipo -archs "$watch/LionFlowWatch")"
 
+      # Two files. LionFlow.ipa is the iPhone and iPad app on its own: the one to install with SideStore, AltStore
+      # or Sideloadly. LionFlow-with-Watch.ipa also has the Apple Watch app inside, which those tools cannot install
+      # with a free Apple ID (it is there for Xcode-less tools that can).
       - name: Pack LionFlow.ipa
+        if: ${{ !cancelled() && steps.device.outcome == 'success' }}
         run: |
-          rm -rf Payload && mkdir Payload
-          cp -R build/Build/Products/Release-iphoneos/LionFlow.app Payload/
+          app=build/Build/Products/Release-iphoneos/LionFlow.app
+          test -d "$app/Watch/LionFlowWatch.app"
+          rm -rf Payload && mkdir Payload && cp -R "$app" Payload/
+          zip -qry LionFlow-with-Watch.ipa Payload
+          rm -rf Payload/LionFlow.app/Watch
           zip -qry LionFlow.ipa Payload
-          ls -lh LionFlow.ipa
+          ls -lh LionFlow.ipa LionFlow-with-Watch.ipa
+          unzip -l LionFlow.ipa | grep -c "Watch/" | grep -qx 0
 
       - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && steps.device.outcome == 'success' }}
         with:
           name: LionFlow-ipa
-          path: iOS/LionFlow.ipa
+          path: |
+            iOS/LionFlow.ipa
+            iOS/LionFlow-with-Watch.ipa
+
+      # Where people download it: one page that always has the newest build. It is a pre-release with a tag of its
+      # own, so the Android app's updater and the "latest version" link never see it.
+      - name: Publish LionFlow.ipa
+        if: ${{ success() && github.ref == 'refs/heads/main' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' build/Build/Products/Release-iphoneos/LionFlow.app/Info.plist)"
+          {
+            echo "LionFlow for iPhone and iPad, version ${version}, built $(date -u +%Y-%m-%d) from ${GITHUB_SHA:0:7}."
+            echo
+            echo "**A preview.** It is tested by programs and in the simulator, not yet on a real iPhone with a real car."
+            echo
+            echo "- \`LionFlow.ipa\`: the iPhone and iPad app. This is the one to install with Sideloadly, SideStore or AltStore."
+            echo "- \`LionFlow-with-Watch.ipa\`: the same app with the Apple Watch app inside. Those tools can't install a watch app with a free Apple ID; the watch app is easiest to get by building with Xcode."
+            echo
+            echo "How to install: https://github.com/${GITHUB_REPOSITORY}#install-on-iphone-or-ipad-outside-the-app-store"
+          } > notes.md
+          if gh release view ios-latest --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release edit ios-latest --repo "$GITHUB_REPOSITORY" --prerelease --title "LionFlow for iPhone and iPad (preview)" --notes-file notes.md
+          else
+            gh release create ios-latest --repo "$GITHUB_REPOSITORY" --prerelease --target "$GITHUB_SHA" \
+              --title "LionFlow for iPhone and iPad (preview)" --notes-file notes.md
+          fi
+          gh release upload ios-latest --repo "$GITHUB_REPOSITORY" LionFlow.ipa LionFlow-with-Watch.ipa --clobber
 
       # Pictures of the app in demo mode, so every change can be looked at without a Mac. They go to the branch
       # "ios-previews" (not part of the app).
       - name: Build for the simulator
+        id: simulator
+        if: ${{ !cancelled() }}
         run: |
           set -o pipefail
-          xcodebuild -project LionFlow.xcodeproj -scheme LionFlow -configuration Debug -sdk iphonesimulator \
-            -derivedDataPath build-sim CODE_SIGNING_ALLOWED=NO build 2>&1 | tee sim.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
-          grep -q "BUILD SUCCEEDED" sim.log
+          xcodebuild -project LionFlow.xcodeproj -scheme LionFlow -configuration Debug -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build-sim CODE_SIGNING_ALLOWED=NO ARCHS=arm64 ONLY_ACTIVE_ARCH=NO \
+            build 2>&1 | tee sim.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" sim.log || { grep -E "error" sim.log | sort -u | head -80; exit 1; }
 
       - name: Take pictures in the simulator
-        run: ../.github/scripts/ios-screenshots.sh "$PWD/build-sim/Build/Products/Debug-iphonesimulator/LionFlow.app" "$PWD/shots"
+        if: ${{ !cancelled() && steps.simulator.outcome == 'success' }}
+        run: |
+          ../.github/scripts/ios-screenshots.sh "$PWD/build-sim/Build/Products/Debug-iphonesimulator/LionFlow.app" "$PWD/shots" \
+            "$PWD/build-sim/Build/Products/Debug-watchsimulator/LionFlowWatch.app"
 
       - name: Publish the pictures
         if: always()

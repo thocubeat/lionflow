@@ -385,6 +385,16 @@ final class AppModel: ObservableObject {
         resyncFromStore()
     }
 
+    /// The watch's "Switch car": the next car becomes the one in use, across accounts, in the order of the car list.
+    /// Only what is stored changes, and the screens read it again (as when the Android watch switches car).
+    func switchToNextCar() {
+        if isDemo { return }
+        guard let next = Garage.next(services) else { return }
+        stopTicker()
+        activate(next.accountId, next.vehicle)
+        resyncFromStore()
+    }
+
     /** Make a car on another account the one in use. */
     private func activate(_ accountId: String, _ car: Vehicle) {
         if let cur = api.cachedVehicle() { settings.setNameFor(cur.vin, settings.value.carName) }

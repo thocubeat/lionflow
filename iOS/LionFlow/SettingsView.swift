@@ -270,9 +270,12 @@ struct SettingsView: View {
 
     @ViewBuilder private var homeScreens: some View {
         let s = model.prefs
-        SectionTitle("Home screen")
+        SectionTitle("Home screens")
         GroupCard {
             LinkRow(title: "Phone", subtitle: "Choose the cards on Home and their order", icon: LfIcons.home) { sheet = .homePhone }
+            if platform.watchPossible {
+                LinkRow(title: "Watch", subtitle: "Choose what the watch shows", icon: LfIcons.gear) { sheet = .homeWatch }
+            }
             ToggleRow(title: "Note when the car is being driven", subtitle: "At the top of Home", on: s.bannerDriving) { v in model.update { $0.bannerDriving = v } }
             ToggleRow(title: "Note when privacy mode is on", subtitle: "It blocks remote commands and can hide where the car is", on: s.bannerPrivacy) { v in model.update { $0.bannerPrivacy = v } }
             ToggleRow(title: "Note when fog lights are left on", subtitle: "While the car is parked", on: s.bannerFog, showDivider: false) { v in model.update { $0.bannerFog = v } }

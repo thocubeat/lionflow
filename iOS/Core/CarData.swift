@@ -82,3 +82,26 @@ enum CarData {
         return ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"][Int((d + 22.5) / 45) % 8]
     }
 }
+
+/** The car's names for doors and hatches, as people say them. */
+func doorName(_ id: String) -> String {
+    switch id.lowercased() {
+    case "driver": return "Driver's door"
+    case "passenger": return "Passenger door"
+    case "rearleft": return "Rear left door"
+    case "rearright": return "Rear right door"
+    case "trunk", "boot": return "Boot"
+    case "rearwindow": return "Rear window"
+    case "roofwindow": return "Sunroof"
+    case "hood", "bonnet": return "Bonnet"
+    default: return id
+    }
+}
+
+/** Already in the app's language. */
+func doorsLine(_ st: VehicleStatus) -> String {
+    if !st.openDoors.isEmpty { return tr("Open: {0}").replacingOccurrences(of: "{0}", with: st.openDoors.map { tr(doorName($0)) }.joined(separator: ", ")) }
+    if st.locked == true { return tr("Locked") }
+    if st.locked == false { return tr("Unlocked") }
+    return tr("Unknown")
+}

@@ -1,4 +1,5 @@
 import SwiftUI
+import WatchConnectivity
 import UIKit
 import LocalAuthentication
 import AuthenticationServices
@@ -21,6 +22,9 @@ final class Platform: NSObject, ObservableObject {
     }
 
     // MARK: Face ID / Touch ID
+
+    /** An Apple Watch can be paired with this device (an iPhone, not an iPad). */
+    var watchPossible: Bool { WCSession.isSupported() }
 
     var biometricAvailable: Bool {
         LAContext().canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
@@ -199,10 +203,14 @@ struct PhotoPicker: UIViewControllerRepresentable {
 /// phone's own helpers.
 @MainActor
 final class AppHolder: ObservableObject {
+    /** One for the whole app: made when the app starts, also when the watch starts it in the background. */
+    static let shared = AppHolder()
+
     let model: AppModel
     let platform: Platform
+    private var watch: WatchBridge?
 
-    init() {
+    private init() {
         // Text boxes with several lines draw their own background unless told not to (before iOS 16).
         UITextView.appearance().backgroundColor = .clear
         let bundle = Bundle.main
@@ -233,6 +241,9 @@ final class AppHolder: ObservableObject {
         let model = self.model
         platform.onLocation = { model.loadLocationAndWeather() }
         applyLaunchArguments()
+        let link = WatchLink(services)
+        link.switchToNextCar = { await MainActor.run { model.switchToNextCar() } }
+        watch = WatchBridge(link)
     }
 
     /// For the pictures taken when the app is built: "-demo electric|hybrid|fuel" opens the sample car, "-brand opel"

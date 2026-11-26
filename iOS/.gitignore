@@ -7,3 +7,6 @@ DerivedData/
 *.ipa
 .swiftpm/
 xcuserdata/
+Watch/Info.plist
+build-sim/
+shots/

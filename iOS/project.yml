@@ -10,6 +10,9 @@ options:
   createIntermediateGroups: true
 settings:
   base:
+    # The app's identifier. Building with your own Apple ID? Change this one line to something of your own
+    # (for example com.yourname.lionflow): the watch app's identifier follows it.
+    LF_BUNDLE_ID: no.lionflow.app
     SWIFT_VERSION: "5.0"
     MARKETING_VERSION: "0.1.0"
     CURRENT_PROJECT_VERSION: "1"
@@ -55,15 +58,50 @@ targets:
         NSFaceIDUsageDescription: LionFlow can ask for Face ID before it unlocks your car or opens the app.
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: no.lionflow.app
+        PRODUCT_BUNDLE_IDENTIFIER: $(LF_BUNDLE_ID)
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: "NO"
         SWIFT_EMIT_LOC_STRINGS: "NO"
+    dependencies:
+      # The Apple Watch app travels inside the iPhone app.
+      - target: LionFlowWatch
+
+  # LionFlow on the Apple Watch. It has no sign-in of its own: it asks the iPhone app (see Core/WatchLink.swift).
+  LionFlowWatch:
+    type: application
+    platform: watchOS
+    deploymentTarget: "8.0"
+    sources:
+      - path: Watch
+      # The watch's own logic: also part of the phone app's tests, so both ends are tested together.
+      - path: Core/WatchWire.swift
+    info:
+      path: Watch/Info.plist
+      properties:
+        CFBundleDisplayName: LionFlow
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: $(LF_BUNDLE_ID)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(LF_BUNDLE_ID).watchkitapp
+        TARGETED_DEVICE_FAMILY: "4"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: "NO"
+        SWIFT_EMIT_LOC_STRINGS: "NO"
+        SKIP_INSTALL: "YES"
 schemes:
   LionFlow:
     build:
       targets:
         LionFlow: all
+    run:
+      config: Debug
+  LionFlowWatch:
+    build:
+      targets:
+        LionFlowWatch: all
     run:
       config: Debug

@@ -43,7 +43,7 @@ struct ClimateView: View {
             ScreenHeader(kicker: "Outside \(fmtTemp(st?.outsideTempC ?? ui.weather?.tempC, s))", title: "Climate")
             LfCard(padding: 20) {
                 VStack(spacing: 12) {
-                    LfIcon("fanblades.fill", on ? c.orangeInk : c.muted, 40)
+                    LfIcon("wind", on ? c.orangeInk : c.muted, 40)
                     T(on ? "Pre-heating is on" : "Pre-heating is off").font(LfType.stat).foregroundColor(c.text)
                     if model.remoteReady {
                         let sending = ui.commandInProgress?.contains("heating") == true
