@@ -472,6 +472,31 @@ final class TourTests: XCTestCase {
         }
         demo("Home", "-theme", "dark")
     }
+
+    // MARK: Notes about the app itself
+
+    /// A newer build is out and the signature runs out within two days ("-sample-updates" pretends both, without
+    /// asking anyone): Home says so, "Later" puts the update note away, and Settings tells the same.
+    func test12UpdateAndSignatureNotes() {
+        demo("Home", "-sample-updates")
+        see("Update available")
+        see("0.1.9999 is ready")
+        see("Refresh LionFlow soon")
+        snap("app-notes")
+        if tap("Later", scrolls: 2) {
+            Thread.sleep(forTimeInterval: 1.0)
+            XCTAssertFalse(texts("Update available").firstMatch.exists, "the update note stayed after \"Later\"")
+            see("Refresh LionFlow soon")
+            snap("app-notes-after-later")
+        }
+        demo("Settings", "-sample-updates")
+        if reach("App signature", scrolls: 20) != nil {
+            see("Valid until")
+            see("0.1.9999 is ready")
+            snap("settings-app-section")
+        }
+        demo("Home")
+    }
 }
 
 /** A picture taken beside the test while it holds a finger down. */

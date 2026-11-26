@@ -147,6 +147,8 @@ run() { # device, prefix
   shoot "$device" "$prefix-hybrid-Trips" -demo hybrid -brand citroen -tab Trips -clean
   shoot "$device" "$prefix-fuel-Home" -demo fuel -brand opel -tab Home -clean
   shoot "$device" "$prefix-fuel-Trips" -demo fuel -brand opel -tab Trips -clean
+  # The notes about the app itself (a newer build, a signature that runs out soon), with made-up values.
+  shoot "$device" "$prefix-electric-Home-app-notes" -demo electric -brand peugeot -tab Home -clean -sample-updates
 }
 
 watch_shot() { # file name, seconds to wait, arguments for the watch app...

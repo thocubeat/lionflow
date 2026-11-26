@@ -29,7 +29,9 @@ The app for iPhone and iPad (in `iOS/`) handles the same data in the same way, w
 - **Where the sign-in is kept:** in the iPhone's Keychain, marked "this device only", so it is not part of a backup and is not moved to a new phone.
 - **The map is Apple Maps:** Apple receives the area of the map you look at, as with any app that shows Apple Maps. Charging stations still come from OpenStreetMap Overpass, the weather from MET Norway and addresses from OpenStreetMap Nominatim. OpenFreeMap and NOBIL are not used.
 - **Directions:** "Navigate" and "Open in Maps" open Apple Maps with the charger as the destination, and "Walk to the car" opens Google Maps with the car's position. Nothing is sent before you tap.
-- **Not there, so nothing is sent for it:** the trip planner, route recording, voice search, update checks and the active-device count. The iPhone app never contacts GitHub by itself.
+- **Update checks:** when the app is opened, at most every 6 hours, it downloads LionFlow's version list (`source.json`) from the GitHub release, to see whether a newer build is out. Nothing is sent with it: no ID, no account or car details. Copies built by hand in Xcode don't check.
+- **The app's signature:** the app reads the date its own signature runs out from its own files, to warn you two days before. That date stays on the phone.
+- **Not there, so nothing is sent for it:** the trip planner, route recording, voice search and the active-device count.
 - **Apple Watch:** the watch asks the iPhone app for the car's status over Apple's own link between the two. The sign-in stays on the iPhone.
 - **Your phone's own backup:** settings, the charging log, places, trip tags and service history are stored like any app's data, so they are in your iPhone's backup (iCloud or a computer) if you have turned that on. The developer has no access to it.
 - **Deleting everything:** Settings → **Sign out** in LionFlow, or delete the app.

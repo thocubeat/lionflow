@@ -208,6 +208,8 @@ final class AppHolder: ObservableObject {
 
     let model: AppModel
     let platform: Platform
+    /** New builds and the signature on this copy (the app can't renew or update itself: see IOSRelease). */
+    let updates = AppUpdates()
     private var watch: WatchBridge?
 
     private init() {

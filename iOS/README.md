@@ -36,7 +36,11 @@ Every push runs [`.github/workflows/ios.yml`](../.github/workflows/ios.yml), in 
   that every icon exists on iOS 15, the build for iPhone, iPad and Apple Watch, and pictures of the main screens and
   of the watch app in the simulators (branch [`ios-previews`](https://github.com/thocubeat/lionflow/tree/ios-previews)).
   A build of `main` also puts `LionFlow.ipa` on the
-  [download page](https://github.com/thocubeat/lionflow/releases/tag/ios-latest).
+  [download page](https://github.com/thocubeat/lionflow/releases/tag/ios-latest), with `source.json` next to it:
+  the source SideStore and AltStore read (written from the app file by `.github/scripts/ios-source.py`). Each build
+  gets its own version, `0.1.<run number>`, because SideStore only offers an update for a higher version. The app
+  reads the same file to say a newer build is out (`Core/IOSRelease.swift`, `LionFlow/Updates.swift`); it can't
+  install it or renew its signature itself, an iPhone app isn't allowed to.
 - **tour**: `UITests/TourTests.swift` walks through the whole app in the iPhone and iPad simulators with the sample
   car, tapping and scrolling: every tab from top to bottom, the sheets and editors, commands, the first screens,
   pulling a page down to read the car again, and that nothing scrolled up shows through the clock. It fails when
@@ -65,4 +69,5 @@ change when the Android code did.
 
 The app takes a few arguments at launch, used for the pictures: `-demo electric|hybrid|fuel`, `-brand opel`,
 `-tab Charging`, `-theme light`, `-lang nb`, `-clean` (no demo banner), `-signedout`. The watch app takes `-preview`
-(a sample car, no phone needed). They only ever start or leave demo mode.
+(a sample car, no phone needed). They only ever start or leave demo mode. `-sample-updates` pretends a newer build is
+out and the signature runs out in 20 hours, to show those notes.

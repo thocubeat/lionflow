@@ -115,6 +115,7 @@ private enum SettingsSheet: String, Identifiable {
 struct SettingsView: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var platform: Platform
+    @EnvironmentObject private var updates: AppUpdates
     @Environment(\.lf) private var c
     let wide: Bool
     @State private var sheet: SettingsSheet?
@@ -335,12 +336,40 @@ struct SettingsView: View {
         }
     }
 
+    /// "New versions": which build this is, and whether a newer one is out. Tapping installs the newer one, or reads
+    /// the list again; a copy built in Xcode, or one that couldn't check, gets the download page.
+    @ViewBuilder private var newVersions: some View {
+        let mine = model.services.version
+        if updates.builtByHand {
+            LinkRow(title: "New versions", subtitle: "You have \(mine). Newer ones are on LionFlow's page on GitHub", icon: LfIcons.download) {
+                platform.openUrl(IOSRelease.pageURL)
+            }
+        } else if let a = updates.available {
+            LinkRow(title: "New versions", subtitle: "You have \(mine). \(a.version) is ready: tap to install", icon: LfIcons.download) {
+                updates.install()
+            }
+        } else if updates.latest != nil && !updates.lastCheckFailed {
+            LinkRow(title: "New versions", subtitle: "You have \(mine), the newest", icon: LfIcons.download) {
+                Task { await updates.check() }
+            }
+        } else {
+            LinkRow(title: "New versions", subtitle: "You have \(mine). Newer ones are on LionFlow's page on GitHub", icon: LfIcons.download) {
+                platform.openUrl(IOSRelease.pageURL)
+                Task { await updates.check() }
+            }
+        }
+    }
+
     @ViewBuilder private var about: some View {
         let s = model.prefs
         SectionTitle("App")
         GroupCard {
-            LinkRow(title: "New versions", subtitle: "You have \(model.services.version). Newer ones are on LionFlow's page on GitHub", icon: LfIcons.download) {
-                platform.openUrl("https://github.com/thocubeat/lionflow/releases/tag/ios-latest")
+            newVersions
+            if let until = updates.signedUntilText {
+                LinkRow(title: "App signature", subtitle: "Valid until \(until). SideStore, AltStore or Sideloadly renews it: tap to see how that can happen by itself",
+                        icon: "checkmark.seal.fill") {
+                    platform.openUrl(IOSRelease.howToURL)
+                }
             }
             LinkRow(title: "Send feedback", subtitle: "Ideas, problems or bugs, straight to the developer", icon: "envelope.fill", last: true) { sheet = .feedback }
         }

@@ -136,6 +136,7 @@ struct HomeView: View {
 
     @ViewBuilder private var notes: some View {
         if model.isDemo && !model.hideDemoBanner { DemoBanner() }
+        AppUpdateNotes()
         NoStatusCard()
         QuietCarCard()
         HomeBanners()

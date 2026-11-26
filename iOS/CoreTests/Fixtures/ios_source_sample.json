@@ -1,0 +1,50 @@
+{
+  "name": "LionFlow",
+  "identifier": "no.lionflow.source",
+  "subtitle": "For Peugeot, Citroën, DS, Opel and Vauxhall",
+  "description": "LionFlow for iPhone and iPad, straight from its GitHub page. Every new build is added here, so SideStore and AltStore can tell you about it and install it over the one you have.",
+  "iconURL": "https://raw.githubusercontent.com/thocubeat/lionflow/main/iOS/LionFlow/Assets.xcassets/AppIcon.appiconset/icon-1024.png",
+  "website": "https://github.com/thocubeat/lionflow",
+  "tintColor": "C6F36B",
+  "featuredApps": [
+    "no.lionflow.app"
+  ],
+  "apps": [
+    {
+      "name": "LionFlow",
+      "bundleIdentifier": "no.lionflow.app",
+      "developerName": "thocubeat",
+      "subtitle": "A faster app for your Peugeot, Citroën, DS, Opel or Vauxhall",
+      "localizedDescription": "Status, charging, pre-heating, trips, service and remote control for cars that use the MyPeugeot, MyCitroën, MyDS, myOpel or myVauxhall app. Open source, no ads, and it talks only to your car's own servers.\n\nA preview: tested by programs and in the simulator. Please tell what you find: https://github.com/thocubeat/lionflow/issues",
+      "iconURL": "https://raw.githubusercontent.com/thocubeat/lionflow/main/iOS/LionFlow/Assets.xcassets/AppIcon.appiconset/icon-1024.png",
+      "tintColor": "C6F36B",
+      "category": "utilities",
+      "screenshotURLs": [
+        "https://raw.githubusercontent.com/thocubeat/lionflow/ios-previews/phone-electric-Home.png",
+        "https://raw.githubusercontent.com/thocubeat/lionflow/ios-previews/phone-electric-Charging.png",
+        "https://raw.githubusercontent.com/thocubeat/lionflow/ios-previews/phone-electric-Climate.png",
+        "https://raw.githubusercontent.com/thocubeat/lionflow/ios-previews/phone-electric-Trips.png"
+      ],
+      "versions": [
+        {
+          "version": "0.1.0",
+          "buildVersion": "19",
+          "date": "2026-11-26T17:52:10Z",
+          "localizedDescription": "iOS: a test",
+          "downloadURL": "https://github.com/thocubeat/lionflow/releases/download/ios-latest/LionFlow-0.1.0.ipa",
+          "size": 2105947,
+          "sha256": "fa55150b671d016005eb916a7ba5ccc48d1589c09ced9bc0364f6688af362a8f",
+          "minOSVersion": "15.0"
+        }
+      ],
+      "appPermissions": {
+        "entitlements": [],
+        "privacy": {
+          "NSFaceIDUsageDescription": "LionFlow can ask for Face ID before it unlocks your car or opens the app.",
+          "NSLocationWhenInUseUsageDescription": "LionFlow shows where you are on the map, to find chargers near you and the way to your car. Your position is not sent to LionFlow or anyone else."
+        }
+      }
+    }
+  ],
+  "news": []
+}

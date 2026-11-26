@@ -148,7 +148,7 @@ jobs:
             -only-testing:LionFlowTour/TourTests/test01EveryTabOfTheElectricCar -only-testing:LionFlowTour/TourTests/test03CommandsChangeTheSampleCar \
             -only-testing:LionFlowTour/TourTests/test04SheetsAndEditorsOpen -only-testing:LionFlowTour/TourTests/test08NothingShowsThroughTheClock \
             -only-testing:LionFlowTour/TourTests/test09PullingHomeDownReadsTheCarAgain -only-testing:LionFlowTour/TourTests/test10PullingAnotherTabDownReadsTheCarAgain \
-            > "$RUNNER_TEMP/tour.log" 2>&1
+            -only-testing:LionFlowTour/TourTests/test12UpdateAndSignatureNotes > "$RUNNER_TEMP/tour.log" 2>&1
           status=$?
           cp "$RUNNER_TEMP/tour.log" tour.log
           grep -E "Test Case .*(passed|failed)|error:|XCTAssert|Executed [0-9]+ tests|\*\* TEST|LionFlow tour: " tour.log | cut -c1-500 | head -150

@@ -118,30 +118,53 @@ LionFlow is also being built for iPhone and iPad (iOS and iPadOS 15 or newer, so
 
 ### Install on iPhone or iPad (outside the App Store)
 
-LionFlow isn't in the App Store. You install the app file yourself and sign it with your own Apple ID, which Apple allows for personal use. A normal, free Apple ID is enough, with Apple's limits for those:
+LionFlow isn't in the App Store. You install it with a free tool that signs the app with your own Apple ID, which Apple allows for personal use. A normal, free Apple ID is enough, with Apple's limits for those:
 
-- the app works for **7 days**, then it has to be signed again ("refreshed"). Your sign-in and data stay.
-- at most **3** apps installed this way at a time.
+- Apple's signature on the app lasts **7 days**. Then it has to be renewed ("refreshed"), or the app won't open. Your sign-in and data stay either way. The tools below can do this by themselves (see *Keep it working by itself*).
+- at most **3** apps installed this way at a time (SideStore itself is one of them).
 - on iOS 16 and newer you turn on **Developer Mode** once (Settings → Privacy & Security → Developer Mode).
+
+An iPhone app can't renew its own signature or install its own updates: Apple leaves that to these tools. So the easiest way is **SideStore**, which does both on the phone itself. You need a computer once, to set it up.
+
+**1. Install SideStore** (once, with a Windows PC, Mac or Linux computer and a cable):
+
+1. On the iPhone, install **LocalDevVPN** from the App Store. SideStore uses it to install and refresh apps without a computer.
+2. On the computer, install **iloader** and use it to put SideStore on the iPhone. Follow SideStore's own guide, which is kept up to date: [docs.sidestore.io](https://docs.sidestore.io).
+3. Open SideStore, sign in with the same Apple ID, and refresh SideStore itself once (My Apps). From now on you don't need the computer.
+
+**2. Add LionFlow's source and install LionFlow:**
+
+1. In SideStore, open **Sources**, tap **+**, and add this address:
+   ```
+   https://github.com/thocubeat/lionflow/releases/download/ios-latest/source.json
+   ```
+2. Open LionFlow in that source and install it (connect LocalDevVPN first).
+3. If iOS asks: Settings → General → **VPN & Device Management** → your Apple ID → **Trust**, and turn on Developer Mode (see above).
+4. Open LionFlow and sign in as described under *First sign-in* above. After you have signed in on the brand's page, you come back to LionFlow by yourself.
+
+AltStore reads the same source, so this works there too (AltStore needs AltServer running on a computer on the same Wi-Fi).
+
+### Keep it working by itself
+
+- **The 7-day signature.** SideStore renews it in the background while LocalDevVPN is connected. To be sure it happens, let the Shortcuts app run it every night: open **Shortcuts** → **Automation** → **+** → **Time of Day** (for example 03:00, Daily) → **Run Immediately** → add the action **Refresh All Apps** (from SideStore) → **Done**. LocalDevVPN has to be connected at that time.
+- **New versions.** Every new build is added to LionFlow's source. SideStore notices by itself and says *New Update Available*; tap **Update** under My Apps. LionFlow says so too, with an **Install now** button that hands the new build to SideStore or AltStore. It is installed over the one you have, so your sign-in and data stay.
+- **A warning, just in case.** Settings → App in LionFlow shows how long the signature is valid, and Home warns you two days before it runs out, with a button that opens SideStore.
+
+**Other ways.** With **Sideloadly** ([sideloadly.io](https://sideloadly.io), Windows or Mac) you install the file from the computer instead:
 
 **Download:** [`LionFlow.ipa`](https://github.com/thocubeat/lionflow/releases/download/ios-latest/LionFlow.ipa) (always the newest build).
 
-Then use one of these free tools. Each has its own guide, which is kept more up to date than this page:
-
-| Tool | You need | Signing again after 7 days |
-|---|---|---|
-| [Sideloadly](https://sideloadly.io) | a Windows PC or a Mac, and a cable | on the computer: by cable, or by itself over Wi-Fi when you turn that on |
-| [SideStore](https://sidestore.io) | a computer for the first set-up only | on the phone itself |
-| [AltStore](https://altstore.io) | a Windows PC or a Mac on the same Wi-Fi | by itself, when the phone and the computer are on the same Wi-Fi |
-
-With **Sideloadly**, the shortest way:
-
 1. Install Sideloadly on the computer and connect the iPhone or iPad with a cable (tap **Trust** on the phone).
-2. Drag `LionFlow.ipa` into Sideloadly, type your Apple ID, and press **Start**.
+2. Drag `LionFlow.ipa` into Sideloadly, type your Apple ID, leave **automatic refresh** on, and press **Start**.
 3. On the phone: Settings → General → **VPN & Device Management** → your Apple ID → **Trust**. On iOS 16 or newer, also turn on Developer Mode (see above).
-4. Open LionFlow and sign in as described under *First sign-in* above. After you have signed in on the brand's page, you come back to LionFlow by yourself.
 
-To update, install the new `LionFlow.ipa` the same way, with the same Apple ID. The app doesn't update itself.
+Sideloadly renews the signature by itself while its helper (the Sideloadly Daemon) runs on the computer and the phone is on the same Wi-Fi. New versions don't come by themselves that way: when LionFlow says one is ready, install the new `LionFlow.ipa` the same way, with the same Apple ID.
+
+| Tool | You need | Signature renewed by itself | New versions |
+|---|---|---|---|
+| [SideStore](https://sidestore.io) | a computer for the first set-up only | on the phone (LocalDevVPN connected) | from LionFlow's source, one tap |
+| [AltStore](https://altstore.io) | a computer on the same Wi-Fi running AltServer | when phone and computer are on the same Wi-Fi | from LionFlow's source, one tap |
+| [Sideloadly](https://sideloadly.io) | a computer on the same Wi-Fi running its daemon | when phone and computer are on the same Wi-Fi | install the new file yourself |
 
 **With a Mac and Xcode** you can build it yourself, which is also the only way to get the Apple Watch app (see below):
 

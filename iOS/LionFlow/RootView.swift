@@ -27,6 +27,7 @@ private struct PendingPin: Identifiable {
 struct RootView: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var platform: Platform
+    @EnvironmentObject private var updates: AppUpdates
     @Environment(\.colorScheme) private var system
     @Environment(\.scenePhase) private var scenePhase
     @State private var pinFor: PendingPin?
@@ -76,8 +77,14 @@ struct RootView: View {
         .environment(\.lf, c)
         .environment(\.confirm, ConfirmAction(run: confirm))
         .preferredColorScheme(model.prefs.theme == "system" ? nil : (c.isDark ? .dark : .light))
+        .onAppear { updates.checkIfDue() }
         .onChange(of: scenePhase) { phase in
-            if phase == .active { model.onForeground() } else if phase == .background { model.onBackground() }
+            if phase == .active {
+                model.onForeground()
+                updates.checkIfDue()
+            } else if phase == .background {
+                model.onBackground()
+            }
         }
     }
 }

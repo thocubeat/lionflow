@@ -18,6 +18,7 @@ struct LionFlowApp: App {
             RootView()
                 .environmentObject(holder.model)
                 .environmentObject(holder.platform)
+                .environmentObject(holder.updates)
         }
     }
 }
