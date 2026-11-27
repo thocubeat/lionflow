@@ -21,9 +21,52 @@ private final class ChargerPin: NSObject, MKAnnotation {
 private final class CarPin: NSObject, MKAnnotation {
     @objc dynamic var coordinate: CLLocationCoordinate2D
     let title: String?
-    init(_ coordinate: CLLocationCoordinate2D, _ title: String) {
+    /** The way the car points, in degrees (0 = north), when it says. */
+    var heading: Double?
+    init(_ coordinate: CLLocationCoordinate2D, _ title: String, _ heading: Double?) {
         self.coordinate = coordinate
         self.title = title
+        self.heading = heading
+    }
+}
+
+/**
+ * The car seen from above: a rounded rectangle with a small arrow at the front, turned the way the car points
+ * (without the arrow when the car doesn't say).
+ */
+private final class CarTopView: MKAnnotationView {
+    static let accent = UIColor(red: 0.78, green: 0.95, blue: 0.42, alpha: 1)
+    static let ink = UIColor(red: 0.05, green: 0.055, blue: 0.063, alpha: 1)
+
+    static func picture(arrow: Bool) -> UIImage {
+        UIGraphicsImageRenderer(size: CGSize(width: 30, height: 44)).image { _ in
+            let body = CGRect(x: 6, y: 13, width: 18, height: 28)
+            UIColor.white.setFill()
+            UIBezierPath(roundedRect: body.insetBy(dx: -2.5, dy: -2.5), cornerRadius: 7).fill()
+            ink.setFill()
+            UIBezierPath(roundedRect: body, cornerRadius: 5).fill()
+            accent.setFill()
+            UIBezierPath(roundedRect: body.insetBy(dx: 2.5, dy: 2.5), cornerRadius: 3.5).fill()
+            // The windscreen, so the front is clear even without the arrow.
+            ink.setFill()
+            UIBezierPath(roundedRect: CGRect(x: body.minX + 5, y: body.minY + 6, width: body.width - 10, height: 5), cornerRadius: 2).fill()
+            if arrow {
+                let tip = UIBezierPath()
+                tip.move(to: CGPoint(x: 15, y: 1)); tip.addLine(to: CGPoint(x: 22, y: 10)); tip.addLine(to: CGPoint(x: 8, y: 10)); tip.close()
+                tip.lineWidth = 2.5; tip.lineJoinStyle = .round
+                UIColor.white.setStroke(); tip.stroke()
+                accent.setFill(); tip.fill()
+            }
+        }
+    }
+    static let withArrow = picture(arrow: true)
+    static let plain = picture(arrow: false)
+
+    /** Turns the picture: the car's heading, less the way the map itself is turned. */
+    func point(_ heading: Double?, mapHeading: Double) {
+        image = heading == nil ? Self.plain : Self.withArrow
+        let degrees = (heading ?? mapHeading) - mapHeading
+        transform = CGAffineTransform(rotationAngle: CGFloat(degrees * .pi / 180))
     }
 }
 
@@ -35,6 +78,7 @@ private struct CardHeight: PreferenceKey {
 
 private struct CarMap: UIViewRepresentable {
     let car: CLLocationCoordinate2D?
+    let carHeading: Double?
     let carName: String
     let chargers: [Charger]
     let showsUser: Bool
@@ -53,7 +97,7 @@ private struct CarMap: UIViewRepresentable {
         map.showsScale = true
         map.pointOfInterestFilter = .excludingAll
         map.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: "charger")
-        map.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: "car")
+        map.register(CarTopView.self, forAnnotationViewWithReuseIdentifier: "car")
         return map
     }
 
@@ -71,8 +115,12 @@ private struct CarMap: UIViewRepresentable {
         if let car = car {
             if let pin = carPin {
                 if pin.coordinate.latitude != car.latitude || pin.coordinate.longitude != car.longitude { pin.coordinate = car }
+                if pin.heading != carHeading {
+                    pin.heading = carHeading
+                    (map.view(for: pin) as? CarTopView)?.point(carHeading, mapHeading: map.camera.heading)
+                }
             } else {
-                map.addAnnotation(CarPin(car, carName))
+                map.addAnnotation(CarPin(car, carName, carHeading))
             }
         } else if let pin = carPin {
             map.removeAnnotation(pin)
@@ -113,16 +161,22 @@ private struct CarMap: UIViewRepresentable {
                 view?.titleVisibility = .hidden
                 return view
             }
-            if annotation is CarPin {
-                let view = mapView.dequeueReusableAnnotationView(withIdentifier: "car", for: annotation) as? MKMarkerAnnotationView
-                view?.markerTintColor = UIColor(red: 0.05, green: 0.055, blue: 0.063, alpha: 1)
-                view?.glyphImage = UIImage(systemName: "car.fill")
-                view?.glyphTintColor = UIColor(red: 0.78, green: 0.95, blue: 0.42, alpha: 1)
+            if let pin = annotation as? CarPin {
+                let view = mapView.dequeueReusableAnnotationView(withIdentifier: "car", for: annotation) as? CarTopView
+                view?.point(pin.heading, mapHeading: mapView.camera.heading)
                 view?.displayPriority = .required
                 view?.clusteringIdentifier = nil
+                view?.zPriority = .max
                 return view
             }
             return nil
+        }
+
+        /** The map was turned: turn the car with it, so it keeps pointing the right way. */
+        func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+            for case let pin as CarPin in mapView.annotations {
+                (mapView.view(for: pin) as? CarTopView)?.point(pin.heading, mapHeading: mapView.camera.heading)
+            }
         }
 
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
@@ -188,7 +242,7 @@ struct MapView: View {
         var car: CLLocationCoordinate2D? = nil
         if let lat = st?.lat, let lon = st?.lon { car = CLLocationCoordinate2D(latitude: lat, longitude: lon) }
         return ZStack {
-            CarMap(car: car, carName: model.prefs.carName, chargers: chargers, showsUser: platform.locationAllowed, dark: c.isDark, focus: focus, covered: cardHeight + 20) { selected = $0 }
+            CarMap(car: car, carHeading: model.ui.status?.heading, carName: model.prefs.carName, chargers: chargers, showsUser: platform.locationAllowed, dark: c.isDark, focus: focus, covered: cardHeight + 20) { selected = $0 }
                 .ignoresSafeArea(edges: .top)
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .top, spacing: 8) {

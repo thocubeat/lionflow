@@ -452,6 +452,43 @@ private fun addSymbols(ctx: Context, style: Style, accent: Int) {
         cv.drawCircle(sz / 2f, sz / 2f, sz * 0.14f, android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { color = white })
     })
     for (n in 0..12) style.addImage("lf-stop-$n", disc(34f, white, 3f, accent) { cv, sz -> if (n == 0) bolt(cv, sz, dark) else number(cv, sz, "$n", dark) })
+    addCarSymbols(ctx, style, accent)
+}
+
+/**
+ * The car seen from above: a rounded rectangle with a small arrow at the front. Drawn pointing north; the map turns it
+ * to the way the car points ("lf-car-plain" without the arrow, when the car doesn't say).
+ */
+private fun addCarSymbols(ctx: Context, style: Style, accent: Int) {
+    if (style.getImage("lf-car") != null) return
+    val d = ctx.resources.displayMetrics.density
+    fun car(arrow: Boolean): android.graphics.Bitmap {
+        val w = (30 * d).toInt(); val h = (44 * d).toInt()
+        val bmp = android.graphics.Bitmap.createBitmap(w, h, android.graphics.Bitmap.Config.ARGB_8888)
+        val cv = android.graphics.Canvas(bmp)
+        val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+        val body = android.graphics.RectF(6 * d, 13 * d, w - 6 * d, h - 3 * d)
+        paint.color = android.graphics.Color.WHITE
+        cv.drawRoundRect(android.graphics.RectF(body.left - 2.5f * d, body.top - 2.5f * d, body.right + 2.5f * d, body.bottom + 2.5f * d), 7 * d, 7 * d, paint)
+        paint.color = android.graphics.Color.parseColor("#0D0E10")
+        cv.drawRoundRect(body, 5 * d, 5 * d, paint)
+        paint.color = accent
+        cv.drawRoundRect(android.graphics.RectF(body.left + 2.5f * d, body.top + 2.5f * d, body.right - 2.5f * d, body.bottom - 2.5f * d), 3.5f * d, 3.5f * d, paint)
+        // The windscreen, so the front is clear even without the arrow.
+        paint.color = android.graphics.Color.parseColor("#0D0E10")
+        cv.drawRoundRect(android.graphics.RectF(body.left + 5 * d, body.top + 6 * d, body.right - 5 * d, body.top + 11 * d), 2 * d, 2 * d, paint)
+        if (arrow) {
+            val tip = android.graphics.Path().apply { moveTo(w / 2f, 1 * d); lineTo(w / 2f + 7 * d, 10 * d); lineTo(w / 2f - 7 * d, 10 * d); close() }
+            paint.color = android.graphics.Color.WHITE
+            paint.style = android.graphics.Paint.Style.STROKE; paint.strokeWidth = 2.5f * d; paint.strokeJoin = android.graphics.Paint.Join.ROUND
+            cv.drawPath(tip, paint)
+            paint.style = android.graphics.Paint.Style.FILL; paint.color = accent
+            cv.drawPath(tip, paint)
+        }
+        return bmp
+    }
+    style.addImage("lf-car", car(true))
+    style.addImage("lf-car-plain", car(false))
 }
 
 private fun updateLayers(ctx: Context, style: Style, chargers: List<Charger>, ui: UiState, accent: Color, dark: Boolean, is3d: Boolean, routeJson: String?, planner: Planner?) {
@@ -490,6 +527,24 @@ private fun updateLayers(ctx: Context, style: Style, chargers: List<Charger>, ui
         ))
     }
 
+    // The car, turned the way it points (on top of everything else)
+    addCarSymbols(ctx, style, accent.toArgb())
+    if (style.getSource("lf-car-src") == null) {
+        style.addSource(GeoJsonSource("lf-car-src", EMPTY))
+        style.addLayer(SymbolLayer("lf-car", "lf-car-src").withProperties(
+            PropertyFactory.iconImage(Expression.get("icon")),
+            PropertyFactory.iconRotate(Expression.get("heading")),
+            PropertyFactory.iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP),
+            PropertyFactory.iconPitchAlignment(Property.ICON_PITCH_ALIGNMENT_MAP),
+            PropertyFactory.iconAllowOverlap(true), PropertyFactory.iconIgnorePlacement(true)))
+    }
+    val st = ui.status
+    style.getSourceAs<GeoJsonSource>("lf-car-src")?.setGeoJson(FeatureCollection.fromFeatures(
+        if (st?.lat != null && st.lon != null) listOf(Feature.fromGeometry(Point.fromLngLat(st.lon, st.lat)).apply {
+            addStringProperty("icon", if (st.heading != null) "lf-car" else "lf-car-plain")
+            addNumberProperty("heading", st.heading ?: 0.0)
+        }) else emptyList()))
+
     // Nearby chargers
     style.getSourceAs<GeoJsonSource>("lf-chargers-src")?.setGeoJson(FeatureCollection.fromFeatures(chargers.map { ch ->
         Feature.fromGeometry(Point.fromLngLat(ch.lon, ch.lat)).apply {
@@ -526,7 +581,6 @@ private fun updateLayers(ctx: Context, style: Style, chargers: List<Charger>, ui
 
     // Car + me
     val points = mutableListOf<Feature>()
-    ui.status?.lat?.let { la -> ui.status?.lon?.let { lo -> points += Feature.fromGeometry(Point.fromLngLat(lo, la)).apply { addStringProperty("kind", "car") } } }
     ui.myLat?.let { la -> ui.myLon?.let { lo -> points += Feature.fromGeometry(Point.fromLngLat(lo, la)).apply { addStringProperty("kind", "me") } } }
     style.getSourceAs<GeoJsonSource>("lf-points-src")?.setGeoJson(FeatureCollection.fromFeatures(points))
 
