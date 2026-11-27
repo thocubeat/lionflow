@@ -168,18 +168,17 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(ChargePower.usableKwh(status(pct: 50)), 50.0)
     }
 
-    func testASuddenDropInLevelWithTheSameEnergyIsEvenedOut() {
+    /// A sudden drop in the car's level with the same energy is shown as the car reports it (users compare with the
+    /// car and MyPeugeot, which show the car's number).
+    func testASuddenDropInLevelIsShownAsTheCarReportsIt() {
         var st = ChargePower.record(status(pct: 89, range: 380, residual: 68.5))
         XCTAssertEqual(st.batteryPct, 89)
         now += 5 * 60_000
         st = ChargePower.record(status(pct: 79, range: 340, residual: 68.5))
-        XCTAssertEqual(st.batteryPct, 89)          // the level from before the drop is kept
+        XCTAssertEqual(st.batteryPct, 79)
         now += 30 * 60_000
         st = ChargePower.record(status(pct: 78, range: 335, residual: 64.85))
-        XCTAssertEqual(st.batteryPct, 84)          // and moved by the change in energy: 89 - 3.65/73*100
-        now += 30 * 60_000
-        st = ChargePower.record(status(pct: 77, range: 330, residual: 58.0))
-        XCTAssertEqual(st.batteryPct, 77)          // the car's own number has caught up (within 2 points)
+        XCTAssertEqual(st.batteryPct, 78)
     }
 
     func testSchedulesJustSentAreShownUntilTheCarHasThem() {
