@@ -72,10 +72,14 @@ final class AppServices {
     var chargersNear: (Double, Double) async throws -> [Charger] = { lat, lon in try await OsmChargers.near(lat, lon) }
     var address: (Double, Double) async -> String? = { lat, lon in try? await Geocoder.reverse(lat, lon) }
 
-    init(defaults: UserDefaults, secrets: SecretBackend, log: KeyValueStore, demo: KeyValueStore, demoLog: KeyValueStore, cacheDir: URL, filesDir: URL) {
+    /// `knownInstall`: the app's settings file was already there when it started. Then this is never treated as a
+    /// new install, even if the settings can't be read (iOS can start the app in the background before that works),
+    /// so the sign-in is never wiped by mistake.
+    init(defaults: UserDefaults, secrets: SecretBackend, log: KeyValueStore, demo: KeyValueStore, demoLog: KeyValueStore, cacheDir: URL, filesDir: URL,
+         knownInstall: Bool = false) {
         settings = SettingsStore(defaults)
         // What is in the Keychain outlives the app being deleted: a fresh install starts clean.
-        if settings.firstRun() { SecureStore(secrets).wipeAll() }
+        if !knownInstall && settings.firstRun() { SecureStore(secrets).wipeAll() }
         L10n.setPreference(settings.value.language)
         TimeFmt.setPreference(settings.value.timeFormat)
         secure = SecureStore(secrets)
@@ -885,8 +889,14 @@ final class AppModel: ObservableObject {
     func refreshInBackground() async {
         if isDemo || ui.phase != .ready || ui.refreshing { return }
         ui.refreshing = true
+        inBackground = true
         await readCar()
+        inBackground = false
     }
+
+    /// While reading the car in the background a failed sign-in check never signs out: the app tries again when it
+    /// is opened (signing out throws the saved sign-in away for good).
+    private var inBackground = false
 
     func refresh() {
         if ui.refreshing { return }
@@ -952,6 +962,7 @@ final class AppModel: ObservableObject {
         } catch is AuthExpiredException {
             if profile != api.profile { return }
             ui.refreshing = false
+            if inBackground { return }
             toast("Your Peugeot session expired — please sign in again")
             signOut()
         } catch {

@@ -89,24 +89,21 @@ final class WidgetBridge {
 /// Asks iOS to start the app in the background now and then (iOS decides when, often every hour or so) to read the
 /// car, so the widget doesn't only change when the app is opened.
 enum BackgroundRefresh {
-    static let id = "no.lionflow.app.refresh"
+    /// From Info.plist: SideStore and AltStore give the app a bundle id of their own and change this name to match.
+    static let id = (Bundle.main.object(forInfoDictionaryKey: "BGTaskSchedulerPermittedIdentifiers") as? [String])?.first
+        ?? "no.lionflow.app.refresh"
 
     static func register(_ model: AppModel, _ widgets: WidgetBridge) {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: id, using: nil) { task in
             schedule()
             let run = BackgroundRun(task)
+            // Time up: tell iOS, but don't break off a request: if it is renewing the sign-in, the new key must
+            // still be saved (the old one stops working on the server at once).
+            task.expirationHandler = { run.finish(false) }
             Task { @MainActor in
-                let work = Task { @MainActor in
-                    await model.refreshInBackground()
-                    widgets.update()
-                    run.finish(true)
-                }
-                task.expirationHandler = {
-                    Task { @MainActor in
-                        work.cancel()
-                        run.finish(false)
-                    }
-                }
+                await model.refreshInBackground()
+                widgets.update()
+                run.finish(true)
             }
         }
     }

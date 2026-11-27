@@ -227,6 +227,10 @@ final class AppHolder: ObservableObject {
         if let configs = text("stellantis_configs", "json") { try? StellantisConfig.setText(configs) }
 
         let files = FileManager.default
+        // Whether the settings file is there already: then this is not a new install (see AppServices).
+        let prefsFile = files.urls(for: .libraryDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("Preferences/\(bundle.bundleIdentifier ?? "no.lionflow.app").plist")
+        let knownInstall = files.fileExists(atPath: prefsFile.path)
         let cache = files.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         let support = files.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         try? files.createDirectory(at: cache, withIntermediateDirectories: true)
@@ -235,7 +239,7 @@ final class AppHolder: ObservableObject {
         let services = AppServices(
             defaults: .standard, secrets: KeychainSecrets(),
             log: DefaultsStore("log"), demo: DefaultsStore("demo"), demoLog: DefaultsStore("demolog"),
-            cacheDir: cache, filesDir: support)
+            cacheDir: cache, filesDir: support, knownInstall: knownInstall)
         // "0.1.0 (57)": the number in brackets counts the builds, and is what tells two builds of a version apart.
         let build = (bundle.infoDictionary?["CFBundleVersion"] as? String) ?? ""
         services.version = ((bundle.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0") + (build.isEmpty ? "" : " (\(build))")
