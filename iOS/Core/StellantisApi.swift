@@ -263,8 +263,9 @@ final class StellantisApi: @unchecked Sendable {
     func blankStatus(_ v: Vehicle) -> JSONObject {
         let energies = JSONArray()
         let m = v.motorization.lowercased()
-        if m != "thermal" && m != "" { energies.put(JSONObject().put("type", "Electric")) }
-        if m == "thermal" || m == "hybrid" { energies.put(JSONObject().put("type", "Fuel")) }
+        let thermal = ["thermal", "thermic", "petrol", "diesel", "fuel", "gasoline", "ice"].contains(m)
+        if !thermal && m != "" { energies.put(JSONObject().put("type", "Electric")) }
+        if thermal || m == "hybrid" { energies.put(JSONObject().put("type", "Fuel")) }
         return JSONObject().put("energies", energies)
     }
 
@@ -274,11 +275,23 @@ final class StellantisApi: @unchecked Sendable {
     }
 
     func status(_ v: Vehicle) async throws -> JSONObject {
-        try await authed { (token: String) -> JSONObject in
+        let j = try await authed { (token: String) -> JSONObject in
             let url = "\(Self.API)/connectedcar/v4/user/vehicles/\(v.id)/status?\(self.clientQuery())"
             guard let j = try await self.object(url, self.carHeaders(token)) else { throw ApiException(0, "Empty status response") }
             return j
         }
+        // Some cars (seen on an Opel Mokka-e) leave the position out of the status: it has its own address.
+        if j.optJSONObject("lastPosition")?.optJSONObject("geometry") == nil {
+            do {
+                let pos = try await authed { (token: String) -> JSONObject? in
+                    try await self.object("\(Self.API)/connectedcar/v4/user/vehicles/\(v.id)/lastPosition?\(self.clientQuery())", self.carHeaders(token))
+                }
+                if let pos = pos, pos.optJSONObject("geometry")?.optJSONArray("coordinates") != nil { j.put("lastPosition", pos) }
+            } catch let e as AuthExpiredException { throw e } catch {}
+        }
+        // Some petrol cars send no energy data at all: at least say which kind of car it is, so it shows as one.
+        if !j.has("energies") && !j.has("energy"), let e = blankStatus(v).optJSONArray("energies") { j.put("energies", e) }
+        return j
     }
 
     /** Warnings the car itself has reported. Empty when there are none, or when the car doesn't share them. */

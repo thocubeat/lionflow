@@ -885,6 +885,17 @@ final class AppModel: ObservableObject {
         }
     }
 
+    /// Some petrol cars send no fuel level in their status, but their trips say how full the tank was at the end:
+    /// then the newest trip's number is shown (it is what the car reported when it was last switched off).
+    func withTripFuel(_ st: VehicleStatus, _ trips: [Trip]) -> VehicleStatus {
+        if st.energyType != "Fuel" || st.batteryPct != nil { return st }
+        guard let t = trips.filter({ $0.fuelEndPct != nil }).max(by: { ($0.endMillis ?? $0.startMillis ?? 0) < ($1.endMillis ?? $1.startMillis ?? 0) }) else { return st }
+        var out = st
+        out.batteryPct = t.fuelEndPct
+        out.fuelPct = t.fuelEndPct
+        return out
+    }
+
     /** For the background refresh (the home-screen widget): reads the car once and waits until that is done. */
     func refreshInBackground() async {
         if isDemo || ui.phase != .ready || ui.refreshing { return }
@@ -942,7 +953,7 @@ final class AppModel: ObservableObject {
             // Reloading the cars can finish while the status request is on its way.
             let selected = ui.vehicle ?? v
             if profile != api.profile || selected.vin != v.vin { return }
-            let st = applyHolds(ChargePower.record(api.parseStatus(selected, raw, maint)))
+            let st = withTripFuel(applyHolds(ChargePower.record(api.parseStatus(selected, raw, maint))), ui.trips)
             let now = nowMillis()
             settings.lastRefresh = now
             serverRetries = 0
@@ -1293,6 +1304,7 @@ final class AppModel: ObservableObject {
                 let merged = AppModel.newestFirst(self.withCarTrips(AppModel.distinct(all + self.loadImportedTrips())))
                 self.ui.trips = merged
                 self.ui.tripsLoading = false
+                if let st = self.ui.status { self.ui.status = self.withTripFuel(st, merged) }
                 self.autoTagNow()
             } catch {
                 self.ui.tripsLoading = false

@@ -699,7 +699,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 // Reload cars can complete while the status request is in flight.
                 val selected = _ui.value.vehicle ?: v
                 if (profile != api.profile || selected.vin != v.vin) return@launch
-                val st = applyHolds(no.lionflow.app.model.ChargePower.record(api.parseStatus(selected, raw, maint)))
+                val st = withTripFuel(applyHolds(no.lionflow.app.model.ChargePower.record(api.parseStatus(selected, raw, maint))), _ui.value.trips)
                 if (settings.value.smartMode.isNotEmpty() && !programsPending()) try { no.lionflow.app.work.SmartSchedule.syncFromCar(app(), st.programs) } catch (_: Exception) {}
                 val now = System.currentTimeMillis()
                 settings.lastRefresh = now
@@ -997,6 +997,16 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /**
+     * Some petrol cars send no fuel level in their status, but their trips say how full the tank was at the end:
+     * then the newest trip's number is shown (it is what the car reported when it was last switched off).
+     */
+    private fun withTripFuel(st: VehicleStatus, trips: List<no.lionflow.app.model.Trip>): VehicleStatus {
+        if (st.energyType != "Fuel" || st.batteryPct != null) return st
+        val t = trips.filter { it.fuelEndPct != null }.maxByOrNull { it.endMillis ?: it.startMillis ?: 0L } ?: return st
+        return st.copy(batteryPct = t.fuelEndPct, fuelPct = t.fuelEndPct)
+    }
+
     fun dismissUpdate() = _ui.update { it.copy(updateDismissed = true, needsInstallPermission = false, updateStatus = null) }
 
     fun installUpdate() {
@@ -1171,7 +1181,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 remote.addLog("trips: ${all.size} from the last $days days")
                 val imported = loadImportedTrips()
                 val merged = withCarTrips((all + imported).distinctBy { it.id }).sortedByDescending { it.startMillis ?: 0L }
-                _ui.update { it.copy(trips = merged, tripsLoading = false) }
+                _ui.update { it.copy(trips = merged, tripsLoading = false, status = it.status?.let { st -> withTripFuel(st, merged) }) }
                 autoTagNow()
             } catch (e: Exception) {
                 _ui.update { it.copy(tripsLoading = false, trips = withCarTrips(loadImportedTrips()).sortedByDescending { t -> t.startMillis ?: 0L }) }

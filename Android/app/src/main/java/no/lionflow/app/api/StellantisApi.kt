@@ -407,8 +407,9 @@ class StellantisApi(private val ctx: Context, private val secure: SecureStore, p
      */
     fun blankStatus(v: Vehicle): JSONObject = JSONObject().put("energies", JSONArray().apply {
         val m = v.motorization.lowercase()
-        if (m != "thermal" && m != "") put(JSONObject().put("type", "Electric"))
-        if (m == "thermal" || m == "hybrid") put(JSONObject().put("type", "Fuel"))
+        val thermal = m in setOf("thermal", "thermic", "petrol", "diesel", "fuel", "gasoline", "ice")
+        if (!thermal && m != "") put(JSONObject().put("type", "Electric"))
+        if (thermal || m == "hybrid") put(JSONObject().put("type", "Fuel"))
     })
 
     fun parseTrips(vehicle: Vehicle, trips: List<JSONObject>): List<Trip> {
@@ -416,10 +417,23 @@ class StellantisApi(private val ctx: Context, private val secure: SecureStore, p
         return trips.map { Trip.parse(it, mildHybrid) }
     }
 
-    suspend fun status(v: Vehicle): JSONObject = authed { token ->
-        val url = "$API/connectedcar/v4/user/vehicles/${v.id}/status?${clientQuery()}"
-        Http.json(carHeaders(Request.Builder().url(url), token).get().build()) as? JSONObject
-            ?: throw ApiException(0, "Empty status response")
+    suspend fun status(v: Vehicle): JSONObject {
+        val j = authed { token ->
+            val url = "$API/connectedcar/v4/user/vehicles/${v.id}/status?${clientQuery()}"
+            Http.json(carHeaders(Request.Builder().url(url), token).get().build()) as? JSONObject
+                ?: throw ApiException(0, "Empty status response")
+        }
+        // Some cars (seen on an Opel Mokka-e) leave the position out of the status: it has its own address.
+        if (j.optJSONObject("lastPosition")?.optJSONObject("geometry") == null) try {
+            val pos = authed { token ->
+                val url = "$API/connectedcar/v4/user/vehicles/${v.id}/lastPosition?${clientQuery()}"
+                Http.json(carHeaders(Request.Builder().url(url), token).get().build()) as? JSONObject
+            }
+            if (pos?.optJSONObject("geometry")?.optJSONArray("coordinates") != null) j.put("lastPosition", pos)
+        } catch (e: AuthExpiredException) { throw e } catch (_: Exception) { }
+        // Some petrol cars send no energy data at all: at least say which kind of car it is, so it shows as one.
+        if (!j.has("energies") && !j.has("energy")) blankStatus(v).optJSONArray("energies")?.let { j.put("energies", it) }
+        return j
     }
 
     /** Warnings the car itself has reported. Empty when there are none, or when the car doesn't share them. */
