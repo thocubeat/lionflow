@@ -1,0 +1,24 @@
+Test Case '-[LionFlowTour.TourTests test01EveryTabOfTheElectricCar]' passed (181.925 seconds).
+Test Case '-[LionFlowTour.TourTests test02TheBarAtTheBottomOpensEveryTab]' passed (52.700 seconds).
+Test Case '-[LionFlowTour.TourTests test03CommandsChangeTheSampleCar]' passed (47.230 seconds).
+Test Case '-[LionFlowTour.TourTests test04SheetsAndEditorsOpen]' passed (375.468 seconds).
+Test Case '-[LionFlowTour.TourTests test05FuelCarAndHybrid]' passed (113.418 seconds).
+Test Case '-[LionFlowTour.TourTests test06LightColoursAndNorwegian]' passed (113.549 seconds).
+Test Case '-[LionFlowTour.TourTests test07FirstScreensAndStartingTheDemo]' passed (77.582 seconds).
+Test Case '-[LionFlowTour.TourTests test08NothingShowsThroughTheClock]' passed (181.602 seconds).
+Test Case '-[LionFlowTour.TourTests test09PullingHomeDownReadsTheCarAgain]' passed (128.792 seconds).
+Test Case '-[LionFlowTour.TourTests test10PullingAnotherTabDownReadsTheCarAgain]' passed (147.481 seconds).
+Test Case '-[LionFlowTour.TourTests test12UpdateAndSignatureNotes]' passed (60.258 seconds).
+	 Executed 11 tests, with 0 failures (0 unexpected) in 1480.005 (1480.028) seconds
+	 Executed 11 tests, with 0 failures (0 unexpected) in 1480.005 (1480.032) seconds
+	 Executed 11 tests, with 0 failures (0 unexpected) in 1480.005 (1480.035) seconds
+Test Case '-[LionFlowTour.TourTests test01EveryTabOfTheElectricCar]' passed (162.631 seconds).
+Test Case '-[LionFlowTour.TourTests test03CommandsChangeTheSampleCar]' passed (55.629 seconds).
+Test Case '-[LionFlowTour.TourTests test04SheetsAndEditorsOpen]' passed (399.719 seconds).
+Test Case '-[LionFlowTour.TourTests test08NothingShowsThroughTheClock]' passed (181.627 seconds).
+Test Case '-[LionFlowTour.TourTests test09PullingHomeDownReadsTheCarAgain]' passed (121.686 seconds).
+Test Case '-[LionFlowTour.TourTests test12UpdateAndSignatureNotes]' passed (50.072 seconds).
+	 Executed 6 tests, with 0 failures (0 unexpected) in 971.365 (971.375) seconds
+	 Executed 6 tests, with 0 failures (0 unexpected) in 971.365 (971.380) seconds
+	 Executed 6 tests, with 0 failures (0 unexpected) in 971.365 (971.382) seconds
+Home fits on this screen without scrolling: nothing can pass behind the clock there
