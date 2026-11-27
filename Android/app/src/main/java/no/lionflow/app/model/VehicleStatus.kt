@@ -213,8 +213,16 @@ data class Trip(
     /** Fuel gauge (%) when the trip started and ended, when the car reports it: fill-ups show up between two trips. */
     val fuelStartPct: Double? = null,
     val fuelEndPct: Double? = null,
+    /** Battery level (%) when the trip started and ended, when the car reports it. */
+    val batteryStartPct: Double? = null,
+    val batteryEndPct: Double? = null,
+    /** True when [kwh] was worked out by LionFlow (from the battery level or the average), not reported by the car. */
+    val energyEstimated: Boolean = false,
 ) {
     companion object {
+        private fun batteryLevel(t: JSONObject, key: String): Double? =
+            t.optJSONArray(key)?.objects()?.firstOrNull { it.optString("type") == "Electric" }?.num("level")?.takeIf { it in 0.0..100.0 }
+
         private fun fuelLevel(t: JSONObject, key: String): Double? {
             val list = t.optJSONArray(key)?.objects().orEmpty()
             val tank = list.firstOrNull { it.optString("type") == "Fuel" } ?: list.singleOrNull()?.takeIf { it.optString("type") != "Electric" }
@@ -252,6 +260,8 @@ data class Trip(
                 avgLPer100 = liters?.let { it / km * 100 } ?: per100Of(fuel?.num("avgConsumption")),
                 fuelStartPct = fuelLevel(t, "startEnergies"),
                 fuelEndPct = fuelLevel(t, "endEnergies"),
+                batteryStartPct = if (mildHybrid) null else batteryLevel(t, "startEnergies"),
+                batteryEndPct = if (mildHybrid) null else batteryLevel(t, "endEnergies"),
             )
         }
     }

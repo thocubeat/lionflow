@@ -46,7 +46,9 @@ enum CarTrips {
         lock.lock()
         defer { lock.unlock() }
         guard let p = ChargePower.store(), let odo = st.odometerKm, odo > 0 else { return }
-        let now = Snap(t: st.updatedAtMillis ?? clock(), odo: odo, lat: st.lat, lon: st.lon, pct: st.energyType == "Fuel" ? nil : st.batteryPct, res: st.residualKwh, cap: st.capacityKwh)
+        let now = Snap(t: st.updatedAtMillis ?? clock(), odo: odo, lat: st.lat, lon: st.lon, pct: st.energyType == "Fuel" ? nil : st.batteryPct, res: st.residualKwh,
+                       // Newer cars (E-5008) don't report the battery's size: use the one LionFlow knows, so % used can become kWh.
+                       cap: st.energyType == "Fuel" ? nil : (st.capacityKwh ?? ChargePower.usableKwh(st)))
         let lastKey = ChargePower.key("ctLast")
         let openKey = ChargePower.key("ctOpen")
         guard let last = Snap.of(object(p, "ctLast")) else {

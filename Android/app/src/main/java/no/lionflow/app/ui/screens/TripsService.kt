@@ -153,12 +153,12 @@ fun TripsScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean) {
                         TripTagSlot(vm, s, t)
                         Column(horizontalAlignment = Alignment.End) {
                             Text(fmtDistance(t.distanceKm, s), style = Type.label.copy(fontSize = 17.sp), color = c.text)
-                            if (!mildHybrid) t.avgKwhPer100?.let { Text(String.format(Locale.US, "%.1f kWh/100", it), style = Type.tiny, color = c.muted) }
+                            if (!mildHybrid) t.avgKwhPer100?.let { Text((if (t.energyEstimated) "≈ " else "") + String.format(Locale.US, "%.1f kWh/100", it), style = Type.tiny, color = c.muted) }
                             // Battery used on the trip, in % and kWh.
                             val used = t.kwh?.takeIf { it > 0 } ?: t.avgKwhPer100?.let { it * t.distanceKm / 100 }
                             val battery = ui.status?.takeUnless { mildHybrid }?.let { no.lionflow.app.model.ChargePower.usableKwh(it) }
                             if (used != null && battery != null && battery > 0) androidx.compose.material3.Text(
-                                String.format(Locale.US, "−%.0f %% · %.1f kWh", used / battery * 100, used), style = Type.tiny, color = c.muted)
+                                String.format(Locale.US, "−%.0f %% · %s%.1f kWh", used / battery * 100, if (t.energyEstimated) "≈ " else "", used), style = Type.tiny, color = c.muted)
                             t.avgLPer100?.let { Text(String.format(Locale.US, "%.1f l/100", it), style = Type.tiny, color = c.muted) }
                             if (s.fuelPrice > 0) t.liters?.let { androidx.compose.material3.Text("≈ " + fuelMoney(it * s.fuelPrice, fuelCurrency), style = Type.tiny, color = c.muted) }
                         }
@@ -255,12 +255,12 @@ private fun TripDetail(vm: AppViewModel, trip: no.lionflow.app.model.Trip?, rout
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 tile(Modifier.weight(1f), "Average speed", speed?.let { if (s.distanceUnit == "mi") "${Math.round(it * 0.621371)} mph" else "${Math.round(it)} km/h" } ?: "—")
                 when {
-                    !mildHybrid && trip?.avgKwhPer100 != null -> tile(Modifier.weight(1f), "Consumption", String.format(Locale.US, "%.1f kWh/100", trip.avgKwhPer100))
+                    !mildHybrid && trip?.avgKwhPer100 != null -> tile(Modifier.weight(1f), "Consumption", (if (trip.energyEstimated) "≈ " else "") + String.format(Locale.US, "%.1f kWh/100", trip.avgKwhPer100))
                     trip?.avgLPer100 != null -> tile(Modifier.weight(1f), "Fuel", String.format(Locale.US, "%.1f l/100", trip.avgLPer100))
                     else -> tile(Modifier.weight(1f), "Consumption", "—")
                 }
             }
-            val energy = trip?.kwh?.takeIf { !mildHybrid && it > 0 }?.let { String.format(Locale.US, "%.1f kWh", it) }
+            val energy = trip?.kwh?.takeIf { !mildHybrid && it > 0 }?.let { (if (trip.energyEstimated) "≈ " else "") + String.format(Locale.US, "%.1f kWh", it) }
             val fuel = trip?.liters?.let { String.format(Locale.US, "%.1f l", it) }
             val fuelCost = trip?.liters?.takeIf { s.fuelPrice > 0 }?.let { "≈ " + fuelMoney(it * s.fuelPrice, no.lionflow.app.model.ChargeLog.places.value.currency) }
             if (energy != null || fuel != null) Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {

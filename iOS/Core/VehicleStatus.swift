@@ -303,6 +303,17 @@ struct Trip: Equatable {
     /** Fuel gauge (%) when the trip started and ended, when the car reports it: fill-ups show up between two trips. */
     var fuelStartPct: Double? = nil
     var fuelEndPct: Double? = nil
+    /** Battery level (%) when the trip started and ended, when the car reports it. */
+    var batteryStartPct: Double? = nil
+    var batteryEndPct: Double? = nil
+    /** True when [kwh] was worked out by LionFlow (from the battery level or the average), not reported by the car. */
+    var energyEstimated: Bool = false
+
+    private static func batteryLevel(_ t: JSONObject, _ key: String) -> Double? {
+        guard let level = t.optJSONArray(key)?.objects().first(where: { $0.optString("type") == "Electric" })?.num("level"),
+              level >= 0.0, level <= 100.0 else { return nil }
+        return level
+    }
 
     private static func fuelLevel(_ t: JSONObject, _ key: String) -> Double? {
         let list = t.optJSONArray(key)?.objects() ?? []
@@ -349,7 +360,9 @@ struct Trip: Equatable {
             // Work it out from fuel used and distance; the car's own average comes in different units (some trips were km/l).
             avgLPer100: liters.map { $0 / km * 100 } ?? per100Of(fuel?.num("avgConsumption")),
             fuelStartPct: fuelLevel(t, "startEnergies"),
-            fuelEndPct: fuelLevel(t, "endEnergies")
+            fuelEndPct: fuelLevel(t, "endEnergies"),
+            batteryStartPct: mildHybrid ? nil : batteryLevel(t, "startEnergies"),
+            batteryEndPct: mildHybrid ? nil : batteryLevel(t, "endEnergies")
         )
     }
 }

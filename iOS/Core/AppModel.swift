@@ -1295,7 +1295,12 @@ final class AppModel: ObservableObject {
             do {
                 let res = try await self.api.allTrips(v, nowMillis() - Int64(days) * 86_400_000)
                 let vehicle = self.ui.vehicle.flatMap { $0.vin == v.vin ? $0 : nil } ?? v
-                let all = self.api.parseTrips(vehicle, res.trips)
+                let parsed = self.api.parseTrips(vehicle, res.trips)
+                let battery = self.ui.status.flatMap { $0.energyType == "Fuel" ? nil : ChargePower.usableKwh($0) }
+                let all = TripEnergy.fill(parsed, batteryKwh: battery, logged: CarTrips.list())
+                let fromCar = parsed.filter { ($0.kwh ?? 0) > 0 }.count
+                let worked = all.filter { $0.energyEstimated }.count
+                if !parsed.isEmpty { self.remote.addLog("trips: energy from the car \(fromCar), worked out \(worked), missing \(all.count - fromCar - worked)") }
                 self.tripsNone = res.noneFound
                 if res.noneFound { self.remote.addLog("trips: the server says no trips were found") }
                 let newest = all.map { $0.startMillis ?? 0 }.max() ?? 0

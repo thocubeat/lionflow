@@ -183,14 +183,16 @@ private struct TripRow: View {
     let currency: String
     let onOpen: () -> Void
 
+    private var approx: String { trip.energyEstimated ? "≈ " : "" }
+
     private var lines: [String] {
         let s = model.prefs
         var out: [String] = []
-        if !mildHybrid, let a = trip.avgKwhPer100 { out.append(one(a) + " kWh/100") }
+        if !mildHybrid, let a = trip.avgKwhPer100 { out.append(approx + one(a) + " kWh/100") }
         // Battery used on the trip, in % and kWh.
         var used: Double? = nil
         if let k = trip.kwh, k > 0 { used = k } else if let a = trip.avgKwhPer100 { used = a * trip.distanceKm / 100 }
-        if let used = used, let battery = battery, battery > 0 { out.append("−" + Fmt.fixed(used / battery * 100, 0) + " % · " + one(used) + " kWh") }
+        if let used = used, let battery = battery, battery > 0 { out.append("−" + Fmt.fixed(used / battery * 100, 0) + " % · " + approx + one(used) + " kWh") }
         if let l = trip.avgLPer100 { out.append(one(l) + " l/100") }
         if s.fuelPrice > 0, let l = trip.liters { out.append("≈ " + fuelMoney(l * s.fuelPrice, currency)) }
         return out
@@ -274,9 +276,9 @@ private struct TripDetail: View {
         var speedText = "—"
         if let v = speed { speedText = s.distanceUnit == "mi" ? "\((v * 0.621371).roundToLong) mph" : "\(v.roundToLong) km/h" }
         var use = ("Consumption", "—")
-        if !mildHybrid, let a = trip.avgKwhPer100 { use = ("Consumption", one(a) + " kWh/100") } else if let l = trip.avgLPer100 { use = ("Fuel", one(l) + " l/100") }
+        if !mildHybrid, let a = trip.avgKwhPer100 { use = ("Consumption", (trip.energyEstimated ? "≈ " : "") + one(a) + " kWh/100") } else if let l = trip.avgLPer100 { use = ("Fuel", one(l) + " l/100") }
         var energy: String? = nil
-        if !mildHybrid, let k = trip.kwh, k > 0 { energy = one(k) + " kWh" }
+        if !mildHybrid, let k = trip.kwh, k > 0 { energy = (trip.energyEstimated ? "≈ " : "") + one(k) + " kWh" }
         let fuel = trip.liters.map { one($0) + " l" }
         var fuelCost: String? = nil
         if s.fuelPrice > 0, let l = trip.liters { fuelCost = "≈ " + fuelMoney(l * s.fuelPrice, ChargeLog.places.currency) }

@@ -1173,7 +1173,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 val res = api.allTrips(v, System.currentTimeMillis() - days * 86_400_000L)
                 val vehicle = _ui.value.vehicle?.takeIf { it.vin == v.vin } ?: v
-                val all = api.parseTrips(vehicle, res.trips)
+                val parsed = api.parseTrips(vehicle, res.trips)
+                val battery = _ui.value.status?.takeIf { it.energyType != "Fuel" }?.let { no.lionflow.app.model.ChargePower.usableKwh(it) }
+                val all = no.lionflow.app.model.TripEnergy.fill(parsed, battery, no.lionflow.app.model.CarTrips.list())
+                val fromCar = parsed.count { (it.kwh ?: 0.0) > 0 }
+                val worked = all.count { it.energyEstimated }
+                if (parsed.isNotEmpty()) remote.addLog("trips: energy from the car $fromCar, worked out $worked, missing ${all.size - fromCar - worked}")
                 tripsNone = res.noneFound
                 if (tripsNone) remote.addLog("trips: the server says no trips were found")
                 val newest = all.maxOfOrNull { it.startMillis ?: 0L } ?: 0L
