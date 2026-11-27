@@ -37,10 +37,11 @@ object ChargeLimit {
         val s = app.settings.value
         if (!s.chargeLimitOn || !st.isCharging || !app.remote.isSetUp) return false
         val pct = st.batteryPct ?: return false
-        // The car reports every few minutes, so stop a little early when charging fast:
-        // add what it will gain before the next check (at most 3 %).
+        // The car reports every few minutes, so stop a little early when charging fast: add what it will gain before
+        // the next check (at most 3 %), and what it gained since a report that is getting old (at most 10 % in all).
         val kw = no.lionflow.app.model.ChargePower.reading(st)?.kw ?: 0.0
-        val gain = (kw * (5.0 / 60.0) / no.lionflow.app.model.ChargePower.usableKwh(st) * 100).coerceIn(0.0, 3.0)
+        val ageMin = ((System.currentTimeMillis() - (st.updatedAtMillis ?: System.currentTimeMillis())) / 60_000.0).coerceIn(0.0, 60.0)
+        val gain = (kw * ((5.0 + ageMin) / 60.0) / no.lionflow.app.model.ChargePower.usableKwh(st) * 100).coerceIn(0.0, if (ageMin > 10) 10.0 else 3.0)
         return pct + gain >= s.chargeLimitPct
     }
 

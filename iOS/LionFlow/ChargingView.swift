@@ -649,14 +649,19 @@ private struct PlacesSheet: View {
                     PriceBox(label: "Fast (DC)", value: $dc, currency: cur)
                 }
                 SheetLabel(text: "Currency")
-                HStack(spacing: 8) {
-                    ForEach(["kr", "€", "£", "$"], id: \.self) { opt in
-                        let on = cur == opt
-                        Plain(opt).font(LfType.label).foregroundColor(on ? c.onAccent : c.text)
-                            .frame(maxWidth: .infinity).frame(height: 44)
-                            .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(on ? c.accent : c.card))
-                            .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(on ? c.accent : c.line, lineWidth: 1))
-                            .tap { cur = opt }
+                let options = ChargeLog.currencies.contains(ChargeLog.places.currency) ? ChargeLog.currencies : ChargeLog.currencies + [ChargeLog.places.currency]
+                ForEach(Array(stride(from: 0, to: options.count, by: 5)), id: \.self) { start in
+                    let line = Array(options[start..<min(start + 5, options.count)])
+                    HStack(spacing: 8) {
+                        ForEach(line, id: \.self) { opt in
+                            let on = cur == opt
+                            Plain(opt).font(LfType.label).foregroundColor(on ? c.onAccent : c.text)
+                                .frame(maxWidth: .infinity).frame(height: 44)
+                                .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(on ? c.accent : c.card))
+                                .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(on ? c.accent : c.line, lineWidth: 1))
+                                .tap { cur = opt }
+                        }
+                        ForEach(0..<(5 - line.count), id: \.self) { _ in Color.clear.frame(maxWidth: .infinity).frame(height: 44) }
                     }
                 }
                 PrimaryButton("Save", action: save).padding(.top, 6)

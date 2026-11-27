@@ -114,22 +114,32 @@ final class StateTests: XCTestCase {
         XCTAssertTrue(ChargePower.history()[0].hasSuffix("level=43 residual=31.0 status=Stopped type=null plugged=true preheat=false"), ChargePower.history()[0])
     }
 
-    /// The car's level can drop 5 points or more with the same energy in the battery; LionFlow keeps the old number
-    /// for a while, but never while the car is plugged in: there the car's own number decides where charging stops.
-    func testLevelFixStopsWhenPluggedIn() {
+    /// The car's own battery level is always shown as it is (a correction for sudden drops showed levels the car
+    /// and MyPeugeot didn't, e.g. 87 % for 77 %).
+    func testLevelIsTheCarsOwn() {
         _ = ChargePower.record(status(pct: 89, residual: 68.5))
         now += 60_000
-        var st = ChargePower.record(status(pct: 79, residual: 68.5))
-        XCTAssertEqual(st.batteryPct, 89)
-        XCTAssertTrue(ChargePower.history()[0].contains("level=89 (car says 79) residual"), ChargePower.history()[0])
-        now += 60_000
-        st = ChargePower.record(status(pct: 79, plugged: true, residual: 68.5))
+        let st = ChargePower.record(status(pct: 79, residual: 68.5))
         XCTAssertEqual(st.batteryPct, 79)
         XCTAssertTrue(ChargePower.history()[0].contains("level=79 residual"), ChargePower.history()[0])
-        // Unplugged again: the old number doesn't come back.
+    }
+
+    /// A sunroof reported open is ignored until the car has been seen reporting it closed (cars without one report
+    /// it open all the time).
+    func testSunroofCountsOnceSeenClosed() {
+        func roof(_ state: String) -> VehicleStatus {
+            var st = status(pct: 50)
+            st.raw = try! JSONObject("""
+            {"doorsState":{"opening":[{"identifier":"RoofWindow","state":"\(state)"},{"identifier":"Driver","state":"Closed"}]}}
+            """)
+            st.openDoors = state == "Open" ? ["RoofWindow"] : []
+            return st
+        }
+        XCTAssertEqual(ChargePower.record(roof("Open")).openDoors, [])
         now += 60_000
-        st = ChargePower.record(status(pct: 79, residual: 68.4))
-        XCTAssertEqual(st.batteryPct, 79)
+        _ = ChargePower.record(roof("Closed"))
+        now += 60_000
+        XCTAssertEqual(ChargePower.record(roof("Open")).openDoors, ["RoofWindow"])
     }
 
     /// The car reports its scheduled start time also when it is set to charge right away: after LionFlow's

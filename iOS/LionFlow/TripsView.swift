@@ -476,7 +476,7 @@ struct FuelPriceEditor: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
                 T("Fuel price").font(LfType.stat).foregroundColor(c.text).padding(.bottom, 4)
-                T("What a litre costs you. It is used for the fuel cost of trips, months and fill-ups. The currency is the one set for charging costs.")
+                T("What a litre costs you. It is used for the fuel cost of trips, months and fill-ups. The currency is chosen in Settings, under Units.")
                     .font(LfType.small).foregroundColor(c.muted)
                 LfField(label: "\(currency)/l", text: $price, keyboard: .decimalPad)
                     .onChange(of: price) { v in

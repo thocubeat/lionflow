@@ -334,13 +334,16 @@ private fun PlacesDialog(cfg: PlacesConfig, ui: UiState, onClose: () -> Unit) {
 
             // Currency
             SheetLabel("Currency")
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("kr", "€", "£", "$").forEach { opt ->
-                    val sel = cur == opt
-                    Box(Modifier.weight(1f).height(44.dp).clip(RoundedCornerShape(14.dp)).background(if (sel) c.accent else c.card)
-                        .border(1.dp, if (sel) c.accent else c.line, RoundedCornerShape(14.dp)).clickable { cur = opt }, contentAlignment = Alignment.Center) {
-                        Text(opt, style = Type.label, color = if (sel) c.onAccent else c.text)
+            (ChargeLog.CURRENCIES + cfg.currency).distinct().chunked(5).forEach { line ->
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    line.forEach { opt ->
+                        val sel = cur == opt
+                        Box(Modifier.weight(1f).height(44.dp).clip(RoundedCornerShape(14.dp)).background(if (sel) c.accent else c.card)
+                            .border(1.dp, if (sel) c.accent else c.line, RoundedCornerShape(14.dp)).clickable { cur = opt }, contentAlignment = Alignment.Center) {
+                            Text(opt, style = Type.label, color = if (sel) c.onAccent else c.text)
+                        }
                     }
+                    repeat(5 - line.size) { Box(Modifier.weight(1f)) }
                 }
             }
 

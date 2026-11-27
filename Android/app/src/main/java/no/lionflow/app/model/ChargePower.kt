@@ -2,6 +2,7 @@ package no.lionflow.app.model
 
 import android.content.Context
 import android.content.SharedPreferences
+import no.lionflow.app.api.objects
 import no.lionflow.app.data.SettingsStore
 import org.json.JSONArray
 import java.util.Locale
@@ -90,34 +91,21 @@ object ChargePower {
     }
 
     /**
-     * An electric car can suddenly report a much lower level with the same energy in the battery: an E-5008 went from
-     * 89 % to 79 % the moment its daily charge limit was switched back on (68.5 kWh both times), and then counted down
-     * slowly from the old number. Only when exactly that is seen (level drops 5 points or more between two reports while
-     * the energy stays put), the level from before the drop is kept and moved by the change in energy, until the car's
-     * own number has caught up. The energy figure alone is never used: on other cars it doesn't match the level.
+     * Some cars without a sunroof report one that is open ("RoofWindow": Open) all the time. A car that has one reports
+     * it closed now and then, so the sunroof only counts once this car has been seen reporting it closed.
      */
-    private fun fixLevel(st: VehicleStatus): VehicleStatus {
+    private fun fixRoof(st: VehicleStatus): VehicleStatus {
         val p = prefs ?: return st
-        val level = st.batteryPct; val res = st.residualKwh; val cap = st.capacityKwh
-        if (st.energyType != "Electric" || level == null || res == null || cap == null || cap < 30) return st
-        val now = System.currentTimeMillis()
-        val last = p.getString(k("lvl"), "")!!.split(",").mapNotNull { it.toDoubleOrNull() }
-        var anchor = p.getString(k("lvlAnchor"), "")!!.split(",").mapNotNull { it.toDoubleOrNull() }
-        if (last.size == 2 && last[0] - level >= 5 && kotlin.math.abs(last[1] - res) < 1.0) anchor = listOf(last[0], last[1], now.toDouble())
-        var out = st
-        if (anchor.size == 3) {
-            val est = anchor[0] + (res - anchor[1]) / cap * 100
-            // Never while plugged in: the car's own level decides where it stops charging, and showing more than the
-            // car says made a car that stopped at its 80 % daily limit look like it went on to 89 %.
-            if (st.plugged || now - anchor[2] > 86_400_000L || est - level <= 2 || est > 100.5) anchor = emptyList()
-            else out = st.copy(batteryPct = Math.round(est).toDouble())
-        }
-        p.edit().putString(k("lvl"), "$level,$res").putString(k("lvlAnchor"), anchor.joinToString(",")).apply()
-        return out
+        val roof = st.raw.optJSONObject("doorsState")?.optJSONArray("opening")?.objects().orEmpty()
+            .filter { it.optString("identifier").equals("RoofWindow", ignoreCase = true) }
+        if (roof.any { it.optString("state") == "Closed" } && !p.getBoolean(k("roofSeen"), false)) p.edit().putBoolean(k("roofSeen"), true).apply()
+        if (p.getBoolean(k("roofSeen"), false)) return st
+        val doors = st.openDoors.filterNot { it.equals("RoofWindow", ignoreCase = true) }
+        return if (doors.size == st.openDoors.size) st else st.copy(openDoors = doors)
     }
 
     fun record(raw: VehicleStatus): VehicleStatus {
-        val st = applyPendingPrograms(fixRange(fixLevel(raw)))
+        val st = applyPendingPrograms(fixRange(fixRoof(raw)))
         try { ChargeLog.observe(st) } catch (_: Exception) { }
         try { CarTrips.observe(st) } catch (_: Exception) { }
         val p = prefs ?: return st

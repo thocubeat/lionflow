@@ -121,6 +121,8 @@ struct SettingsView: View {
     @State private var sheet: SettingsSheet?
     @State private var confirmSignOut = false
     @State private var importing = false
+    /** The currency for prices (kept with the charging places). */
+    @State private var currency = ChargeLog.places.currency
 
     var body: some View {
         ScreenColumn(wide: wide, refreshing: model.ui.refreshing, onRefresh: { model.refresh() }) {
@@ -254,7 +256,7 @@ struct SettingsView: View {
             if !(plainElectric && chosen == nil) {
                 LfDivider()
                 DropdownRow(title: "48 V mild hybrid", subtitle: detectionText(vehicle.mildHybridDetection),
-                            options: [(0, "Automatic"), (1, "On"), (2, "Off")], selected: chosen == nil ? 0 : (chosen == true ? 1 : 2)) { mode in
+                            options: [(0, "Automatic"), (1, "On"), (2, "Off (plug-in hybrid)")], selected: chosen == nil ? 0 : (chosen == true ? 1 : 2)) { mode in
                     model.setMildHybridOverride(mode == 0 ? nil : mode == 1)
                 }
             }
@@ -266,7 +268,7 @@ struct SettingsView: View {
         case .vehicleMetadata: return "Automatic · Recognized from vehicle metadata"
         case .modelName: return "Automatic · Recognized from model name"
         case .otherPowertrain: return "Automatic · Different powertrain"
-        case .insufficientMetadata: return "Automatic · Insufficient vehicle information"
+        case .insufficientMetadata: return "Automatic · Not sure yet (a plug-in hybrid: choose Off)"
         }
     }
 
@@ -293,6 +295,15 @@ struct SettingsView: View {
             SegRow(title: "Temperature", options: [("c", "°C"), ("f", "°F")], selected: s.tempUnit) { v in model.update { $0.tempUnit = v } }
             LfDivider()
             SegRow(title: "Clock", options: [("24", "24 h"), ("12", "12 h"), ("system", "System")], selected: s.timeFormat) { v in model.update { $0.timeFormat = v } }
+            LfDivider()
+            let currencies = ChargeLog.currencies.contains(currency) ? ChargeLog.currencies : ChargeLog.currencies + [currency]
+            DropdownRow(title: "Currency", subtitle: "For charging and fuel prices",
+                        options: currencies.enumerated().map { ($0.offset, $0.element) }, selected: currencies.firstIndex(of: currency) ?? 0) { i in
+                var places = ChargeLog.places
+                places.currency = currencies[i]
+                ChargeLog.savePlaces(places)
+                currency = currencies[i]
+            }
             if Caps.battery(model.ui.status) {
                 LfDivider()
                 LinkRow(title: "Battery size", subtitle: s.batteryKwh > 0 ? "\(JSONValue.javaInt(s.batteryKwh)) kWh usable · used to work out charging kW"

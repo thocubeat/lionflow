@@ -227,7 +227,8 @@ internal fun CarDataCard(vm: AppViewModel, ui: UiState, s: AppSettings) {
         }
         val cells = listOfNotNull(
             st.odometerKm?.let { "Odometer" to fmtDistance(it, s) },
-            st.outsideTempC?.let { "Outside" to fmtTemp(it, s) },
+            // Some cars don't report it: then the weather where the car is.
+            (st.outsideTempC ?: ui.weather?.tempC)?.let { "Outside" to fmtTemp(it, s) },
             battery12(st)?.let { "12 V battery" to it },
         )
         if (cells.isNotEmpty()) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {

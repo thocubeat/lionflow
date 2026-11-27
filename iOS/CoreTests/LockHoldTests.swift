@@ -49,9 +49,26 @@ final class LockHoldTests: XCTestCase {
         XCTAssertEqual(LockHold.reportedAt(try status("Locked", doorsAt: nil, reportAt: sent + 40_000)), sent + 40_000)
     }
 
+    func testDanishIsOfferedAndTranslates() throws {
+        XCTAssertTrue(L10n.options.contains { $0.0 == "da" && $0.1 == "Dansk" })
+        XCTAssertEqual(L10n.columns.last, "da")
+        let here = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+        let android = here.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("Android/app/src/main/assets/l10n.tsv")
+        let ios = here.deletingLastPathComponent().appendingPathComponent("l10n-ios.tsv")
+        L10n.load([try String(contentsOf: android, encoding: .utf8), try String(contentsOf: ios, encoding: .utf8)])
+        defer { L10n.setPreference("en") }
+        L10n.setPreference("da")
+        XCTAssertEqual(L10n.lang, "da")
+        XCTAssertEqual(tr("Lock"), "Lås")
+        XCTAssertEqual(tr("Stop at 80 %"), "Stop ved 80 %")
+        XCTAssertEqual(tr("Currency"), "Valuta")
+        XCTAssertEqual(tr("Use Face ID or Touch ID"), "Brug Face ID eller Touch ID")
+        XCTAssertEqual(WatchText.table["da"]?["Lock"], "Lås")
+    }
+
     func testFinnishIsOfferedAndTranslates() throws {
         XCTAssertTrue(L10n.options.contains { $0.0 == "fi" && $0.1 == "Suomi" })
-        XCTAssertEqual(L10n.columns.last, "fi")
+        XCTAssertTrue(L10n.columns.contains("fi"))
         let here = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
         let android = here.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("Android/app/src/main/assets/l10n.tsv")
         let ios = here.deletingLastPathComponent().appendingPathComponent("l10n-ios.tsv")

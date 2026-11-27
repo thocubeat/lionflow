@@ -245,7 +245,7 @@ final class AppModel: ObservableObject {
     private func energyLog() -> String {
         guard let raw = ui.status?.raw else { return "" }
         var sb = "LionFlow \(services.version) · car energy data\n"
-        if let energies = raw.optJSONArray("energies") {
+        if let energies = raw.optJSONArray("energies") ?? raw.optJSONArray("energy") {
             for e in energies.objects() {
                 let electric = e.optJSONObject("extension")?.optJSONObject("electric")
                 let ch = electric?.optJSONObject("charging")
@@ -257,7 +257,7 @@ final class AppModel: ObservableObject {
                 sb += "\n"
             }
         } else {
-            sb += "no energies in the answer\n"
+            sb += "no energies in the answer (it has: \(raw.keys().sorted().joined(separator: ", ")))\n"
         }
         let hist = ChargePower.history()
         if !hist.isEmpty {

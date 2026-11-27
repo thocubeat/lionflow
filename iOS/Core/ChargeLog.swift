@@ -113,6 +113,9 @@ struct PlaceMatch: Equatable {
 /// Charging log. The car has no charging history, so LionFlow watches its status reports and turns
 /// "charging started → stopped" into sessions. Everything stays on the phone.
 enum ChargeLog {
+    /// The currencies to pick from for charging and fuel prices.
+    static let currencies = ["€", "kr", "£", "$", "CHF", "zł", "Kč", "Ft", "lei"]
+
     private static let lock = NSRecursiveLock()
     private static var prefs: KeyValueStore?
     private static var vin = ""

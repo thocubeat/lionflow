@@ -125,6 +125,9 @@ object Updater {
 
     fun canInstall(ctx: Context) = ctx.packageManager.canRequestPackageInstalls()
 
+    /** What Android said about the last install: "pending" (it asks the user), "done", or why it failed. */
+    val result = kotlinx.coroutines.flow.MutableStateFlow<String?>(null)
+
     fun install(ctx: Context, apk: File) {
         val installer = ctx.packageManager.packageInstaller
         val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL).apply {
@@ -141,6 +144,17 @@ object Updater {
     }
 }
 
+/**
+ * Some phones (Xiaomi's HyperOS / MIUI) leave LionFlow's own install hanging: then hand the downloaded file to
+ * Android's installer screen instead, as when installing it by hand.
+ */
+fun installWithSystem(ctx: Context, apk: File) {
+    val uri = androidx.core.content.FileProvider.getUriForFile(ctx, ctx.packageName + ".files", apk)
+    val view = Intent(Intent.ACTION_VIEW).setDataAndType(uri, "application/vnd.android.package-archive")
+        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+    ctx.startActivity(view)
+}
+
 /** Receives the install result; if Android wants the user to confirm (first self-update), shows that screen. */
 class InstallResultReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -150,11 +164,13 @@ class InstallResultReceiver : BroadcastReceiver() {
                 val confirm = if (Build.VERSION.SDK_INT >= 33) intent.getParcelableExtra(Intent.EXTRA_INTENT, Intent::class.java)
                 else intent.getParcelableExtra(Intent.EXTRA_INTENT)
                 confirm?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)?.let { context.startActivity(it) }
+                Updater.result.value = "pending"
             }
-            PackageInstaller.STATUS_SUCCESS -> { /* the new version starts the next time the app is opened */ }
+            PackageInstaller.STATUS_SUCCESS -> { Updater.result.value = "done" /* the new version starts the next time the app is opened */ }
             else -> {
                 val msg = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE) ?: "unknown error"
                 (context.applicationContext as? no.lionflow.app.LionFlowApp)?.remote?.addLog("update failed: $msg")
+                Updater.result.value = msg
             }
         }
     }

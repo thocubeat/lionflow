@@ -76,7 +76,7 @@ final class WidgetBridge {
         }
         // The car doesn't report the temperature inside, so "Car" shows whether it is heating.
         w.cabinText = tr(st.preconditioningOn ? "Pre-heating" : "Not heating")
-        w.outsideText = st.outsideTempC.map { fmtTemp($0, s) } ?? "—"
+        w.outsideText = (st.outsideTempC ?? ui.weather?.tempC).map { fmtTemp($0, s) } ?? "—"
         if let p = model.parkedAt {
             w.place = p == "@Home" ? tr("Home") : (p.hasPrefix("@") ? String(p.dropFirst()) : p)
         }

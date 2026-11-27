@@ -18,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -151,14 +152,14 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     private fun energyLog(): String {
         val raw = _ui.value.status?.raw ?: return ""
         val sb = StringBuilder("LionFlow ${no.lionflow.app.BuildConfig.VERSION_NAME} · car energy data\n")
-        raw.optJSONArray("energies")?.objects()?.forEach { e ->
+        (raw.optJSONArray("energies") ?: raw.optJSONArray("energy"))?.objects()?.forEach { e ->
             val ch = e.optJSONObject("extension")?.optJSONObject("electric")?.optJSONObject("charging")
             val load = e.optJSONObject("extension")?.optJSONObject("electric")?.optJSONObject("battery")?.optJSONObject("load")
             sb.append("${e.optString("type")}: level=${e.opt("level")} autonomy=${e.opt("autonomy")} updated=${e.optString("updatedAt")}")
             if (ch != null) sb.append(" plugged=${ch.opt("plugged")} status=${ch.optString("status")}")
             if (load != null) sb.append(" capacity=${load.opt("capacity")} residual=${load.opt("residual")}")
             sb.append("\n")
-        } ?: sb.append("no energies in the answer\n")
+        } ?: sb.append("no energies in the answer (it has: ${raw.keys().asSequence().toList().sorted().joinToString(", ")})\n")
         val hist = no.lionflow.app.model.ChargePower.history()
         if (hist.isNotEmpty()) { sb.append("\nlast car reports (newest first):\n"); hist.forEach { sb.append(it).append('\n') } }
         return sb.append("\n").toString()
@@ -1018,7 +1019,19 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                     return@launch
                 }
                 _ui.update { it.copy(updateStatus = "Installing ${r.name}…") }
+                no.lionflow.app.update.Updater.result.value = null
                 no.lionflow.app.update.Updater.install(ctx, f)
+                // No answer from Android after a while, or it said no (seen on Xiaomi's HyperOS): use Android's own
+                // installer screen instead, as when installing the file by hand.
+                val said = kotlinx.coroutines.withTimeoutOrNull(30_000) {
+                    no.lionflow.app.update.Updater.result.first { it != null }
+                }
+                if (said != "pending" && said != "done" && _ui.value.updateStatus?.startsWith("Installing") == true) {
+                    remote.addLog("update ${r.tag}: ${said ?: "no answer after 30 s"} → Android's installer")
+                    _ui.update { it.copy(updateStatus = "Opening Android's installer…") }
+                    try { no.lionflow.app.update.installWithSystem(ctx, f) }
+                    catch (e: Exception) { _ui.update { it.copy(updateStatus = "Update failed — ${no.lionflow.app.api.Http.describe(e)}") } }
+                }
             } catch (e: Exception) {
                 _ui.update { it.copy(updateStatus = "Update failed — ${no.lionflow.app.api.Http.describe(e)}") }
             }

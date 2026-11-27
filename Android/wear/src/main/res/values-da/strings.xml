@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LionFlow</string>
+    <string name="battery">Batteri</string>
+    <string name="fuel">Brændstof</string>
+    <string name="range">Rækkevidde</string>
+    <string name="today">I dag</string>
+    <string name="yesterday">I går</string>
+    <string name="unlock">Lås op</string>
+    <string name="lock">Lås</string>
+    <string name="flash">Blink</string>
+    <string name="preheat">Forvarm</string>
+    <string name="find_car">Bilen er ved</string>
+    <string name="refresh">Opdatér</string>
+    <string name="loading">Henter bilens status…</string>
+    <string name="no_phone">Åbn LionFlow på din telefon. Uret henter sine data derfra.</string>
+    <string name="confirm_unlock">Låse bilen op?</string>
+    <string name="confirm_lock">Låse bilen?</string>
+    <string name="confirm_flash">Blinke med lygterne?</string>
+    <string name="confirm_preheat">Starte forvarmning?</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nej</string>
+    <string name="sending">Sender til bilen…</string>
+    <string name="updated" formatted="false">Opdateret %s</string>
+    <string name="switch_car">Skift bil</string>
+</resources>

@@ -19,7 +19,8 @@ struct CarDataCard: View {
     private func cells(_ st: VehicleStatus) -> [(String, String)] {
         var out: [(String, String)] = []
         if let odo = st.odometerKm { out.append(("Odometer", fmtDistance(odo, model.prefs))) }
-        if let t = st.outsideTempC { out.append(("Outside", fmtTemp(t, model.prefs))) }
+        // Some cars don't report it: then the weather where the car is.
+        if let t = st.outsideTempC ?? model.ui.weather?.tempC { out.append(("Outside", fmtTemp(t, model.prefs))) }
         if let b = battery12(st) { out.append(("12 V battery", b)) }
         return out
     }

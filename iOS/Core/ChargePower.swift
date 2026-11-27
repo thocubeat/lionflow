@@ -112,28 +112,16 @@ enum ChargePower {
         (text ?? "").components(separatedBy: ",").compactMap { JSONValue.javaParseDouble($0) }
     }
 
-    /// An electric car can suddenly report a much lower level with the same energy in the battery: an E-5008 went from
-    /// 89 % to 79 % the moment its daily charge limit was switched back on (68.5 kWh both times), and then counted down
-    /// slowly from the old number. Only when exactly that is seen (level drops 5 points or more between two reports while
-    /// the energy stays put), the level from before the drop is kept and moved by the change in energy, until the car's
-    /// own number has caught up. The energy figure alone is never used: on other cars it doesn't match the level.
-    private static func fixLevel(_ st: VehicleStatus) -> VehicleStatus {
+    /// Some cars without a sunroof report one that is open ("RoofWindow": Open) all the time. A car that has one
+    /// reports it closed now and then, so the sunroof only counts once this car has been seen reporting it closed.
+    private static func fixRoof(_ st: VehicleStatus) -> VehicleStatus {
         guard let p = prefs else { return st }
-        guard st.energyType == "Electric", let level = st.batteryPct, let res = st.residualKwh, let cap = st.capacityKwh, cap >= 30 else { return st }
-        let now = clock()
-        let last = doubles(p.string(k("lvl")))
-        var anchor = doubles(p.string(k("lvlAnchor")))
-        if last.count == 2 && last[0] - level >= 5 && abs(last[1] - res) < 1.0 { anchor = [last[0], last[1], Double(now)] }
+        let roof = (st.raw.optJSONObject("doorsState")?.optJSONArray("opening")?.objects() ?? [])
+            .filter { $0.optString("identifier").lowercased() == "roofwindow" }
+        if roof.contains(where: { $0.optString("state") == "Closed" }) && p.string(k("roofSeen")) != "1" { p.set(k("roofSeen"), "1") }
+        if p.string(k("roofSeen")) == "1" { return st }
         var out = st
-        if anchor.count == 3 {
-            let est = anchor[0] + (res - anchor[1]) / cap * 100
-            // Never while plugged in: the car's own level decides where it stops charging, and showing more than the
-            // car says made a car that stopped at its 80 % daily limit look like it went on to 89 %.
-            if st.plugged || Double(now) - anchor[2] > 86_400_000 || est - level <= 2 || est > 100.5 { anchor = [] }
-            else { out.batteryPct = Double(est.roundToLong) }
-        }
-        p.set(k("lvl"), "\(JSONValue.javaDouble(level)),\(JSONValue.javaDouble(res))")
-        p.set(k("lvlAnchor"), anchor.map { JSONValue.javaDouble($0) }.joined(separator: ","))
+        out.openDoors = st.openDoors.filter { $0.lowercased() != "roofwindow" }
         return out
     }
 
@@ -142,7 +130,7 @@ enum ChargePower {
     static func record(_ raw: VehicleStatus) -> VehicleStatus {
         lock.lock()
         defer { lock.unlock() }
-        let st = applyPendingPrograms(fixRange(fixLevel(raw)))
+        let st = applyPendingPrograms(fixRange(fixRoof(raw)))
         ChargeLog.observe(st)
         CarTrips.observe(st)
         guard let p = prefs else { return st }

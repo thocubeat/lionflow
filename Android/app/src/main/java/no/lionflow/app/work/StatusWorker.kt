@@ -29,7 +29,22 @@ class StatusWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
         if (!app.api.isSignedIn) return Result.success()
         val vehicle = app.api.cachedVehicle() ?: return Result.success()
         return try {
-            val st = no.lionflow.app.model.ChargePower.record(app.api.readStatus(vehicle))
+            var st = no.lionflow.app.model.ChargePower.record(app.api.readStatus(vehicle))
+            // LionFlow's charge limit needs fresh numbers, but some cars (seen on an e-208) stop reporting while they
+            // charge, and then charged on to 100 %. When the last report is over 15 minutes old, wake the car for a
+            // new one (at most every 10 minutes).
+            if (s.chargeLimitOn && st.isCharging && app.remote.isSetUp && (st.batteryPct ?: 100.0) < s.chargeLimitPct) {
+                val now = System.currentTimeMillis()
+                val lastWake = app.settings.raw("limitWakeAt").toLongOrNull() ?: 0L
+                if (now - (st.updatedAtMillis ?: now) > 15 * 60_000L && now - lastWake > 10 * 60_000L) {
+                    app.settings.setRaw("limitWakeAt", now.toString())
+                    try {
+                        Waker.wake(app)
+                        st = no.lionflow.app.model.ChargePower.record(app.api.readStatus(vehicle))
+                        app.remote.addLog("charge limit: no report for ${(now - (st.updatedAtMillis ?: now)) / 60_000} min → woke the car, now ${st.batteryPct?.toInt()} %")
+                    } finally { app.remote.disconnect() }
+                }
+            }
             no.lionflow.app.widget.WidgetData.save(applicationContext, st)
             // While charging, check again in ~10 minutes so the charging log gets a good start/end.
             // LionFlow's own charge limit.

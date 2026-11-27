@@ -95,7 +95,8 @@ data class VehicleStatus(
             mildHybrid: Boolean = false,
             requireChargingEvidence: Boolean = false,
         ): VehicleStatus {
-            val energies = j.optJSONArray("energies")?.objects().orEmpty()
+            // "energy" is the older name, still seen from some cars.
+            val energies = (j.optJSONArray("energies") ?: j.optJSONArray("energy"))?.objects().orEmpty()
             val reportedElectric = energies.firstOrNull { it.optString("type") == "Electric" }
             val reportedCharging = reportedElectric?.obj("extension", "electric", "charging")
             // Stellantis can report a full or partial charge target even when the car is unplugged.

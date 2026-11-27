@@ -17,8 +17,9 @@ enum L10n {
         ("nb", "Norsk (bokmål)"),
         ("nl", "Nederlands"),
         ("fi", "Suomi"),
+        ("da", "Dansk"),
     ]
-    static let columns = ["fr", "de", "es", "nb", "nl", "fi"]
+    static let columns = ["fr", "de", "es", "nb", "nl", "fi", "da"]
 
     private struct Template {
         let regex: NSRegularExpression

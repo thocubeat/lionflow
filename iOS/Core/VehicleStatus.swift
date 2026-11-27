@@ -89,7 +89,8 @@ struct VehicleStatus: Equatable {
     }
 
     static func parse(_ j: JSONObject, _ maintenance: JSONObject?, mildHybrid: Bool = false, requireChargingEvidence: Bool = false) -> VehicleStatus {
-        let energies = j.optJSONArray("energies")?.objects() ?? []
+        // "energy" is the older name, still seen from some cars.
+        let energies = (j.optJSONArray("energies") ?? j.optJSONArray("energy"))?.objects() ?? []
         let reportedElectric = energies.first { $0.optString("type") == "Electric" }
         let reportedCharging = reportedElectric?.obj("extension", "electric", "charging")
         // Stellantis can report a full or partial charge target even when the car is unplugged.

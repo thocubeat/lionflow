@@ -116,6 +116,9 @@ data class PlaceMatch(val kind: String, val label: String, val price: Double?)  
  * "charging started → stopped" into sessions. Everything stays on the phone.
  */
 object ChargeLog {
+    /** The currencies to pick from for charging and fuel prices. */
+    val CURRENCIES = listOf("€", "kr", "£", "$", "CHF", "zł", "Kč", "Ft", "lei")
+
     private var prefs: SharedPreferences? = null
     private var cacheDir: File? = null
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
