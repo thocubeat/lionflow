@@ -14,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import no.lionflow.app.R
+import no.lionflow.app.door.GarageDoor
 import no.lionflow.app.car.ui.Hit
 import no.lionflow.app.car.ui.HomeModel
 import no.lionflow.app.car.ui.HomePaint
@@ -65,6 +66,7 @@ internal class HomeScreen(ctx: CarContext, ui: CarUi) : DrawnScreen(ctx, ui) {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { combine(CarHub.status, CarHub.message, CarHub.loading, CarHub.trips) { _, _, _, _ -> Unit }.collect { redraw() } }
                 launch { SavedRoutes.changes.collect { redraw() } }
+                launch { GarageDoor.config.collect { invalidate() } }
                 launch { while (true) { delay(10_000L); CarHub.refresh(carContext, force = true); CarHub.askCar(carContext) } }   // fresh numbers while it shows
                 launch { CarHub.live.collect { redraw() } }   // battery and range straight from the car
                 // The speed is read again every 5 seconds (that also keeps "reported … ago" right).
@@ -99,9 +101,16 @@ internal class HomeScreen(ctx: CarContext, ui: CarUi) : DrawnScreen(ctx, ui) {
         val out = ArrayList<Btn>()
         // Sun in the dark look (switch to light), moon in the light look.
         out += Btn(if (pal.dark) R.drawable.ic_car_sun else R.drawable.ic_car_moon) { CarTheme.toggle(carContext); invalidate(); redraw() }
-        out += Btn(R.drawable.ic_car_refresh) { CarHub.refresh(carContext, force = true); CarHub.loadTrips(carContext, force = true) }
+        val refresh = Btn(R.drawable.ic_car_refresh) { CarHub.refresh(carContext, force = true); CarHub.loadTrips(carContext, force = true) }
+        out += refresh
+        // The garage door, just before YouTube (set up on the phone: Settings → Integrations).
+        if (GarageDoor.configured && "garage" !in no.lionflow.app.data.HomeLayout.hidden(CarHub.app(carContext).settings.value.carHidden)) {
+            out += Btn(R.drawable.ic_car_garage) { screenManager.push(GarageScreen(carContext, ui)) }
+        }
         out += Btn(R.drawable.ic_car_play, tint = CarColor.RED) { openVideo(VideoSite.YouTube) }
         if (Where.inNorway(carContext)) out += Btn(custom = nrkBadge()) { openVideo(VideoSite.NrkTv) }
+        // Android Auto shows at most four. This screen updates itself every 10 seconds, so refresh is the one to go.
+        if (out.size > 4) out.remove(refresh)
         return out
     }
 

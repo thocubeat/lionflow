@@ -366,7 +366,7 @@ fun HomeEditor(vm: AppViewModel, ui: UiState, s: AppSettings, target: String, on
     val c = LocalLf.current
     val st = ui.status
     val all = when (target) { "watch" -> HomeLayout.WATCH; "car" -> HomeLayout.CAR; else -> HomeLayout.PHONE }
-    fun applies(i: HomeLayout.Item) = when (i.needs) { "battery" -> Caps.battery(st); "fuel" -> Caps.fuel(st); else -> true }
+    fun applies(i: HomeLayout.Item) = when (i.needs) { "battery" -> Caps.battery(st); "fuel" -> Caps.fuel(st); "garage" -> no.lionflow.app.door.GarageDoor.configured; else -> true }
     val hiddenCsv = when (target) { "watch" -> s.watchHidden; "car" -> s.carHidden; else -> s.homeHidden }
     val hidden = HomeLayout.hidden(hiddenCsv)
     val items = (if (target == "phone") HomeLayout.ordered(all, s.homeOrder) else all).filter { applies(it) }

@@ -16,7 +16,7 @@ import java.util.zip.ZipOutputStream
  */
 object Backup {
     private const val MARK = "lionflow-backup.txt"
-    private val skipPrefs = setOf("lf_secure.xml", "demo.xml", "charge_log_demo.xml")
+    private val skipPrefs = setOf("lf_secure.xml", "lf_door_secure.xml", "demo.xml", "charge_log_demo.xml")
 
     fun export(ctx: Context): File {
         val data = ctx.applicationInfo.dataDir.let(::File)

@@ -72,6 +72,7 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
     var showChanges by remember { mutableStateOf(false) }
     var showCarData by remember { mutableStateOf(false) }
     var editHome by remember { mutableStateOf<String?>(null) }
+    var editGarage by remember { mutableStateOf(false) }
     var askRestore by remember { mutableStateOf<android.net.Uri?>(null) }
     val restorer = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> if (uri != null) askRestore = uri }
     val importer = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -287,6 +288,13 @@ fun SettingsScreen(vm: AppViewModel, ui: UiState, s: AppSettings) {
                 ToggleRow("Check for updates when the app opens", "Shows a popup when a new version is ready. Only versions signed with LionFlow's key are installed", s.autoUpdate, showDivider = false) { v -> set { it.copy(autoUpdate = v) } }
             }
         }
+
+        SectionTitle("Integrations")
+        GroupCard {
+            val garageCfg by no.lionflow.app.door.GarageDoor.config.collectAsState()
+            LinkRow("Garage door", garageCfg.let { garageSummary() }, LfIcons.Garage, last = true) { editGarage = true }
+        }
+        if (editGarage) GarageSetup(vm, s) { editGarage = false }
 
         SectionTitle("Android Auto")
         GroupCard {

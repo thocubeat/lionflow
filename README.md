@@ -22,6 +22,7 @@ Status, battery, range, trips and service data come with your brand account. Cha
 - **Clear errors:** when something fails you get the actual reason and code, not a generic "try again later".
 - **More on screen:** a Wear OS watch app, a home-screen widget, a free 2D/3D charger map, local weather and forecast, and layouts for foldables and tablets.
 - **Your own home screen:** choose which cards Home shows and in what order, and what the watch and Android Auto show (Settings → Home screens).
+- **Garage door:** open and close it from a button in Android Auto (it asks before anything moves) and, if you like, a card on Home. Works with ismartgate, Gogogate 2, Home Assistant, or any service with web links (IFTTT, Homey, Shelly …). Set up under Settings → Integrations.
 - **Everything the car reports:** all values in plain words, every single value under the carmaker's own name, and the raw data. Warnings from the car, where it is parked and which way it faces (with the walk to it in Google Maps), and notes when it is being driven, when privacy mode is on or when fog lights are left on.
 - **Fuel cars and hybrids:** fuel cost per trip and per month, monthly totals, fill-ups read from the fuel gauge, records, and the average since new.
 - **Stays signed in:** the carmaker hands out a new sign-in token at every renewal and the old one stops working. LionFlow writes the new one to encrypted storage before it does anything else, and never runs two renewals at once.

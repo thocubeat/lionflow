@@ -234,6 +234,10 @@ internal class OverviewScreen(ctx: CarContext, private val ui: CarUi) : LiveScre
         val km = week?.sumOf { it.distanceKm } ?: 0.0
         tile(1, if (trips == null) "Trips" else "7 days: ${fmtDistance(km, s)}", if (trips == null) "Loading…" else "${week?.size ?: 0} trips",
             R.drawable.ic_car_history, lion) { screenManager.push(TripsScreen(carContext)) }
+        if (no.lionflow.app.door.GarageDoor.configured && "garage" !in no.lionflow.app.data.HomeLayout.hidden(s.carHidden)) {
+            val door = no.lionflow.app.door.GarageDoor
+            tile(2, "Garage door", door.label(door.state.value).ifEmpty { "Open or close" }, R.drawable.ic_car_garage) { screenManager.push(GarageListScreen(carContext)) }
+        }
         if (st.energyType != "Fuel") tile(2, "Plan a trip", "Battery % on arrival", R.drawable.ic_car_search, lion) { screenManager.push(TripSearchScreen(carContext, ui)) }
         if (no.lionflow.app.plan.SavedRoutes.fromPlay(carContext)) {
             val saved = no.lionflow.app.plan.SavedRoutes.all(carContext)

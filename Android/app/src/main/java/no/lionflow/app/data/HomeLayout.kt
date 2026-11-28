@@ -5,7 +5,7 @@ package no.lionflow.app.data
  * status lines. Kept as plain lists of ids in the settings, so a part added later simply shows up at the end.
  */
 object HomeLayout {
-    /** [needs]: "battery" for parts only cars with a traction battery have, "fuel" for cars with a tank, "" for all. */
+    /** [needs]: "battery" for parts only cars with a traction battery have, "fuel" for cars with a tank, "garage" once a garage door is set up, "" for all. */
     data class Item(val id: String, val title: String, val note: String = "", val needs: String = "")
 
     val PHONE = listOf(
@@ -20,8 +20,9 @@ object HomeLayout {
         Item("charging", "Charging", "State, speed and limit", needs = "battery"),
         Item("monthCost", "Charging this month", "Energy and cost, home and away", needs = "battery"),
         Item("cardata", "Car data", "Odometer, outside temperature, 12 V battery and all the rest"),
+        Item("garage", "Garage door", "Open or close it from Home", needs = "garage"),
     )
-    const val PHONE_HIDDEN = "charging,monthCost"
+    const val PHONE_HIDDEN = "charging,monthCost,garage"
 
     val WATCH = listOf(
         Item("distance", "Distance today and yesterday"),
@@ -42,6 +43,7 @@ object HomeLayout {
         Item("saved", "Saved routes"),
         Item("trips", "Previous trips"),
         Item("info", "Car Info"),
+        Item("garage", "Garage door button", "Next to the YouTube button", needs = "garage"),
         Item("speed", "Speed", "A line next to the battery"),
         Item("doors", "Doors and lock", "A line next to the battery"),
         Item("charging", "Charging state", "A line next to the battery", needs = "battery"),

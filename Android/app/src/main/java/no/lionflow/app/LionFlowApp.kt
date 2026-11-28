@@ -35,6 +35,7 @@ open class LionFlowApp : Application() {
         remote = RemoteControl(api, secure)
         no.lionflow.app.model.ChargePower.init(this, settings, api.cachedVehicle()?.vin)
         no.lionflow.app.model.ChargeLog.init(this, api.cachedVehicle()?.vin)
+        no.lionflow.app.door.GarageDoor.init(this) { remote.addLog(it) }
 
         // "Remember me" off: start every cold launch signed out.
         if (!settings.value.rememberMe && api.isSignedIn) {

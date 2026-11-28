@@ -9,6 +9,8 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.net.Uri
 import no.lionflow.app.R
+import no.lionflow.app.car.ui.GarageModel
+import no.lionflow.app.car.ui.GaragePaint
 import no.lionflow.app.car.ui.Hit
 import no.lionflow.app.car.ui.HomeModel
 import no.lionflow.app.car.ui.HomePaint
@@ -245,6 +247,12 @@ class CarPreviewTest {
         return b
     }
 
+    private fun garage(open: Boolean) = GarageModel("Garage door", if (open) "Door is open" else "Door is closed", if (open) Tone.WARN else Tone.MUTED, listOf(
+        GarageModel.Choice("open", "Open", main = !open),
+        GarageModel.Choice("close", "Close", main = open),
+        GarageModel.Choice("cancel", "Cancel", R.drawable.ic_car_close),
+    ))
+
     // ---------------- the pictures ----------------
 
     @Test fun pictures() {
@@ -254,7 +262,10 @@ class CarPreviewTest {
             shot("info-${s.name}", s, Palette.DARK, 1) { c, k, h -> InfoPaint.draw(c, k, info(true), null, h) }
             shot("trips-${s.name}", s, Palette.DARK, 1) { c, k, h -> ListPaint.draw(c, k, trips(), 0, null, h) }
             shot("trip-${s.name}", s, Palette.DARK, 1) { c, k, h -> TripPaint.draw(c, k, trip(true, 150), null, h) }
+            val g = shot("garage-${s.name}", s, Palette.DARK, 1) { c, k, h -> GaragePaint.draw(c, k, garage(false), null, h) }
+            assertTrue("garage: open, close and cancel can be tapped", listOf("open", "close", "cancel").all { key -> g.any { it.key == key } })
         }
+        shot("garage-wide-split-light-open", scenes[1], Palette.LIGHT, 1) { c, k, h -> GaragePaint.draw(c, k, garage(true), "close", h) }
         val split = scenes[1]; val full = scenes[0]; val hd = scenes[2]
         shot("home-wide-split-light", split, Palette.LIGHT, 4) { c, k, h -> HomePaint.draw(c, k, home(false, charging = true), "chargers", h) }
         shot("home-wide-full-light", full, Palette.LIGHT, 3) { c, k, h -> HomePaint.draw(c, k, home(false, 5), null, h) }

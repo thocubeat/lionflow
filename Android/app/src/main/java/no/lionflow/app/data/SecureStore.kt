@@ -15,8 +15,8 @@ import javax.crypto.spec.GCMParameterSpec
  * that lives in the Android Keystore (hardware-backed where the phone supports it),
  * so tokens, the OTP state and the security code never sit on disk in plain text.
  */
-class SecureStore(context: Context) {
-    private val prefs = context.getSharedPreferences("lf_secure", Context.MODE_PRIVATE)
+class SecureStore(context: Context, file: String = "lf_secure") {
+    private val prefs = context.getSharedPreferences(file, Context.MODE_PRIVATE)
     private val alias = "lionflow_master_key"
 
     /** Which account's keys are used. "" is the first account (keys kept as before); others are stored as "<id>@<name>". */

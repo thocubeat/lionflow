@@ -80,6 +80,7 @@ object LfIcons {
     val Check = stroke("check", "M5 12l5 5 9-10", width = 2.4f)
     val Download = stroke("dl", "M12 3v12M7 10l5 5 5-5", "M4 19h16")
     val Upload = stroke("ul", "M12 15V3M7 8l5-5 5 5", "M4 19h16")
+    val Garage = stroke("garage", "M3 20V10l9-6 9 6v10", "M6.5 20v-8h11v8", "M6.5 15h11M6.5 17.5h11")
     val Car = stroke("car", "M5 17h14l-1.5-6.5A2 2 0 0 0 15.6 9H8.4a2 2 0 0 0-1.9 1.5z", circle(7.5f, 17.5f, 1.5f), circle(16.5f, 17.5f, 1.5f))
     val Close = stroke("close", "M6 6l12 12M18 6L6 18")
     val Fan = stroke("fan", "M12 12c-2-3-1-7 2-8 1 3-1 5-2 8zM12 12c3-2 7-1 8 2-3 1-5-1-8-2zM12 12c2 3 1 7-2 8-1-3 1-5 2-8zM12 12c-3 2-7 1-8-2 3-1 5 1 8 2z")

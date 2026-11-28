@@ -92,6 +92,7 @@ fun HomeScreen(vm: AppViewModel, ui: UiState, s: AppSettings, wide: Boolean, exp
                             "service" -> ServiceCard(vm, ui, s)
                             "fuel" -> FuelMonthCard(vm, ui, s)
                             "cardata" -> CarDataCard(vm, ui, s)
+                            "garage" -> GarageCard(vm)
                         }
                     }
                     if (no.lionflow.app.ui.Caps.battery(ui.status)) MonthCostCard(vm)
@@ -129,6 +130,7 @@ private fun HomePhone(vm: AppViewModel, ui: UiState, s: AppSettings) {
                     "charging" -> if (no.lionflow.app.ui.Caps.battery(ui.status)) ChargingSummary(vm, ui, s)
                     "monthCost" -> if (no.lionflow.app.ui.Caps.battery(ui.status)) MonthCostCard(vm)
                     "cardata" -> CarDataCard(vm, ui, s)
+                    "garage" -> GarageCard(vm)
                 }
             }
             CustomizeLink(vm, ui, s)

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Garage door openers on the home network (an ismartgate or Gogogate 2 at its IP address, Home Assistant at
+  http://homeassistant.local:8123) only speak plain HTTP, so it is allowed. Everything else LionFlow talks to uses HTTPS.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
